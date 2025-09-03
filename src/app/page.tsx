@@ -7,12 +7,14 @@ export default function Home() {
       {/* Hero Section with Campfire Background */}
       <div className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Campfire Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-900 via-red-900 to-black">
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-          {/* Fire effect placeholder */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-96 h-96 bg-gradient-radial from-orange-400 via-red-500 to-transparent rounded-full opacity-30 blur-3xl"></div>
-          </div>
+        <div className="absolute inset-0">
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: "url('/images/hero/hero-campfire.png.png')"
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
         </div>
         
         {/* Hero Content */}

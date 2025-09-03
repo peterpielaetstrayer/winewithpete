@@ -16,6 +16,13 @@ export default function JoinPage(){
 
       <div className="bg-white rounded-2xl p-8 shadow-sm border">
         <div className="text-center mb-8">
+          <div className="aspect-[16/9] rounded-xl overflow-hidden mb-6">
+            <img 
+              src="/images/events/events-community-gathering.png.png" 
+              alt="Join our community of people who value slow conversation and meaningful connections"
+              className="w-full h-full object-cover"
+            />
+          </div>
           <h2 className="text-xl font-serif font-semibold mb-4">What You'll Get</h2>
           <div className="grid md:grid-cols-3 gap-6 text-sm">
             <div className="text-center">

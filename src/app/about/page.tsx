@@ -30,18 +30,29 @@ export default function AboutPage(){
         </div>
 
         <div className="bg-white rounded-2xl p-8 shadow-sm border mb-8">
-          <h2 className="text-2xl font-serif font-semibold mb-4">Who is Pete?</h2>
-          <p className="text-black/80 leading-relaxed mb-4">
-            Pete is a writer, community builder, and believer in the power of slow conversation. 
-            After years of feeling disconnected in a hyper-connected world, he started hosting 
-            small gatherings around fire and food, where people could share stories, ask hard questions, 
-            and build genuine connections.
-          </p>
-          <p className="text-black/80 leading-relaxed">
-            What started as informal beach fires with friends has grown into a community of people 
-            who value depth over breadth, quality over quantity, and the kind of conversations that 
-            stay with you long after the fire burns out.
-          </p>
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+              <h2 className="text-2xl font-serif font-semibold mb-4">Who is Pete?</h2>
+              <p className="text-black/80 leading-relaxed mb-4">
+                Pete is a writer, community builder, and believer in the power of slow conversation. 
+                After years of feeling disconnected in a hyper-connected world, he started hosting 
+                small gatherings around fire and food, where people could share stories, ask hard questions, 
+                and build genuine connections.
+              </p>
+              <p className="text-black/80 leading-relaxed">
+                What started as informal beach fires with friends has grown into a community of people 
+                who value depth over breadth, quality over quantity, and the kind of conversations that 
+                stay with you long after the fire burns out.
+              </p>
+            </div>
+            <div className="aspect-[4/3] rounded-xl overflow-hidden">
+              <img 
+                src="/images/about/about-pete-beach-fire.png.png" 
+                alt="Pete by a beach fire at sunset, cooking and contemplating"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="bg-white rounded-2xl p-8 shadow-sm border mb-8">

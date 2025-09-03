@@ -27,13 +27,12 @@ export default function EventsPage(){
               </div>
             </div>
             <div className="order-1 lg:order-2">
-              <div className="aspect-[4/3] bg-gradient-to-br from-orange-100 to-amber-200 rounded-2xl overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-orange-200 via-amber-300 to-yellow-400 flex items-center justify-center">
-                  <div className="text-center text-white/80">
-                    <div className="text-6xl mb-4">🔥</div>
-                    <div className="text-sm">Beach Fire Scene</div>
-                  </div>
-                </div>
+              <div className="aspect-[4/3] rounded-2xl overflow-hidden">
+                <img 
+                  src="/images/events/events-community-gathering.png.png" 
+                  alt="Community gathering around a campfire with wine and conversation"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>
@@ -43,13 +42,12 @@ export default function EventsPage(){
         <div className="relative">
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             <div className="order-1">
-              <div className="aspect-[4/3] bg-gradient-to-br from-purple-100 to-indigo-200 rounded-2xl overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-purple-200 via-indigo-300 to-blue-400 flex items-center justify-center">
-                  <div className="text-center text-white/80">
-                    <div className="text-6xl mb-4">🍷</div>
-                    <div className="text-sm">Intimate Dining Scene</div>
-                  </div>
-                </div>
+              <div className="aspect-[4/3] rounded-2xl overflow-hidden">
+                <img 
+                  src="/images/about/about-pete-beach-fire.png.png" 
+                  alt="Intimate dining scene with wine and thoughtful conversation"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
             <div className="order-2">
