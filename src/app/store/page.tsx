@@ -8,7 +8,8 @@ export default function StorePage(){
     image, 
     description, 
     badge, 
-    featured = false 
+    featured = false,
+    comingSoon = false
   }: {
     title: string;
     price: string;
@@ -16,11 +17,17 @@ export default function StorePage(){
     description: string;
     badge?: string;
     featured?: boolean;
+    comingSoon?: boolean;
   }) => (
     <div className={`group relative bg-white rounded-2xl overflow-hidden shadow-sm border hover:shadow-lg transition-all duration-300 ${featured ? 'md:col-span-2' : ''}`}>
       {badge && (
         <Badge className="absolute top-4 left-4 z-10 bg-[var(--wwp-ember)] text-white">
           {badge}
+        </Badge>
+      )}
+      {comingSoon && (
+        <Badge className="absolute top-4 right-4 z-10 bg-gray-500 text-white">
+          Coming Soon
         </Badge>
       )}
       <div className={`aspect-square bg-gray-100 relative overflow-hidden ${featured ? 'md:aspect-[4/3]' : ''}`}>
@@ -33,8 +40,11 @@ export default function StorePage(){
         <p className="text-sm text-black/70 mb-4 line-clamp-2">{description}</p>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <span className="text-xl font-serif text-[var(--wwp-ember)]">{price}</span>
-          <Button className="bg-black hover:bg-black/80 text-white rounded-full px-4 py-2 text-sm self-start sm:self-auto">
-            Add to Cart
+          <Button 
+            className="bg-black hover:bg-black/80 text-white rounded-full px-4 py-2 text-sm self-start sm:self-auto"
+            disabled={comingSoon}
+          >
+            {comingSoon ? 'Coming Soon' : 'Add to Cart'}
           </Button>
         </div>
       </div>
@@ -42,131 +52,125 @@ export default function StorePage(){
   );
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-16">
+    <div className="mx-auto max-w-6xl px-4 py-16">
       {/* Hero Section */}
       <div className="text-center mb-16">
         <h1 className="text-4xl md:text-5xl font-serif font-semibold mb-4">Wine With Pete Store</h1>
         <p className="text-lg text-black/70 max-w-2xl mx-auto">
-          Thoughtful products for those who appreciate the slower things in life. 
-          From art prints to conversation starters.
+          Curated essentials for the slow living community. 
+          Quality over quantity, meaning over mass production.
         </p>
       </div>
 
-      {/* Featured Product */}
-      <div className="mb-16">
-        <h2 className="text-2xl font-serif mb-8">Featured</h2>
-        <div className="grid md:grid-cols-2 gap-8">
-          <ProductCard
-            title="Wine Lady Art Print"
-            price="from $50.00"
-            image="/wine-lady.jpg"
-            description="A stunning Art Nouveau-inspired illustration of a sophisticated wine lady. Perfect for creating an elegant atmosphere in your home."
-            badge="Bestseller"
-            featured={true}
-          />
-        </div>
-      </div>
-
-      {/* Wine Bear Collection */}
+      {/* Community Favorites */}
       <div className="mb-16">
         <div className="flex items-center gap-4 mb-8">
-          <h2 className="text-2xl font-serif">Wine Bear Collection</h2>
+          <h2 className="text-2xl font-serif">Community Favorites</h2>
           <Badge variant="outline" className="text-[var(--wwp-ember)] border-[var(--wwp-ember)]">
-            Playful
+            Best Sellers
           </Badge>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <ProductCard
-            title="Wine Bear Baseball Cap"
-            price="$34.99"
-            image="/wine-bear-cap.jpg"
-            description="Comfortable trucker cap featuring our beloved wine bear. Perfect for casual wine tastings and outdoor gatherings."
-          />
-          <ProductCard
-            title="Wine Bear T-Shirt"
-            price="$29.99"
-            image="/wine-bear-shirt.jpg"
-            description="Soft cotton tee with embroidered wine bear patch. Available in multiple colors and sizes."
-          />
-          <ProductCard
-            title="Campfire Bear T-Shirt"
-            price="$29.99"
-            image="/campfire-bear.jpg"
-            description="Cozy campfire scene with our bear friend. Perfect for those who love both wine and the great outdoors."
-          />
-        </div>
-      </div>
-
-      {/* Wine With Collection */}
-      <div className="mb-16">
-        <div className="flex items-center gap-4 mb-8">
-          <h2 className="text-2xl font-serif">Wine With Collection</h2>
-          <Badge variant="outline" className="text-[var(--wwp-ember)] border-[var(--wwp-ember)]">
-            Essential
-          </Badge>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <ProductCard
-            title="Hardcover Bound Notebook"
-            price="$19.99"
-            image="/notebook.jpg"
-            description="Premium hardcover notebook for capturing thoughts, wine notes, and conversations. Elastic closure and ribbon bookmark included."
-          />
-          <ProductCard
-            title="Wine Tumbler"
-            price="$29.99"
-            image="/wine-tumbler.jpg"
-            description="Insulated wine tumbler with thought bubble design. Keeps your wine at the perfect temperature for hours."
-          />
-          <ProductCard
-            title="Wine With Pete Trucker Cap"
-            price="$34.99"
-            image="/trucker-cap.jpg"
-            description="Classic trucker cap with embroidered Wine With Pete logo. Mesh back for breathability."
-          />
-        </div>
-      </div>
-
-      {/* Wine Art Collection */}
-      <div className="mb-16">
-        <div className="flex items-center gap-4 mb-8">
-          <h2 className="text-2xl font-serif">Wine Art Collection</h2>
-          <Badge variant="outline" className="text-[var(--wwp-ember)] border-[var(--wwp-ember)]">
-            Artistic
-          </Badge>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 gap-6">
           <ProductCard
             title="#winestagram Hoodie"
             price="from $49.99"
             image="/winestagram-hoodie.jpg"
             description="Comfortable hoodie featuring vibrant wine-inspired artwork. Perfect for cozy wine nights at home."
+            badge="Popular"
           />
           <ProductCard
             title="#MEGA-PINT Hoodie"
             price="from $49.99"
             image="/mega-pint-hoodie.jpg"
             description="Bold design celebrating the art of wine appreciation. Available in multiple colors."
-          />
-          <ProductCard
-            title="Gothic Wine Lady Tapestry"
-            price="from $79.99"
-            image="/gothic-tapestry.jpg"
-            description="Dramatic gothic-style wine lady tapestry. Perfect for creating an atmospheric wine room or study."
+            badge="Popular"
           />
         </div>
       </div>
 
-      {/* Call to Action */}
+      {/* Digital Recipes - Coming Soon */}
+      <div className="mb-16">
+        <div className="flex items-center gap-4 mb-8">
+          <h2 className="text-2xl font-serif">Fire & Food Collection</h2>
+          <Badge variant="outline" className="text-[var(--wwp-ember)] border-[var(--wwp-ember)]">
+            Digital
+          </Badge>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ProductCard
+            title="Open Fire Recipe Collection"
+            price="$12.99"
+            image="/fire-recipes.jpg"
+            description="10 carefully crafted recipes designed for cooking over open fire. Includes wine pairings and conversation starters."
+            comingSoon={true}
+          />
+          <ProductCard
+            title="Salon Dinner Menu Guide"
+            price="$8.99"
+            image="/dinner-guide.jpg"
+            description="Curated menu ideas for intimate gatherings. Wine pairings, conversation topics, and hosting tips included."
+            comingSoon={true}
+          />
+          <ProductCard
+            title="Seasonal Fire Cooking"
+            price="$15.99"
+            image="/seasonal-recipes.jpg"
+            description="Year-round recipes that celebrate the seasons. From summer beach fires to winter hearth cooking."
+            comingSoon={true}
+          />
+        </div>
+      </div>
+
+      {/* Coming Soon Section */}
+      <div className="mb-16">
+        <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
+          <h3 className="text-2xl font-serif font-semibold mb-4">More Coming Soon</h3>
+          <p className="text-black/70 mb-6 max-w-2xl mx-auto">
+            We're working on bringing you more thoughtful products that align with our mission. 
+            Think conversation starter cards, fire-starting kits, and curated wine selections.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button variant="outline" className="border-[var(--wwp-ember)] text-[var(--wwp-ember)] hover:bg-[var(--wwp-ember)] hover:text-white rounded-full px-6">
+              Get Notified
+            </Button>
+            <Button className="bg-[var(--wwp-ember)] hover:opacity-90 text-white rounded-full px-6">
+              Join the Circle
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Philosophy Section */}
       <div className="text-center bg-white rounded-2xl p-12 border">
-        <h3 className="text-2xl font-serif mb-4">Questions about our products?</h3>
-        <p className="text-black/70 mb-6 max-w-lg mx-auto">
-          We're here to help you find the perfect piece for your wine journey. 
-          Reach out with any questions about sizing, materials, or custom orders.
+        <h3 className="text-2xl font-serif font-semibold mb-4">Our Store Philosophy</h3>
+        <p className="text-black/70 mb-6 max-w-3xl mx-auto">
+          We believe in quality over quantity. Every product we offer is carefully selected 
+          to enhance your slow living journey. No mass production, no fast fashion, no meaningless merch. 
+          Just thoughtful items that bring people together around fire, food, and conversation.
         </p>
-        <Button className="bg-[var(--wwp-ember)] hover:opacity-90 text-white rounded-full px-8">
-          Contact Us
-        </Button>
+        <div className="grid md:grid-cols-3 gap-6 mt-8">
+          <div className="text-center">
+            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center">
+              <span className="text-xl">🔥</span>
+            </div>
+            <h4 className="font-medium mb-2">Quality First</h4>
+            <p className="text-sm text-black/70">Every item is chosen for its quality and alignment with our values.</p>
+          </div>
+          <div className="text-center">
+            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
+              <span className="text-xl">🌱</span>
+            </div>
+            <h4 className="font-medium mb-2">Slow & Sustainable</h4>
+            <p className="text-sm text-black/70">We prioritize sustainable practices and thoughtful consumption.</p>
+          </div>
+          <div className="text-center">
+            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-[var(--wwp-gold)] to-amber-500 rounded-full flex items-center justify-center">
+              <span className="text-xl">🤝</span>
+            </div>
+            <h4 className="font-medium mb-2">Community Focused</h4>
+            <p className="text-sm text-black/70">Products that bring people together and enhance connection.</p>
+          </div>
+        </div>
       </div>
     </div>
   );
