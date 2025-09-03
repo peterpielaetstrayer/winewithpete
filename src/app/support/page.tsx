@@ -40,32 +40,20 @@ export default function SupportPage(){
           <Tier 
             title="Buy Me a Coffee" 
             price="$5 – One-Time" 
-            note="A small gesture, a big boost."
+            note="A small gesture that helps keep the fire burning. Supports one community gathering."
             buttonText="Give $5"
           />
           <Tier 
             title="Buy Me a Glass of Wine" 
             price="$7/month – Recurring" 
-            note="Support the weekly essays every month, like subscribing to a conversation that matters."
+            note="Monthly support for the community. Enables weekly essays, event planning, and keeps the conversation flowing."
             buttonText="Give Monthly"
           />
           <Tier 
-            title="Buy Me a Bottle of Wine" 
-            price="$30 – One-Time" 
-            note="A deeper thank you. Helps cover time, research, and the firewood that keeps this going."
-            buttonText="Give $30"
-          />
-          <Tier 
-            title="Buy Me a Really Nice Bottle" 
+            title="Support the Vision" 
             price="$50 – One-Time" 
-            note="For when you feel this work in your bones and want to honor it."
+            note="For those who believe in building something lasting. Helps fund larger events, partnerships, and community growth."
             buttonText="Give $50"
-          />
-          <Tier 
-            title="Support the Long-Term Vision" 
-            price="$250 – One-Time" 
-            note="For those who believe in the deeper mission and want to help build something lasting."
-            buttonText="Give $250"
           />
         </div>
       </div>

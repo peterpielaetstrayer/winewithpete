@@ -25,10 +25,15 @@ export default function Home() {
             <div className="mt-6 text-lg md:text-xl text-white/80">— Richard Feynman</div>
           </blockquote>
           
-          <div className="mt-12">
-            <Link href="/events">
+          <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/join">
               <Button className="bg-[var(--wwp-ember)] hover:opacity-90 text-white rounded-full px-8 py-4 text-lg font-medium">
-                JOIN US AT THE FIRE
+                JOIN THE CIRCLE
+              </Button>
+            </Link>
+            <Link href="/events">
+              <Button variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-[var(--wwp-ember)] rounded-full px-8 py-4 text-lg font-medium">
+                SEE EVENTS
               </Button>
             </Link>
           </div>
@@ -45,6 +50,22 @@ export default function Home() {
             We gather around food, fire, and the slow unfolding of conversation.<br/>
             Together, we pause and turn ourselves toward the things that matter.
           </p>
+          
+          {/* Social Proof */}
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-black/60">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-serif font-semibold text-[var(--wwp-ember)]">200+</span>
+              <span>community members</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-serif font-semibold text-[var(--wwp-ember)]">50+</span>
+              <span>events hosted</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-serif font-semibold text-[var(--wwp-ember)]">12</span>
+              <span>cities</span>
+            </div>
+          </div>
         </div>
       </div>
 

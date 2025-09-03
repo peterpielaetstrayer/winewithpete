@@ -16,12 +16,13 @@ export function SiteHeader(){
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex gap-6">
+          {link('/about','About')}
           {link('/events','Events')}
           {link('/archive','Archive')}
           {link('/join','Join')}
           {link('/store','Store')}
           {link('/support','Support')}
-          {link('/wine-with','Wine With')}
+          {link('/wine-with','Become a Host')}
         </nav>
         
         {/* Mobile Menu Button */}
@@ -39,12 +40,13 @@ export function SiteHeader(){
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-black/5">
           <nav className="px-4 py-4 flex flex-col gap-4">
+            {link('/about','About')}
             {link('/events','Events')}
             {link('/archive','Archive')}
             {link('/join','Join')}
             {link('/store','Store')}
             {link('/support','Support')}
-            {link('/wine-with','Wine With')}
+            {link('/wine-with','Become a Host')}
           </nav>
         </div>
       )}

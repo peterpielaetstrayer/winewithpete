@@ -6,14 +6,48 @@ import { Input } from '@/components/ui/input';
 export default function JoinPage(){
   const [email, setEmail] = useState('');
   return (
-    <div className="mx-auto max-w-md px-4 py-16">
-      <h1 className="text-3xl font-serif">Join the Circle</h1>
-      <p className="mt-2 text-black/70">Occasional invites, rituals, and tools for hosting slower nights.</p>
-      <div className="mt-6 flex flex-col sm:flex-row gap-2">
-        <Input placeholder="your@email.com" value={email} onChange={e=>setEmail(e.target.value)} className="flex-1" />
-        <Button className="bg-[var(--wwp-ember)] sm:px-8">I'm in</Button>
+    <div className="mx-auto max-w-2xl px-4 py-16">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-serif font-semibold mb-6">Join the Circle</h1>
+        <p className="text-lg text-black/80 max-w-xl mx-auto">
+          Get invites to intimate gatherings, weekly essays on slow living, and tools for hosting your own meaningful conversations.
+        </p>
       </div>
-      <p className="mt-2 text-xs opacity-60">We respect your privacy. Unsubscribe anytime.</p>
+
+      <div className="bg-white rounded-2xl p-8 shadow-sm border">
+        <div className="text-center mb-8">
+          <h2 className="text-xl font-serif font-semibold mb-4">What You'll Get</h2>
+          <div className="grid md:grid-cols-3 gap-6 text-sm">
+            <div className="text-center">
+              <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center">
+                <span className="text-xl">🔥</span>
+              </div>
+              <h3 className="font-medium mb-2">Event Invites</h3>
+              <p className="text-black/70">Exclusive invites to Open Fire Sundays and Salon Dinners in your area.</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
+                <span className="text-xl">📝</span>
+              </div>
+              <h3 className="font-medium mb-2">Weekly Essays</h3>
+              <p className="text-black/70">Thoughtful writing on slow living, community, and meaningful connection.</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-[var(--wwp-gold)] to-amber-500 rounded-full flex items-center justify-center">
+                <span className="text-xl">🤝</span>
+              </div>
+              <h3 className="font-medium mb-2">Hosting Tools</h3>
+              <p className="text-black/70">Conversation starters, event guides, and resources for hosting your own gatherings.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Input placeholder="your@email.com" value={email} onChange={e=>setEmail(e.target.value)} className="flex-1" />
+          <Button className="bg-[var(--wwp-ember)] sm:px-8">I'm in</Button>
+        </div>
+        <p className="mt-2 text-xs opacity-60 text-center">We respect your privacy. Unsubscribe anytime.</p>
+      </div>
     </div>
   );
 }
