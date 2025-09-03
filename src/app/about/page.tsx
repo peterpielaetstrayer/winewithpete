@@ -79,22 +79,22 @@ export default function AboutPage(){
           <h2 className="text-2xl font-serif font-semibold mb-4">Our Values</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center">
-                <span className="text-xl">🔥</span>
+              <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                <img src="/images/icons/icon-fire.png" alt="Authenticity" className="w-10 h-10" />
               </div>
               <h3 className="font-medium mb-2">Authenticity</h3>
               <p className="text-sm text-black/70">We create spaces where people can be their real selves, not their social media personas.</p>
             </div>
             <div className="text-center">
-              <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
-                <span className="text-xl">🌱</span>
+              <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                <img src="/images/icons/icon-growth.png" alt="Slow Connection" className="w-10 h-10" />
               </div>
               <h3 className="font-medium mb-2">Slow Connection</h3>
               <p className="text-sm text-black/70">We believe the best relationships develop over time, not in quick interactions.</p>
             </div>
             <div className="text-center">
-              <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-[var(--wwp-gold)] to-amber-500 rounded-full flex items-center justify-center">
-                <span className="text-xl">🤝</span>
+              <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                <img src="/images/icons/icon-community.png" alt="Community" className="w-10 h-10" />
               </div>
               <h3 className="font-medium mb-2">Community</h3>
               <p className="text-sm text-black/70">We build lasting connections that extend beyond individual events.</p>

@@ -150,22 +150,22 @@ export default function StorePage(){
         </p>
         <div className="grid md:grid-cols-3 gap-6 mt-8">
           <div className="text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center">
-              <span className="text-xl">🔥</span>
+            <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+              <img src="/images/icons/icon-fire.png" alt="Quality First" className="w-10 h-10" />
             </div>
             <h4 className="font-medium mb-2">Quality First</h4>
             <p className="text-sm text-black/70">Every item is chosen for its quality and alignment with our values.</p>
           </div>
           <div className="text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
-              <span className="text-xl">🌱</span>
+            <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+              <img src="/images/icons/icon-growth.png" alt="Slow & Sustainable" className="w-10 h-10" />
             </div>
             <h4 className="font-medium mb-2">Slow & Sustainable</h4>
             <p className="text-sm text-black/70">We prioritize sustainable practices and thoughtful consumption.</p>
           </div>
           <div className="text-center">
-            <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-[var(--wwp-gold)] to-amber-500 rounded-full flex items-center justify-center">
-              <span className="text-xl">🤝</span>
+            <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+              <img src="/images/icons/icon-community.png" alt="Community Focused" className="w-10 h-10" />
             </div>
             <h4 className="font-medium mb-2">Community Focused</h4>
             <p className="text-sm text-black/70">Products that bring people together and enhance connection.</p>

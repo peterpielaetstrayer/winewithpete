@@ -76,8 +76,8 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4 grid md:grid-cols-3 gap-8">
           {/* Events Card */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
-            <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center">
-              <span className="text-2xl">🔥</span>
+            <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+              <img src="/images/icons/icon-fire.png" alt="Fire" className="w-12 h-12" />
             </div>
             <h3 className="text-xl font-medium mb-4 text-[var(--wwp-charcoal)]">Events</h3>
             <p className="text-black/70 leading-relaxed">
@@ -87,8 +87,8 @@ export default function Home() {
 
           {/* Essays Card */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
-            <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
-              <span className="text-2xl">🌱</span>
+            <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+              <img src="/images/icons/icon-writing.png" alt="Writing" className="w-12 h-12" />
             </div>
             <h3 className="text-xl font-medium mb-4 text-[var(--wwp-charcoal)]">Essays</h3>
             <p className="text-black/70 leading-relaxed">
@@ -98,8 +98,8 @@ export default function Home() {
 
           {/* Join the Circle Card */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
-            <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-[var(--wwp-gold)] to-amber-500 rounded-full flex items-center justify-center">
-              <span className="text-2xl">👍</span>
+            <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+              <img src="/images/icons/icon-connection.png" alt="Connection" className="w-12 h-12" />
             </div>
             <h3 className="text-xl font-medium mb-4 text-[var(--wwp-charcoal)]">Join the Circle</h3>
             <p className="text-black/70 leading-relaxed">
