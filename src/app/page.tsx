@@ -17,7 +17,7 @@ export default function Home() {
         
         {/* Hero Content */}
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <blockquote className="text-2xl md:text-4xl lg:text-5xl font-serif text-white leading-relaxed mb-8">
+          <blockquote className="text-2xl md:text-4xl lg:text-5xl font-serif font-medium text-white leading-relaxed mb-8">
             "If our small minds, for some convenience,<br/>
             divide this glass of <span className="text-[var(--wwp-gold)]">wine</span>—this universe—<br/>
             into parts: physics, biology, geology, astronomy, psychology...<br/>
@@ -41,7 +41,7 @@ export default function Home() {
       {/* Mission Statement */}
       <div className="bg-[var(--wwp-cream)] py-24">
         <div className="mx-auto max-w-4xl px-4 text-center">
-          <p className="text-2xl md:text-3xl font-serif text-[var(--wwp-charcoal)] leading-relaxed">
+          <p className="text-2xl md:text-3xl font-serif font-medium text-[var(--wwp-charcoal)] leading-relaxed">
             We gather around food, fire, and the slow unfolding of conversation.<br/>
             Together, we pause and turn ourselves toward the things that matter.
           </p>

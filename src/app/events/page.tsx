@@ -5,7 +5,7 @@ export default function EventsPage(){
     <div className="mx-auto max-w-7xl px-4 py-16">
       {/* Hero Section */}
       <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-serif mb-6">Events</h1>
+        <h1 className="text-4xl md:text-5xl font-serif font-semibold mb-6">Events</h1>
         <p className="text-lg text-black/80 max-w-2xl mx-auto">
           Wine With Pete events are an invitation to slow down.
         </p>

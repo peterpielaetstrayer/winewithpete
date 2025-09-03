@@ -9,7 +9,16 @@
   --wwp-cream:#f6f3ef;
   --wwp-charcoal:#1f1f1f;
 }
-body{ background:var(--wwp-cream); color:var(--wwp-charcoal); }
+
+body{ 
+  background:var(--wwp-cream); 
+  color:var(--wwp-charcoal);
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+.font-serif {
+  font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+}
 
 @theme inline {
   --color-background: var(--background);
