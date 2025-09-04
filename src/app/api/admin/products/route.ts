@@ -4,10 +4,20 @@ import { createClient } from '@/lib/supabase/server';
 // Helper function to verify admin authentication
 async function verifyAdmin(request: NextRequest) {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
   
-  if (!user) {
-    return { error: 'Unauthorized', user: null };
+  // Get the authorization header
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return { error: 'No authorization token', user: null };
+  }
+  
+  const token = authHeader.split(' ')[1];
+  
+  // Verify the token and get user
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+  
+  if (error || !user) {
+    return { error: 'Invalid token', user: null };
   }
   
   return { error: null, user };

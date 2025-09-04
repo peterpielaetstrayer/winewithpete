@@ -75,8 +75,20 @@ export default function AdminPage() {
 
   const fetchData = async () => {
     try {
-      // Fetch products
-      const productsRes = await fetch('/api/admin/products');
+      // Get the current session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        console.error('No session found');
+        return;
+      }
+
+      // Fetch products with session
+      const productsRes = await fetch('/api/admin/products', {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+      });
       const productsData = await productsRes.json();
       setProducts(productsData.data || []);
 
@@ -85,8 +97,12 @@ export default function AdminPage() {
       const eventsData = await eventsRes.json();
       setEvents(eventsData.data || []);
 
-      // Fetch recent orders
-      const ordersRes = await fetch('/api/admin/orders');
+      // Fetch recent orders with session
+      const ordersRes = await fetch('/api/admin/orders', {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+      });
       const ordersData = await ordersRes.json();
       setOrders(ordersData.data || []);
     } catch (error) {
@@ -98,9 +114,20 @@ export default function AdminPage() {
 
   const toggleProductStatus = async (productId: string, isActive: boolean) => {
     try {
+      // Get the current session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        console.error('No session found');
+        return;
+      }
+
       const response = await fetch('/api/admin/products', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
         body: JSON.stringify({
           id: productId,
           is_active: !isActive,
