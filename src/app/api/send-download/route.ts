@@ -53,15 +53,30 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Here you would integrate with your email service (Kit, SendGrid, etc.)
-    // For now, we'll just return the download links
-    // In production, you'd send these via email to the customer
+    // Send email with download links
+    if (downloadLinks.length > 0) {
+      try {
+        const { sendEmail, emailTemplates } = await import('@/lib/email');
+        
+        await sendEmail({
+          to: order.email,
+          ...emailTemplates.purchaseConfirmation(
+            order.name,
+            order.order_items[0]?.products?.name || 'Your Recipe Cards',
+            downloadLinks
+          )
+        });
+
+        console.log('Download email sent successfully to:', order.email);
+      } catch (emailError) {
+        console.error('Failed to send download email:', emailError);
+        // Don't fail the request if email fails
+      }
+    }
 
     return NextResponse.json({
-      message: 'Download links generated successfully',
-      downloadLinks,
-      // In production, you'd return success without exposing the links
-      // return NextResponse.json({ message: 'Download email sent successfully' });
+      message: 'Download email sent successfully',
+      downloadLinks: downloadLinks.length > 0 ? downloadLinks : undefined
     });
 
   } catch (error) {

@@ -67,6 +67,9 @@ export async function POST(request: NextRequest) {
 
         // Send download links to customer
         try {
+          console.log('Attempting to send download email for order:', order.id);
+          console.log('Customer email:', order.email);
+          
           const downloadResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/send-download`, {
             method: 'POST',
             headers: {
@@ -77,15 +80,19 @@ export async function POST(request: NextRequest) {
             }),
           });
 
+          console.log('Download response status:', downloadResponse.status);
+          
           if (downloadResponse.ok) {
             const downloadData = await downloadResponse.json();
+            console.log('Download data received:', downloadData);
             
             // Send email with download links
             if (downloadData.downloadLinks && downloadData.downloadLinks.length > 0) {
+              console.log('Sending email with download links...');
               const { sendEmail, emailTemplates } = await import('@/lib/email');
               const productName = session.metadata?.productName || 'Your Recipe Cards';
               
-              await sendEmail({
+              const emailResult = await sendEmail({
                 to: order.email,
                 ...emailTemplates.purchaseConfirmation(
                   order.name,
@@ -93,7 +100,13 @@ export async function POST(request: NextRequest) {
                   downloadData.downloadLinks
                 )
               });
+              
+              console.log('Email send result:', emailResult);
+            } else {
+              console.log('No download links found, skipping email');
             }
+          } else {
+            console.error('Download response failed:', await downloadResponse.text());
           }
         } catch (emailError) {
           console.error('Failed to send download email:', emailError);

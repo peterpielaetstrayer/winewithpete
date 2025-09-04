@@ -76,7 +76,7 @@ export default function StorePage(){
     badge?: string;
     featured?: boolean;
     comingSoon?: boolean;
-    re solidproductId?: string;
+    productId?: string;
     productPrice?: number;
     imagePath?: string;
   }) => (

@@ -1,5 +1,4 @@
-// Kit email integration for Wine With Pete
-// Replace with your actual Kit API setup
+// Resend email integration for Wine With Pete
 
 interface EmailData {
   to: string;
@@ -9,30 +8,30 @@ interface EmailData {
 }
 
 export async function sendEmail(emailData: EmailData) {
-  // For now, we'll use a simple fetch to Kit API
-  // You'll need to replace this with your actual Kit setup
-  
   try {
-    const response = await fetch('https://api.kit.co/v1/emails', {
+    const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.KIT_API_KEY}`,
+        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        to: emailData.to,
+        from: 'Wine With Pete <pete@winewithpete.me>',
+        to: [emailData.to],
         subject: emailData.subject,
         html: emailData.html,
         text: emailData.text,
-        from: 'Pete <pete@winewithpete.me>',
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Kit API error: ${response.status}`);
+      const errorData = await response.text();
+      throw new Error(`Resend API error: ${response.status} - ${errorData}`);
     }
 
-    return await response.json();
+    const result = await response.json();
+    console.log('Email sent successfully:', result);
+    return result;
   } catch (error) {
     console.error('Email sending failed:', error);
     // Don't throw - we don't want email failures to break the app
