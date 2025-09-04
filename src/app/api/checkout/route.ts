@@ -5,8 +5,8 @@ import { CreateCheckoutSessionRequest } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
   try {
-    const body: CreateCheckoutSessionRequest = await request.json();
-    const { productId, quantity = 1, customerEmail, customerName } = body;
+    const body: CreateCheckoutSessionRequest & { customAmount?: number; customDescription?: string } = await request.json();
+    const { productId, quantity = 1, customerEmail, customerName, customAmount, customDescription } = body;
 
     if (!productId) {
       return NextResponse.json(
@@ -15,7 +15,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get product details from Supabase
+    // Handle support payments (custom amounts)
+    if (productId.startsWith('support-') && customAmount) {
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: customDescription || 'Support Wine With Pete',
+                description: 'Thank you for supporting the community!',
+              },
+              unit_amount: Math.round(customAmount * 100), // Convert to cents
+            },
+            quantity: 1,
+          },
+        ],
+        mode: 'payment',
+        success_url: `${request.nextUrl.origin}/store/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${request.nextUrl.origin}/support?cancelled=true`,
+        customer_email: customerEmail,
+        metadata: {
+          productId: productId,
+          productName: customDescription || 'Support Payment',
+          customerName: customerName || '',
+          isSupportPayment: 'true',
+        },
+      });
+
+      return NextResponse.json({ 
+        sessionId: session.id,
+        url: session.url 
+      });
+    }
+
+    // Get product details from Supabase for regular products
     const supabase = createClient();
     const { data: product, error: productError } = await supabase
       .from('products')
