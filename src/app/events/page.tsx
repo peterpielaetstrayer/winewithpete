@@ -87,7 +87,7 @@ export default function EventsPage(){
       </div>
 
       {/* Upcoming Events */}
-      <EventsList />
+      {/* <EventsList /> */}
     </div>
   );
 }

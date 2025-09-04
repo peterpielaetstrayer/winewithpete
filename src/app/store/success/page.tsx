@@ -13,7 +13,7 @@ async function SuccessContent({ sessionId }: { sessionId: string }) {
       return (
         <div className="text-center">
           <h1 className="text-2xl font-serif text-charcoal mb-4">Payment Not Found</h1>
-          <p className="text-black/70 mb-6">We couldn't find your payment session.</p>
+          <p className="text-black/70 mb-6">We couldn&apos;t find your payment session.</p>
           <Link href="/store">
             <Button className="btn-ember">Back to Store</Button>
           </Link>
@@ -61,7 +61,7 @@ async function SuccessContent({ sessionId }: { sessionId: string }) {
 
         <div className="space-y-4">
           <div>
-            <h3 className="font-medium text-charcoal mb-2">What's Next?</h3>
+            <h3 className="font-medium text-charcoal mb-2">What&apos;s Next?</h3>
             <p className="text-sm text-black/70 mb-4">
               You&apos;ll receive an email with download links for your recipe cards within the next few minutes.
             </p>
@@ -88,7 +88,7 @@ async function SuccessContent({ sessionId }: { sessionId: string }) {
     return (
       <div className="text-center">
         <h1 className="text-2xl font-serif text-charcoal mb-4">Something went wrong</h1>
-        <p className="text-black/70 mb-6">We're having trouble processing your payment confirmation.</p>
+        <p className="text-black/70 mb-6">We&apos;re having trouble processing your payment confirmation.</p>
         <Link href="/store">
           <Button className="btn-ember">Back to Store</Button>
         </Link>
