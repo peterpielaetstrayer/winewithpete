@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Product, Event, Order } from '@/lib/types';
-import { supabase } from '@/lib/supabase/client';
 
 export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -25,6 +24,8 @@ export default function AdminPage() {
 
   const checkUser = async () => {
     try {
+      // Dynamic import to avoid build-time issues
+      const { supabase } = await import('@/lib/supabase/client');
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
       if (user) {
@@ -42,6 +43,7 @@ export default function AdminPage() {
     setLoginError('');
     
     try {
+      const { supabase } = await import('@/lib/supabase/client');
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
@@ -64,6 +66,7 @@ export default function AdminPage() {
   };
 
   const handleLogout = async () => {
+    const { supabase } = await import('@/lib/supabase/client');
     await supabase.auth.signOut();
     setUser(null);
     setProducts([]);
@@ -79,6 +82,8 @@ export default function AdminPage() {
 
   const fetchData = async () => {
     try {
+      // Dynamic import to avoid build-time issues
+      const { supabase } = await import('@/lib/supabase/client');
       // Get the current session
       const { data: { session } } = await supabase.auth.getSession();
       
@@ -118,6 +123,8 @@ export default function AdminPage() {
 
   const toggleProductStatus = async (productId: string, isActive: boolean) => {
     try {
+      // Dynamic import to avoid build-time issues
+      const { supabase } = await import('@/lib/supabase/client');
       // Get the current session
       const { data: { session } } = await supabase.auth.getSession();
       
