@@ -97,12 +97,13 @@ async function SuccessContent({ sessionId }: { sessionId: string }) {
   }
 }
 
-export default function SuccessPage({
+export default async function SuccessPage({
   searchParams,
 }: {
-  searchParams: { session_id?: string };
+  searchParams: Promise<{ session_id?: string }>;
 }) {
-  const sessionId = searchParams.session_id;
+  const resolvedSearchParams = await searchParams;
+  const sessionId = resolvedSearchParams.session_id;
 
   if (!sessionId) {
     return (
