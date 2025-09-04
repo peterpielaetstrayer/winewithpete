@@ -9,24 +9,29 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    // Validate input with Zod
-    const validationResult = newsletterSchema.safeParse(body);
-    if (!validationResult.success) {
+    // Basic validation
+    if (!body.email || typeof body.email !== 'string') {
       return NextResponse.json(
-        { 
-          error: 'Validation failed', 
-          details: validationResult.error.errors.map(e => e.message)
-        },
+        { error: 'Valid email is required' },
         { status: 400 }
       );
     }
 
-    const { email, name } = validationResult.data;
+    const { email, name } = body;
+
+    // Simple email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Invalid email format' },
+        { status: 400 }
+      );
+    }
 
     // Sanitize inputs
     const sanitizedData = {
-      email: validateEmail(email),
-      name: name ? validateName(name) : undefined,
+      email: email.trim().toLowerCase(),
+      name: name ? name.trim() : undefined,
     };
 
     // Subscribe to newsletter in Supabase
@@ -73,6 +78,12 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Newsletter subscription error:', error);
     
+    // Log more details for debugging
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
+    
     // Handle duplicate subscription
     if (error instanceof Error && error.message.includes('duplicate')) {
       return NextResponse.json(
@@ -81,8 +92,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Handle RLS policy errors
+    if (error instanceof Error && error.message.includes('row-level security')) {
+      return NextResponse.json(
+        { error: 'Database permission error. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Failed to subscribe. Please try again.' },
+      { 
+        error: 'Failed to subscribe. Please try again.',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
