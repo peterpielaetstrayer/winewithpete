@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { EventCard } from '@/components/event-card';
+import { EventsList } from '@/components/events-list';
 
 export default function EventsPage(){
   return (
@@ -61,25 +63,8 @@ export default function EventsPage(){
         </div>
       </div>
 
-      {/* No Events Message */}
-      <div className="text-center bg-white rounded-2xl p-12 border">
-        <h3 className="text-xl font-serif mb-4">No upcoming events scheduled.</h3>
-        <p className="text-black/70 mb-6 max-w-lg mx-auto">
-          Join the circle to be notified or contact us if you&apos;d like to host one in your space.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/join">
-            <button className="bg-[var(--wwp-ember)] hover:opacity-90 text-white rounded-full px-8 py-3 font-medium">
-              Join the Circle
-            </button>
-          </Link>
-          <Link href="/wine-with">
-            <button className="border border-[var(--wwp-ember)] text-[var(--wwp-ember)] hover:bg-[var(--wwp-ember)] hover:text-white rounded-full px-8 py-3 font-medium transition-colors">
-              Become a Host
-            </button>
-          </Link>
-        </div>
-      </div>
+      {/* Upcoming Events */}
+      <EventsList />
     </div>
   );
 }

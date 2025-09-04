@@ -12,12 +12,28 @@ export default function JoinPage(){
     e.preventDefault();
     setIsSubmitting(true);
     
-    // TODO: Integrate with Supabase for email collection
-    // For now, just simulate success
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setIsSubmitted(true);
+      } else {
+        alert(result.error || 'Failed to subscribe');
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      alert('Failed to subscribe. Please try again.');
+    } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 1000);
+    }
   };
 
   if (isSubmitted) {
