@@ -43,12 +43,16 @@ export default function AdminPage() {
     
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim(),
         password,
       });
 
       if (error) {
-        setLoginError(error.message);
+        if (error.message.includes('rate limit') || error.message.includes('too many')) {
+          setLoginError('Too many login attempts. Please wait before trying again.');
+        } else {
+          setLoginError('Invalid email or password.');
+        }
         return;
       }
 

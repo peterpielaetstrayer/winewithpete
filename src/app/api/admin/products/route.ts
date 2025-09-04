@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { productUpdateSchema } from '@/lib/validations';
+import { logAdminAction, AdminActions } from '@/lib/admin-logger';
 
 // Helper function to verify admin authentication
 async function verifyAdmin(request: NextRequest) {
@@ -26,13 +28,16 @@ async function verifyAdmin(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Verify admin authentication
-    const { error: authError } = await verifyAdmin(request);
+    const { error: authError, user } = await verifyAdmin(request);
     if (authError) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
+
+    // Log admin action
+    logAdminAction(request, AdminActions.VIEW_PRODUCTS, 'products');
 
     const supabase = createClient();
     
@@ -62,7 +67,7 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     // Verify admin authentication
-    const { error: authError } = await verifyAdmin(request);
+    const { error: authError, user } = await verifyAdmin(request);
     if (authError) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -70,14 +75,24 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const { id, ...updates } = await request.json();
-
-    if (!id) {
+    const body = await request.json();
+    
+    // Validate input with Zod
+    const validationResult = productUpdateSchema.safeParse(body);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Product ID is required' },
+        { 
+          error: 'Validation failed', 
+          details: validationResult.error.errors.map(e => e.message)
+        },
         { status: 400 }
       );
     }
+
+    const { id, ...updates } = validationResult.data;
+
+    // Log admin action
+    logAdminAction(request, AdminActions.UPDATE_PRODUCT, 'products', id, updates);
 
     const supabase = createClient();
     

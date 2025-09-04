@@ -2,18 +2,49 @@ import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createClient } from '@/lib/supabase/server';
 import { CreateCheckoutSessionRequest } from '@/lib/types';
+import { checkoutSchema, validateEmail, validateName } from '@/lib/validations';
+import { checkoutRateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
-    const body: CreateCheckoutSessionRequest & { customAmount?: number; customDescription?: string } = await request.json();
-    const { productId, quantity = 1, customerEmail, customerName, customAmount, customDescription } = body;
-
-    if (!productId) {
+    // Check rate limit
+    const rateLimitResult = checkoutRateLimit(request);
+    if (!rateLimitResult.success) {
       return NextResponse.json(
-        { error: 'Product ID is required' },
+        { 
+          error: 'Too many checkout attempts. Please try again later.',
+          retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString(),
+            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+            'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
+          }
+        }
+      );
+    }
+
+    const body = await request.json();
+    
+    // Validate input with Zod
+    const validationResult = checkoutSchema.safeParse(body);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { 
+          error: 'Validation failed', 
+          details: validationResult.error.errors.map(e => e.message)
+        },
         { status: 400 }
       );
     }
+
+    const { productId, quantity, customerEmail, customerName, customAmount, customDescription } = validationResult.data;
+
+    // Sanitize inputs
+    const sanitizedEmail = validateEmail(customerEmail);
+    const sanitizedName = validateName(customerName);
 
     // Handle support payments (custom amounts)
     if (productId.startsWith('support-') && customAmount) {
@@ -35,11 +66,11 @@ export async function POST(request: NextRequest) {
         mode: 'payment',
         success_url: `${request.nextUrl.origin}/store/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${request.nextUrl.origin}/support?cancelled=true`,
-        customer_email: customerEmail,
+        customer_email: sanitizedEmail,
         metadata: {
           productId: productId,
           productName: customDescription || 'Support Payment',
-          customerName: customerName || '',
+          customerName: sanitizedName,
           isSupportPayment: 'true',
         },
       });
@@ -101,11 +132,11 @@ export async function POST(request: NextRequest) {
         mode: 'payment',
         success_url: `${request.nextUrl.origin}/store/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${request.nextUrl.origin}/store?cancelled=true`,
-        customer_email: customerEmail,
+        customer_email: sanitizedEmail,
         metadata: {
           productId: product.id,
           productName: product.name,
-          customerName: customerName || '',
+          customerName: sanitizedName,
           isFreeProduct: 'true',
           tipAmount: tipAmount.toString(),
         },

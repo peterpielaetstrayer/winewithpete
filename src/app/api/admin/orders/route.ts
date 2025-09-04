@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logAdminAction, AdminActions } from '@/lib/admin-logger';
 
 // Helper function to verify admin authentication
 async function verifyAdmin(request: NextRequest) {
@@ -26,13 +27,16 @@ async function verifyAdmin(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Verify admin authentication
-    const { error: authError } = await verifyAdmin(request);
+    const { error: authError, user } = await verifyAdmin(request);
     if (authError) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
+
+    // Log admin action
+    logAdminAction(request, AdminActions.VIEW_ORDERS, 'orders');
 
     const supabase = createClient();
     

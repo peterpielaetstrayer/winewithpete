@@ -1,31 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { subscribeToNewsletter } from '@/lib/supabase/database';
+import { newsletterSchema, validateEmail, validateName } from '@/lib/validations';
 // import type { NewsletterFormData } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, name } = body;
-
-    // Validate required fields
-    if (!email) {
+    
+    // Validate input with Zod
+    const validationResult = newsletterSchema.safeParse(body);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Email is required' },
+        { 
+          error: 'Validation failed', 
+          details: validationResult.error.errors.map(e => e.message)
+        },
         { status: 400 }
       );
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
+    const { email, name } = validationResult.data;
+
+    // Sanitize inputs
+    const sanitizedData = {
+      email: validateEmail(email),
+      name: name ? validateName(name) : undefined,
+    };
 
     // Subscribe to newsletter
-    const subscriber = await subscribeToNewsletter({ email, name });
+    const subscriber = await subscribeToNewsletter(sanitizedData);
 
     // TODO: Send welcome email via Kit
     // For now, just return success

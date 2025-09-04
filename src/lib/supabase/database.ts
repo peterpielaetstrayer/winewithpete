@@ -1,9 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Event, EventRSVP, Product, Order, OrderItem, NewsletterSubscriber, RSVPFormData, NewsletterFormData } from '../types';
 
+// Create Supabase client with proper environment variables
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY!
 );
 
 // Events

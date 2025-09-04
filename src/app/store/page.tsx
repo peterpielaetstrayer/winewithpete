@@ -18,8 +18,9 @@ export default function StorePage(){
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/admin/products');
+      const response = await fetch('/api/products');
       const data = await response.json();
+      console.log('Products fetched:', data);
       setProducts(data.data || []);
     } catch (error) {
       console.error('Failed to fetch products:', error);
@@ -178,8 +179,12 @@ export default function StorePage(){
               </div>
             </div>
           ) : (
-            products
-              .filter(product => product.product_type === 'recipe_card' && product.is_active && product.price === 0)
+            (() => {
+              const freeRecipeCards = products.filter(product => product.product_type === 'recipe_card' && product.is_active && product.price === 0);
+              console.log('All products:', products);
+              console.log('Free recipe cards:', freeRecipeCards);
+              return freeRecipeCards;
+            })()
               .map((product, index) => (
                 <ProductCard
                   key={product.id}
