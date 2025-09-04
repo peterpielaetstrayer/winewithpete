@@ -63,7 +63,7 @@ async function SuccessContent({ sessionId }: { sessionId: string }) {
           <div>
             <h3 className="font-medium text-charcoal mb-2">What's Next?</h3>
             <p className="text-sm text-black/70 mb-4">
-              You'll receive an email with download links for your recipe cards within the next few minutes.
+              You&apos;ll receive an email with download links for your recipe cards within the next few minutes.
             </p>
           </div>
           

@@ -25,7 +25,7 @@ export default function Error({
           </div>
           <h1 className="text-2xl font-serif font-medium mb-4 text-charcoal">Something went wrong</h1>
           <p className="text-lg text-black/70 mb-8">
-            We encountered an unexpected error. Don't worry, it's not your fault.
+            We encountered an unexpected error. Don&apos;t worry, it&apos;s not your fault.
           </p>
           <div className="space-y-4">
             <Button 

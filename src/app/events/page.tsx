@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
-import { EventCard } from '@/components/event-card';
-import { EventsList } from '@/components/events-list';
+// import Link from 'next/link';
+// import { EventCard } from '@/components/event-card';
+// import { EventsList } from '@/components/events-list';
 import { useState, useEffect } from 'react';
 import { Event } from '@/lib/types';
 

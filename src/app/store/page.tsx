@@ -60,7 +60,6 @@ export default function StorePage(){
   const ProductCard = ({ 
     title, 
     price, 
-    image, 
     description, 
     badge, 
     featured = false,
@@ -69,7 +68,6 @@ export default function StorePage(){
   }: {
     title: string;
     price: string;
-    image: string;
     description: string;
     badge?: string;
     featured?: boolean;

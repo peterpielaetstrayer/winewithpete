@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { subscribeToNewsletter } from '@/lib/supabase/database';
-import type { NewsletterFormData } from '@/lib/types';
+// import type { NewsletterFormData } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
   try {

@@ -97,7 +97,7 @@ export interface StripeWebhookEvent {
   id: string;
   type: string;
   data: {
-    object: any;
+    object: Record<string, unknown>;
   };
 }
 
