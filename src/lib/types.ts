@@ -33,6 +33,7 @@ export interface Product {
   price: number;
   product_type: 'recipe_card' | 'guide' | 'ebook' | 'bundle';
   file_path: string | null;
+  image_path: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;

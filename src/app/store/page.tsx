@@ -10,6 +10,7 @@ export default function StorePage(){
   const [loading, setLoading] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
+  const [tipAmount, setTipAmount] = useState<number>(0);
 
   useEffect(() => {
     fetchProducts();
@@ -27,7 +28,7 @@ export default function StorePage(){
     }
   };
 
-  const handleCheckout = async (productId: string) => {
+  const handleCheckout = async (productId: string, productPrice: number) => {
     setLoading(productId);
     try {
       const response = await fetch('/api/checkout', {
@@ -38,6 +39,7 @@ export default function StorePage(){
         body: JSON.stringify({
           productId,
           quantity: 1,
+          customAmount: productPrice === 0 ? tipAmount : undefined,
         }),
       });
 
@@ -64,7 +66,9 @@ export default function StorePage(){
     badge, 
     featured = false,
     comingSoon = false,
-    productId
+    productId,
+    productPrice = 0,
+    imagePath
   }: {
     title: string;
     price: string;
@@ -72,7 +76,9 @@ export default function StorePage(){
     badge?: string;
     featured?: boolean;
     comingSoon?: boolean;
-    productId?: string;
+    re solidproductId?: string;
+    productPrice?: number;
+    imagePath?: string;
   }) => (
     <div className={`group relative bg-white rounded-2xl overflow-hidden shadow-sm border hover:shadow-lg transition-all duration-300 ${featured ? 'md:col-span-2' : ''}`}>
       {badge && (
@@ -86,27 +92,57 @@ export default function StorePage(){
         </Badge>
       )}
       <div className={`aspect-square bg-gray-100 relative overflow-hidden ${featured ? 'md:aspect-[4/3]' : ''}`}>
-        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-          <div className="text-gray-400 text-sm">Product Image</div>
-        </div>
+        {imagePath ? (
+          <img 
+            src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${imagePath}`}
+            alt={title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+            <div className="text-gray-400 text-sm">Product Image</div>
+          </div>
+        )}
       </div>
       <div className="p-6">
         <h3 className="font-medium text-lg mb-2">{title}</h3>
         <p className="text-sm text-black/70 mb-4 line-clamp-2">{description}</p>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <span className="text-xl font-serif text-ember">{price}</span>
-          <Button 
-            className="btn-ember px-4 py-2 rounded-full text-sm self-start sm:self-auto"
-            disabled={comingSoon || loading === productId}
-            onClick={() => productId && handleCheckout(productId)}
-          >
-            {loading === productId ? (
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Processing...
+        <div className="space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <span className="text-xl font-serif text-ember">{price}</span>
+            <Button 
+              className="btn-ember px-4 py-2 rounded-full text-sm self-start sm:self-auto"
+              disabled={comingSoon || loading === productId}
+              onClick={() => productId && handleCheckout(productId, productPrice)}
+            >
+              {loading === productId ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Processing...
+                </div>
+              ) : comingSoon ? 'Coming Soon' : productPrice === 0 ? 'Get Free Recipe' : 'Buy Now'}
+            </Button>
+          </div>
+          
+          {/* Tip input for free products */}
+          {productPrice === 0 && !comingSoon && (
+            <div className="space-y-2">
+              <label className="text-sm text-black/70">Optional tip to support the community:</label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={tipAmount || ''}
+                  onChange={(e) => setTipAmount(parseFloat(e.target.value) || 0)}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ember focus:border-transparent"
+                />
+                <span className="text-sm text-black/70 self-center">USD</span>
               </div>
-            ) : comingSoon ? 'Coming Soon' : 'Buy Now'}
-          </Button>
+              <p className="text-xs text-black/50">Any amount helps support creating more content!</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -123,12 +159,50 @@ export default function StorePage(){
         </p>
       </div>
 
+      {/* Featured Free Recipe Card */}
+      <div className="mb-16">
+        <div className="flex items-center gap-4 mb-8">
+          <h2 className="text-2xl font-serif text-charcoal">Featured Recipe Card</h2>
+          <Badge className="bg-green-600 text-white">
+            Free with Optional Tip
+          </Badge>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {productsLoading ? (
+            <div className="bg-white rounded-2xl overflow-hidden shadow-sm border animate-pulse md:col-span-2">
+              <div className="aspect-square bg-gray-200"></div>
+              <div className="p-6">
+                <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded mb-4"></div>
+                <div className="h-6 bg-gray-200 rounded w-20"></div>
+              </div>
+            </div>
+          ) : (
+            products
+              .filter(product => product.product_type === 'recipe_card' && product.is_active && product.price === 0)
+              .map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  title={product.name}
+                  price={product.price === 0 ? "Free (Pay What You Want)" : `$${product.price}`}
+                  description={product.description || ''}
+                  badge="Free Sample"
+                  featured={true}
+                  productId={product.id}
+                  productPrice={product.price}
+                  imagePath={product.image_path}
+                />
+              ))
+          )}
+        </div>
+      </div>
+
       {/* Digital Recipe Cards */}
       <div className="mb-16">
         <div className="flex items-center gap-4 mb-8">
-          <h2 className="text-2xl font-serif text-charcoal">Fire-Friendly Recipe Cards</h2>
+          <h2 className="text-2xl font-serif text-charcoal">Full Recipe Collections</h2>
           <Badge variant="outline" className="text-ember border-ember">
-            Digital Downloads
+            Coming Soon
           </Badge>
         </div>
         {productsLoading ? (
@@ -152,33 +226,20 @@ export default function StorePage(){
                 <ProductCard
                   key={product.id}
                   title={product.name}
-                  price={`$${product.price}`}
-                  image="/fire-recipes.jpg" // You can add product images later
+                  price={product.price === 0 ? "Free (Pay What You Want)" : `$${product.price}`}
                   description={product.description || ''}
-                  badge={index === 0 ? "Popular" : index === 1 ? "New" : undefined}
+                  badge={product.price === 0 ? "Free Sample" : index === 0 ? "Popular" : index === 1 ? "New" : undefined}
                   productId={product.id}
+                  productPrice={product.price}
+                  imagePath={product.image_path}
                 />
               ))}
-            {/* Fallback products if none in database */}
-            {products.length === 0 && (
-              <>
-                <ProductCard
-                  title="Open Fire Sunday Collection"
-                  price="$12.99"
-                  image="/fire-recipes.jpg"
-                  description="5 carefully crafted recipes designed for cooking over open fire. Includes wine pairings and conversation starters."
-                  badge="Popular"
-                  productId="open-fire-collection"
-                />
-                <ProductCard
-                  title="Pre-Prep Recipe Cards"
-                  price="$8.99"
-                  image="/prep-recipes.jpg"
-                  description="3 recipes designed to be prepped the night before and cooked at the fire. Perfect for busy schedules."
-                  badge="New"
-                  productId="pre-prep-cards"
-                />
-              </>
+            {/* Show message if no products */}
+            {products.filter(product => product.product_type === 'recipe_card' && product.is_active).length === 0 && (
+              <div className="col-span-full text-center py-12">
+                <p className="text-black/70 mb-4">No recipe cards available yet.</p>
+                <p className="text-sm text-black/50">Check back soon for our first collection!</p>
+              </div>
             )}
           </div>
         )}
@@ -192,28 +253,9 @@ export default function StorePage(){
             Coming Soon
           </Badge>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <ProductCard
-            title="The Art of Learning [WINE]"
-            price="$19.99"
-            image="/wine-learning-ebook.jpg"
-            description="A comprehensive guide for adult learners using wine as a medium. Teaches how to learn, taste, and appreciate wine systematically."
-            comingSoon={true}
-          />
-          <ProductCard
-            title="Fire Setup & Safety Guide"
-            price="$9.99"
-            image="/fire-guide.jpg"
-            description="Complete guide to building and maintaining safe fires for cooking and gathering. Includes safety tips and equipment recommendations."
-            comingSoon={true}
-          />
-          <ProductCard
-            title="Conversation Starter Cards"
-            price="$14.99"
-            image="/conversation-cards.jpg"
-            description="50 thoughtful questions designed to spark deeper conversations around the fire. Perfect for intimate gatherings."
-            comingSoon={true}
-          />
+        <div className="text-center py-12">
+          <p className="text-black/70 mb-4">More guides and e-books coming soon!</p>
+          <p className="text-sm text-black/50">We're working on bringing you thoughtful digital resources.</p>
         </div>
       </div>
 

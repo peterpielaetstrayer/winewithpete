@@ -66,7 +66,58 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create Stripe checkout session
+    // Handle free products with optional tips
+    if (product.price === 0) {
+      // For free products, allow custom amount (tip)
+      const tipAmount = customAmount || 0;
+      
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: product.name,
+                description: product.description || undefined,
+              },
+              unit_amount: 0, // Free product
+            },
+            quantity: 1,
+          },
+          // Add tip if provided
+          ...(tipAmount > 0 ? [{
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: 'Tip for Wine With Pete',
+                description: 'Thank you for supporting the community!',
+              },
+              unit_amount: Math.round(tipAmount * 100),
+            },
+            quantity: 1,
+          }] : []),
+        ],
+        mode: 'payment',
+        success_url: `${request.nextUrl.origin}/store/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${request.nextUrl.origin}/store?cancelled=true`,
+        customer_email: customerEmail,
+        metadata: {
+          productId: product.id,
+          productName: product.name,
+          customerName: customerName || '',
+          isFreeProduct: 'true',
+          tipAmount: tipAmount.toString(),
+        },
+      });
+
+      return NextResponse.json({ 
+        sessionId: session.id,
+        url: session.url 
+      });
+    }
+
+    // Regular paid products
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
