@@ -18,11 +18,10 @@ export function SiteHeader(){
         <nav className="hidden md:flex gap-6">
           {link('/about','About')}
           {link('/events','Events')}
-          {link('/archive','Archive')}
-          {link('/join','Join')}
+          {link('/archive','Essays')}
           {link('/store','Store')}
           {link('/support','Support')}
-          {link('/wine-with','Become a Host')}
+          {link('/join','Join')}
         </nav>
         
         {/* Mobile Menu Button */}
@@ -42,11 +41,10 @@ export function SiteHeader(){
           <nav className="px-4 py-4 flex flex-col gap-4">
             {link('/about','About')}
             {link('/events','Events')}
-            {link('/archive','Archive')}
-            {link('/join','Join')}
+            {link('/archive','Essays')}
             {link('/store','Store')}
             {link('/support','Support')}
-            {link('/wine-with','Become a Host')}
+            {link('/join','Join')}
           </nav>
         </div>
       )}

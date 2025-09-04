@@ -23,7 +23,7 @@ export default function EventsPage(){
               <div className="bg-white rounded-2xl p-8 shadow-sm border">
                 <h2 className="text-2xl font-medium mb-4">🔥 Open Fire Sundays</h2>
                 <p className="text-black/80 mb-2">Casual. Coastal. Community-driven.</p>
-                <p className="text-black/80">We meet early, cook over fire, and share what's real.</p>
+                <p className="text-black/80">We meet early, cook over fire, and share what&apos;s real.</p>
               </div>
             </div>
             <div className="order-1 lg:order-2">
@@ -65,7 +65,7 @@ export default function EventsPage(){
       <div className="text-center bg-white rounded-2xl p-12 border">
         <h3 className="text-xl font-serif mb-4">No upcoming events scheduled.</h3>
         <p className="text-black/70 mb-6 max-w-lg mx-auto">
-          Join the circle to be notified or contact us if you'd like to host one in your space.
+          Join the circle to be notified or contact us if you&apos;d like to host one in your space.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/join">

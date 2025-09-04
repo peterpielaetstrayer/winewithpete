@@ -24,7 +24,7 @@ export default function AboutPage(){
           </p>
           <p className="text-black/80 leading-relaxed">
             Our community is built on the simple idea that the best connections happen when we 
-            pause, listen deeply, and share what's real. Whether it's around a campfire on the beach 
+            pause, listen deeply, and share what&apos;s real. Whether it&apos;s around a campfire on the beach 
             or at an intimate dinner table, we create environments where authentic conversation can flourish.
           </p>
         </div>
@@ -107,8 +107,8 @@ export default function AboutPage(){
       <div className="text-center bg-white rounded-2xl p-12 border">
         <h3 className="text-2xl font-serif font-semibold mb-4">Ready to Join Us?</h3>
         <p className="text-black/70 mb-6 max-w-lg mx-auto">
-          Whether you're looking for deeper connections, want to host your own gathering, 
-          or simply believe in the power of slow conversation, we'd love to have you.
+          Whether you&apos;re looking for deeper connections, want to host your own gathering, 
+          or simply believe in the power of slow conversation, we&apos;d love to have you.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/join">

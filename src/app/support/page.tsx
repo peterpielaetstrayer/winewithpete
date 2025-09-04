@@ -25,8 +25,8 @@ export default function SupportPage(){
       </p>
       
       <div className="mt-8 space-y-2 text-black/80">
-        <p>If you've ever read something here that made you pause, breathe, or feel a little less alone — thank you. That means we met.</p>
-        <p>You can help this project grow by supporting it financially, one glass at a time. Whether it's a single cup of coffee or a deep investment in the long-term vision, every bit fuels the writing, the conversations, and the future.</p>
+        <p>If you&apos;ve ever read something here that made you pause, breathe, or feel a little less alone — thank you. That means we met.</p>
+        <p>You can help this project grow by supporting it financially, one glass at a time. Whether it&apos;s a single cup of coffee or a deep investment in the long-term vision, every bit fuels the writing, the conversations, and the future.</p>
       </div>
 
       <div className="mt-12">

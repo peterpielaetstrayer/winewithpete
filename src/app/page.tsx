@@ -20,10 +20,10 @@ export default function Home() {
         {/* Hero Content */}
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <blockquote className="text-2xl md:text-4xl lg:text-5xl font-serif font-medium text-white leading-relaxed mb-8">
-            "If our small minds, for some convenience,<br/>
+            &ldquo;If our small minds, for some convenience,<br/>
             divide this glass of <span className="text-[var(--wwp-gold)]">wine</span>—this universe—<br/>
             into parts: physics, biology, geology, astronomy, psychology...<br/>
-            remember: <span className="text-[var(--wwp-gold)]">nature</span> does not know it."
+            remember: <span className="text-[var(--wwp-gold)]">nature</span> does not know it.&rdquo;
             <div className="mt-6 text-lg md:text-xl text-white/80">— Richard Feynman</div>
           </blockquote>
           
@@ -71,40 +71,116 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Three Feature Cards */}
+      {/* Four Main Pathways */}
       <div className="bg-[var(--wwp-cream)] pb-24">
-        <div className="mx-auto max-w-6xl px-4 grid md:grid-cols-3 gap-8">
-          {/* Events Card */}
-          <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
-            <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-              <img src="/images/icons/icon-fire.png" alt="Fire" className="w-12 h-12" />
-            </div>
-            <h3 className="text-xl font-medium mb-4 text-[var(--wwp-charcoal)]">Events</h3>
-            <p className="text-black/70 leading-relaxed">
-              Open Fire Sundays. Salon-style dinners. We gather to share food and slow conversation.
-            </p>
-          </div>
+        <div className="mx-auto max-w-6xl px-4">
+          <h2 className="text-3xl font-serif font-medium text-center mb-16 text-charcoal">
+            Choose Your Path
+          </h2>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Read - Essays */}
+            <Link href="/archive" className="group">
+              <div className="bg-white rounded-2xl p-8 shadow-sm border text-center hover:shadow-md transition-all duration-300 group-hover:-translate-y-1">
+                <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                  <img src="/images/icons/icon-writing.png" alt="Writing" className="w-12 h-12" />
+                </div>
+                <h3 className="text-xl font-medium mb-4 text-charcoal">Read</h3>
+                <p className="text-black/70 leading-relaxed mb-4">
+                  Weekly essays on Substack exploring philosophy, connection, and the stories we tell.
+                </p>
+                <div className="text-sm text-ember font-medium group-hover:text-ember-light">
+                  Read Essays →
+                </div>
+              </div>
+            </Link>
 
-          {/* Essays Card */}
-          <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
-            <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-              <img src="/images/icons/icon-writing.png" alt="Writing" className="w-12 h-12" />
-            </div>
-            <h3 className="text-xl font-medium mb-4 text-[var(--wwp-charcoal)]">Essays</h3>
-            <p className="text-black/70 leading-relaxed">
-              Writings and threads exploring disconnection, truth, and the search for something real.
-            </p>
-          </div>
+            {/* Attend - Events */}
+            <Link href="/events" className="group">
+              <div className="bg-white rounded-2xl p-8 shadow-sm border text-center hover:shadow-md transition-all duration-300 group-hover:-translate-y-1">
+                <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                  <img src="/images/icons/icon-fire.png" alt="Fire" className="w-12 h-12" />
+                </div>
+                <h3 className="text-xl font-medium mb-4 text-charcoal">Attend</h3>
+                <p className="text-black/70 leading-relaxed mb-4">
+                  Open Fire Sundays and curated salon events. Bring food, share stories, slow down.
+                </p>
+                <div className="text-sm text-ember font-medium group-hover:text-ember-light">
+                  See Events →
+                </div>
+              </div>
+            </Link>
 
-          {/* Join the Circle Card */}
-          <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
-            <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-              <img src="/images/icons/icon-connection.png" alt="Connection" className="w-12 h-12" />
+            {/* Support - Store & Donations */}
+            <Link href="/store" className="group">
+              <div className="bg-white rounded-2xl p-8 shadow-sm border text-center hover:shadow-md transition-all duration-300 group-hover:-translate-y-1">
+                <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                  <img src="/images/icons/icon-wine.png" alt="Wine" className="w-12 h-12" />
+                </div>
+                <h3 className="text-xl font-medium mb-4 text-charcoal">Support</h3>
+                <p className="text-black/70 leading-relaxed mb-4">
+                  Recipe cards, guides, and digital products. Help keep the fire burning.
+                </p>
+                <div className="text-sm text-ember font-medium group-hover:text-ember-light">
+                  Visit Store →
+                </div>
+              </div>
+            </Link>
+
+            {/* Join - Newsletter */}
+            <Link href="/join" className="group">
+              <div className="bg-white rounded-2xl p-8 shadow-sm border text-center hover:shadow-md transition-all duration-300 group-hover:-translate-y-1">
+                <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                  <img src="/images/icons/icon-connection.png" alt="Connection" className="w-12 h-12" />
+                </div>
+                <h3 className="text-xl font-medium mb-4 text-charcoal">Join</h3>
+                <p className="text-black/70 leading-relaxed mb-4">
+                  Weekly philosophical newsletter. Recipes, musings, and invitations to gather.
+                </p>
+                <div className="text-sm text-ember font-medium group-hover:text-ember-light">
+                  Join Circle →
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* What to Expect Section */}
+      <div className="bg-white py-24">
+        <div className="mx-auto max-w-4xl px-4">
+          <h2 className="text-3xl font-serif font-medium text-center mb-16 text-charcoal">
+            What to Expect
+          </h2>
+          
+          <div className="grid md:grid-cols-2 gap-12">
+            <div>
+              <h3 className="text-xl font-medium mb-4 text-ember">Substack Essays</h3>
+              <p className="text-black/70 leading-relaxed mb-6">
+                Weekly philosophical essays exploring disconnection, truth, and the search for something real. 
+                Deep dives into the stories we tell and the beliefs we inherit.
+              </p>
+              
+              <h3 className="text-xl font-medium mb-4 text-ember">Newsletter</h3>
+              <p className="text-black/70 leading-relaxed">
+                Curated insights, recipe cards, event updates, and personal musings. 
+                A more intimate space for those who want to stay connected to the community.
+              </p>
             </div>
-            <h3 className="text-xl font-medium mb-4 text-[var(--wwp-charcoal)]">Join the Circle</h3>
-            <p className="text-black/70 leading-relaxed">
-              Thoughtful notes now and then. Invitations to show up, slow down, and connect.
-            </p>
+            
+            <div>
+              <h3 className="text-xl font-medium mb-4 text-ember">Open Fire Sundays</h3>
+              <p className="text-black/70 leading-relaxed mb-6">
+                Pop-up gatherings in different cities. I bring the fire, you bring your food. 
+                Pick from recipe cards, share stories, slow down together.
+              </p>
+              
+              <h3 className="text-xl font-medium mb-4 text-ember">Salon Events</h3>
+              <p className="text-black/70 leading-relaxed">
+                Curated, invite-only gatherings for deeper conversation. 
+                Application-based selection for those ready to engage more deeply.
+              </p>
+            </div>
           </div>
         </div>
       </div>

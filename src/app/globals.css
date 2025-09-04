@@ -8,16 +8,63 @@
   --wwp-gold:#c98a2b;
   --wwp-cream:#f6f3ef;
   --wwp-charcoal:#1f1f1f;
+  --wwp-ember-light:#7a3a35;
+  --wwp-gold-light:#d4a547;
+  --wwp-cream-dark:#f0ebe5;
 }
 
 body{ 
   background:var(--wwp-cream); 
   color:var(--wwp-charcoal);
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
 }
 
 .font-serif {
   font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+}
+
+/* Custom utility classes */
+.text-ember { color: var(--wwp-ember); }
+.text-gold { color: var(--wwp-gold); }
+.text-charcoal { color: var(--wwp-charcoal); }
+.bg-ember { background-color: var(--wwp-ember); }
+.bg-gold { background-color: var(--wwp-gold); }
+.bg-cream { background-color: var(--wwp-cream); }
+.border-ember { border-color: var(--wwp-ember); }
+.border-gold { border-color: var(--wwp-gold); }
+
+/* Hover effects */
+.hover-ember:hover { 
+  background-color: var(--wwp-ember-light); 
+  transition: background-color 0.2s ease;
+}
+.hover-gold:hover { 
+  background-color: var(--wwp-gold-light); 
+  transition: background-color 0.2s ease;
+}
+
+/* Button styles */
+.btn-ember {
+  background-color: var(--wwp-ember);
+  color: white;
+  transition: all 0.2s ease;
+}
+.btn-ember:hover {
+  background-color: var(--wwp-ember-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(91, 35, 32, 0.3);
+}
+
+.btn-gold {
+  background-color: var(--wwp-gold);
+  color: white;
+  transition: all 0.2s ease;
+}
+.btn-gold:hover {
+  background-color: var(--wwp-gold-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(201, 138, 43, 0.3);
 }
 
 @theme inline {

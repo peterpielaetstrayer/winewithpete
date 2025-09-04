@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
@@ -21,7 +22,7 @@ export default function StorePage(){
   }) => (
     <div className={`group relative bg-white rounded-2xl overflow-hidden shadow-sm border hover:shadow-lg transition-all duration-300 ${featured ? 'md:col-span-2' : ''}`}>
       {badge && (
-        <Badge className="absolute top-4 left-4 z-10 bg-[var(--wwp-ember)] text-white">
+        <Badge className="absolute top-4 left-4 z-10 bg-ember text-white">
           {badge}
         </Badge>
       )}
@@ -39,9 +40,9 @@ export default function StorePage(){
         <h3 className="font-medium text-lg mb-2">{title}</h3>
         <p className="text-sm text-black/70 mb-4 line-clamp-2">{description}</p>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <span className="text-xl font-serif text-[var(--wwp-ember)]">{price}</span>
+          <span className="text-xl font-serif text-ember">{price}</span>
           <Button 
-            className="bg-black hover:bg-black/80 text-white rounded-full px-4 py-2 text-sm self-start sm:self-auto"
+            className="btn-ember px-4 py-2 rounded-full text-sm self-start sm:self-auto"
             disabled={comingSoon}
           >
             {comingSoon ? 'Coming Soon' : 'Add to Cart'}
@@ -55,61 +56,35 @@ export default function StorePage(){
     <div className="mx-auto max-w-6xl px-4 py-16">
       {/* Hero Section */}
       <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-serif font-semibold mb-4">Wine With Pete Store</h1>
+        <h1 className="text-4xl md:text-5xl font-serif font-medium mb-4 text-charcoal">Wine With Pete Store</h1>
         <p className="text-lg text-black/70 max-w-2xl mx-auto">
-          Curated essentials for the slow living community. 
+          Digital recipe cards, guides, and e-books for the slow living community. 
           Quality over quantity, meaning over mass production.
         </p>
       </div>
 
-      {/* Community Favorites */}
+      {/* Digital Recipe Cards */}
       <div className="mb-16">
         <div className="flex items-center gap-4 mb-8">
-          <h2 className="text-2xl font-serif">Community Favorites</h2>
-          <Badge variant="outline" className="text-[var(--wwp-ember)] border-[var(--wwp-ember)]">
-            Best Sellers
-          </Badge>
-        </div>
-        <div className="grid sm:grid-cols-2 gap-6">
-          <ProductCard
-            title="#winestagram Hoodie"
-            price="from $49.99"
-            image="/winestagram-hoodie.jpg"
-            description="Comfortable hoodie featuring vibrant wine-inspired artwork. Perfect for cozy wine nights at home."
-            badge="Popular"
-          />
-          <ProductCard
-            title="#MEGA-PINT Hoodie"
-            price="from $49.99"
-            image="/mega-pint-hoodie.jpg"
-            description="Bold design celebrating the art of wine appreciation. Available in multiple colors."
-            badge="Popular"
-          />
-        </div>
-      </div>
-
-      {/* Digital Recipes - Coming Soon */}
-      <div className="mb-16">
-        <div className="flex items-center gap-4 mb-8">
-          <h2 className="text-2xl font-serif">Fire & Food Collection</h2>
-          <Badge variant="outline" className="text-[var(--wwp-ember)] border-[var(--wwp-ember)]">
-            Digital
+          <h2 className="text-2xl font-serif text-charcoal">Fire-Friendly Recipe Cards</h2>
+          <Badge variant="outline" className="text-ember border-ember">
+            Digital Downloads
           </Badge>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <ProductCard
-            title="Open Fire Recipe Collection"
+            title="Open Fire Sunday Collection"
             price="$12.99"
             image="/fire-recipes.jpg"
-            description="10 carefully crafted recipes designed for cooking over open fire. Includes wine pairings and conversation starters."
-            comingSoon={true}
+            description="5 carefully crafted recipes designed for cooking over open fire. Includes wine pairings and conversation starters."
+            badge="Popular"
           />
           <ProductCard
-            title="Salon Dinner Menu Guide"
+            title="Pre-Prep Recipe Cards"
             price="$8.99"
-            image="/dinner-guide.jpg"
-            description="Curated menu ideas for intimate gatherings. Wine pairings, conversation topics, and hosting tips included."
-            comingSoon={true}
+            image="/prep-recipes.jpg"
+            description="3 recipes designed to be prepped the night before and cooked at the fire. Perfect for busy schedules."
+            badge="New"
           />
           <ProductCard
             title="Seasonal Fire Cooking"
@@ -121,54 +96,91 @@ export default function StorePage(){
         </div>
       </div>
 
+      {/* Guides & E-books */}
+      <div className="mb-16">
+        <div className="flex items-center gap-4 mb-8">
+          <h2 className="text-2xl font-serif text-charcoal">Guides & E-books</h2>
+          <Badge variant="outline" className="text-ember border-ember">
+            Coming Soon
+          </Badge>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ProductCard
+            title="The Art of Learning [WINE]"
+            price="$19.99"
+            image="/wine-learning-ebook.jpg"
+            description="A comprehensive guide for adult learners using wine as a medium. Teaches how to learn, taste, and appreciate wine systematically."
+            comingSoon={true}
+          />
+          <ProductCard
+            title="Fire Setup & Safety Guide"
+            price="$9.99"
+            image="/fire-guide.jpg"
+            description="Complete guide to building and maintaining safe fires for cooking and gathering. Includes safety tips and equipment recommendations."
+            comingSoon={true}
+          />
+          <ProductCard
+            title="Conversation Starter Cards"
+            price="$14.99"
+            image="/conversation-cards.jpg"
+            description="50 thoughtful questions designed to spark deeper conversations around the fire. Perfect for intimate gatherings."
+            comingSoon={true}
+          />
+        </div>
+      </div>
+
       {/* Coming Soon Section */}
       <div className="mb-16">
         <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
-          <h3 className="text-2xl font-serif font-semibold mb-4">More Coming Soon</h3>
+          <h3 className="text-2xl font-serif font-medium mb-4 text-charcoal">More Coming Soon</h3>
           <p className="text-black/70 mb-6 max-w-2xl mx-auto">
-            We're working on bringing you more thoughtful products that align with our mission. 
-            Think conversation starter cards, fire-starting kits, and curated wine selections.
+            We&apos;re working on bringing you more thoughtful digital products that align with our mission. 
+            Think individual recipe cards, fire-starting guides, and curated wine education materials.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="outline" className="border-[var(--wwp-ember)] text-[var(--wwp-ember)] hover:bg-[var(--wwp-ember)] hover:text-white rounded-full px-6">
-              Get Notified
-            </Button>
-            <Button className="bg-[var(--wwp-ember)] hover:opacity-90 text-white rounded-full px-6">
-              Join the Circle
-            </Button>
+            <Link href="/join">
+              <Button variant="outline" className="border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6">
+                Get Notified
+              </Button>
+            </Link>
+            <Link href="/join">
+              <Button className="btn-ember px-6 rounded-full">
+                Join the Circle
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
 
       {/* Philosophy Section */}
       <div className="text-center bg-white rounded-2xl p-12 border">
-        <h3 className="text-2xl font-serif font-semibold mb-4">Our Store Philosophy</h3>
+        <h3 className="text-2xl font-serif font-medium mb-4 text-charcoal">Our Store Philosophy</h3>
         <p className="text-black/70 mb-6 max-w-3xl mx-auto">
-          We believe in quality over quantity. Every product we offer is carefully selected 
-          to enhance your slow living journey. No mass production, no fast fashion, no meaningless merch. 
-          Just thoughtful items that bring people together around fire, food, and conversation.
+          We believe in quality over quantity. Every digital product we offer is carefully crafted 
+          to enhance your slow living journey. No mass production, no meaningless content. 
+          Just thoughtful resources that bring people together around fire, food, and conversation.
         </p>
         <div className="grid md:grid-cols-3 gap-6 mt-8">
           <div className="text-center">
             <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
               <img src="/images/icons/icon-fire.png" alt="Quality First" className="w-10 h-10" />
             </div>
-            <h4 className="font-medium mb-2">Quality First</h4>
-            <p className="text-sm text-black/70">Every item is chosen for its quality and alignment with our values.</p>
+            <h4 className="font-medium mb-2 text-charcoal">Quality First</h4>
+            <p className="text-sm text-black/70">Every resource is crafted for quality and alignment with our values.</p>
           </div>
           <div className="text-center">
             <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
               <img src="/images/icons/icon-growth.png" alt="Slow & Sustainable" className="w-10 h-10" />
             </div>
-            <h4 className="font-medium mb-2">Slow & Sustainable</h4>
-            <p className="text-sm text-black/70">We prioritize sustainable practices and thoughtful consumption.</p>
+            <h4 className="font-medium mb-2 text-charcoal">Slow & Sustainable</h4>
+            <p className="text-sm text-black/70">We prioritize thoughtful consumption and digital sustainability.</p>
           </div>
           <div className="text-center">
             <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-              <img src="/images/icons/icon-community.png" alt="Community Focused" className="w-10 h-10" />
+              <img src="/images/icons/icon-connection.png" alt="Community Focused" className="w-10 h-10" />
             </div>
-            <h4 className="font-medium mb-2">Community Focused</h4>
-            <p className="text-sm text-black/70">Products that bring people together and enhance connection.</p>
+            <h4 className="font-medium mb-2 text-charcoal">Community Focused</h4>
+            <p className="text-sm text-black/70">Resources that bring people together and enhance connection.</p>
           </div>
         </div>
       </div>
