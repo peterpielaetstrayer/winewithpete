@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Product, Event, Order } from '@/lib/types';
+import { supabase } from '@/lib/supabase/client';
 
 export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -12,10 +13,65 @@ export default function AdminPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'products' | 'events' | 'orders'>('products');
+  const [user, setUser] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
 
   useEffect(() => {
-    fetchData();
+    checkUser();
   }, []);
+
+  const checkUser = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      if (user) {
+        fetchData();
+      }
+    } catch (error) {
+      console.error('Auth check error:', error);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setLoginError(error.message);
+        return;
+      }
+
+      setUser(data.user);
+      fetchData();
+    } catch (error) {
+      setLoginError('Login failed. Please try again.');
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setProducts([]);
+    setEvents([]);
+    setOrders([]);
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
 
   const fetchData = async () => {
     try {
@@ -61,6 +117,68 @@ export default function AdminPage() {
     }
   };
 
+  if (authLoading) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-16">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-ember border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-black/70">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-16">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-serif text-charcoal mb-2">Admin Login</h1>
+          <p className="text-black/70">Sign in to access the admin dashboard</p>
+        </div>
+        
+        <Card className="p-6">
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-charcoal mb-1">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ember"
+                required
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-charcoal mb-1">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ember"
+                required
+              />
+            </div>
+            
+            {loginError && (
+              <div className="text-red-600 text-sm">{loginError}</div>
+            )}
+            
+            <Button type="submit" className="w-full btn-ember">
+              Sign In
+            </Button>
+          </form>
+        </Card>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-16">
@@ -75,8 +193,15 @@ export default function AdminPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
       <div className="mb-8">
-        <h1 className="text-3xl font-serif text-charcoal mb-2">Admin Dashboard</h1>
-        <p className="text-black/70">Manage your Wine With Pete community</p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-serif text-charcoal mb-2">Admin Dashboard</h1>
+            <p className="text-black/70">Manage your Wine With Pete community</p>
+          </div>
+          <Button onClick={handleLogout} variant="outline" size="sm">
+            Logout
+          </Button>
+        </div>
       </div>
 
       {/* Tabs */}
