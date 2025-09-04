@@ -80,6 +80,27 @@ export interface NewsletterFormData {
   name?: string;
 }
 
+// Stripe types
+export interface StripeCheckoutSession {
+  id: string;
+  url: string;
+}
+
+export interface CreateCheckoutSessionRequest {
+  productId: string;
+  quantity?: number;
+  customerEmail?: string;
+  customerName?: string;
+}
+
+export interface StripeWebhookEvent {
+  id: string;
+  type: string;
+  data: {
+    object: any;
+  };
+}
+
 // API response types
 export interface ApiResponse<T> {
   data?: T;

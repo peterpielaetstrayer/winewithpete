@@ -1,8 +1,31 @@
+'use client';
+
 import Link from 'next/link';
 import { EventCard } from '@/components/event-card';
 import { EventsList } from '@/components/events-list';
+import { useState, useEffect } from 'react';
+import { Event } from '@/lib/types';
 
 export default function EventsPage(){
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch('/api/events');
+      const data = await response.json();
+      setEvents(data.data || []);
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-16">
       {/* Hero Section */}

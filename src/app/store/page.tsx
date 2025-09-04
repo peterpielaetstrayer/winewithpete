@@ -1,8 +1,62 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useState, useEffect } from 'react';
+import { Product } from '@/lib/types';
 
 export default function StorePage(){
+  const [loading, setLoading] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('/api/admin/products');
+      const data = await response.json();
+      setProducts(data.data || []);
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+    } finally {
+      setProductsLoading(false);
+    }
+  };
+
+  const handleCheckout = async (productId: string) => {
+    setLoading(productId);
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId,
+          quantity: 1,
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error('Checkout failed:', data.error);
+        alert('Checkout failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Checkout failed. Please try again.');
+    } finally {
+      setLoading(null);
+    }
+  };
+
   const ProductCard = ({ 
     title, 
     price, 
@@ -10,7 +64,8 @@ export default function StorePage(){
     description, 
     badge, 
     featured = false,
-    comingSoon = false
+    comingSoon = false,
+    productId
   }: {
     title: string;
     price: string;
@@ -19,6 +74,7 @@ export default function StorePage(){
     badge?: string;
     featured?: boolean;
     comingSoon?: boolean;
+    productId?: string;
   }) => (
     <div className={`group relative bg-white rounded-2xl overflow-hidden shadow-sm border hover:shadow-lg transition-all duration-300 ${featured ? 'md:col-span-2' : ''}`}>
       {badge && (
@@ -43,9 +99,15 @@ export default function StorePage(){
           <span className="text-xl font-serif text-ember">{price}</span>
           <Button 
             className="btn-ember px-4 py-2 rounded-full text-sm self-start sm:self-auto"
-            disabled={comingSoon}
+            disabled={comingSoon || loading === productId}
+            onClick={() => productId && handleCheckout(productId)}
           >
-            {comingSoon ? 'Coming Soon' : 'Add to Cart'}
+            {loading === productId ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Processing...
+              </div>
+            ) : comingSoon ? 'Coming Soon' : 'Buy Now'}
           </Button>
         </div>
       </div>
@@ -71,29 +133,57 @@ export default function StorePage(){
             Digital Downloads
           </Badge>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <ProductCard
-            title="Open Fire Sunday Collection"
-            price="$12.99"
-            image="/fire-recipes.jpg"
-            description="5 carefully crafted recipes designed for cooking over open fire. Includes wine pairings and conversation starters."
-            badge="Popular"
-          />
-          <ProductCard
-            title="Pre-Prep Recipe Cards"
-            price="$8.99"
-            image="/prep-recipes.jpg"
-            description="3 recipes designed to be prepped the night before and cooked at the fire. Perfect for busy schedules."
-            badge="New"
-          />
-          <ProductCard
-            title="Seasonal Fire Cooking"
-            price="$15.99"
-            image="/seasonal-recipes.jpg"
-            description="Year-round recipes that celebrate the seasons. From summer beach fires to winter hearth cooking."
-            comingSoon={true}
-          />
-        </div>
+        {productsLoading ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm border animate-pulse">
+                <div className="aspect-square bg-gray-200"></div>
+                <div className="p-6">
+                  <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded mb-4"></div>
+                  <div className="h-6 bg-gray-200 rounded w-20"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products
+              .filter(product => product.product_type === 'recipe_card' && product.is_active)
+              .map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  title={product.name}
+                  price={`$${product.price}`}
+                  image="/fire-recipes.jpg" // You can add product images later
+                  description={product.description || ''}
+                  badge={index === 0 ? "Popular" : index === 1 ? "New" : undefined}
+                  productId={product.id}
+                />
+              ))}
+            {/* Fallback products if none in database */}
+            {products.length === 0 && (
+              <>
+                <ProductCard
+                  title="Open Fire Sunday Collection"
+                  price="$12.99"
+                  image="/fire-recipes.jpg"
+                  description="5 carefully crafted recipes designed for cooking over open fire. Includes wine pairings and conversation starters."
+                  badge="Popular"
+                  productId="open-fire-collection"
+                />
+                <ProductCard
+                  title="Pre-Prep Recipe Cards"
+                  price="$8.99"
+                  image="/prep-recipes.jpg"
+                  description="3 recipes designed to be prepped the night before and cooked at the fire. Perfect for busy schedules."
+                  badge="New"
+                  productId="pre-prep-cards"
+                />
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Guides & E-books */}
