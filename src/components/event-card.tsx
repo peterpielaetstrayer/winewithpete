@@ -94,7 +94,7 @@ export function EventCard({ event }: EventCardProps) {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-8 shadow-sm border">
+    <div className="card-enhanced bg-white rounded-2xl p-8 shadow-sm border">
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-sm font-medium text-ember">
@@ -133,7 +133,7 @@ export function EventCard({ event }: EventCardProps) {
       {!isRSVPOpen ? (
         <Button 
           onClick={() => setIsRSVPOpen(true)}
-          className="w-full btn-ember"
+          className="w-full btn-ember focus-ring"
           disabled={!!(event.max_attendees && event.current_attendees >= event.max_attendees)}
         >
           {event.max_attendees && event.current_attendees >= event.max_attendees 
@@ -189,14 +189,14 @@ export function EventCard({ event }: EventCardProps) {
               type="button"
               variant="outline"
               onClick={() => setIsRSVPOpen(false)}
-              className="flex-1 border-ember text-ember hover:bg-ember hover:text-white"
+              className="flex-1 border-ember text-ember hover:bg-ember hover:text-white focus-ring"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 btn-ember"
+              className="flex-1 btn-ember focus-ring"
             >
               {isSubmitting ? 'Submitting...' : 'Submit RSVP'}
             </Button>

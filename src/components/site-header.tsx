@@ -6,7 +6,7 @@ export function SiteHeader(){
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const link = (href:string, label:string) => (
-    <Link href={href} className="text-sm tracking-wide hover:opacity-80 transition-opacity">{label}</Link>
+    <Link href={href} className="text-sm tracking-wide hover:opacity-80 transition-opacity focus-ring rounded-md px-2 py-1">{label}</Link>
   );
   
   return (
@@ -26,7 +26,7 @@ export function SiteHeader(){
         
         {/* Mobile Menu Button */}
         <button 
-          className="md:hidden flex flex-col gap-1 w-6 h-6"
+          className="md:hidden flex flex-col gap-1 w-6 h-6 focus-ring rounded-md p-1"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           <div className={`w-full h-0.5 bg-black transition-transform ${isMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></div>

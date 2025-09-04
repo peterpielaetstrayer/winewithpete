@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { LoadingSkeleton, LoadingSkeletonLarge } from '@/components/loading-skeleton';
 import { useState, useEffect } from 'react';
 import { Product } from '@/lib/types';
 
@@ -77,11 +79,11 @@ export default function StorePage(){
     badge?: string;
     featured?: boolean;
     comingSoon?: boolean;
-    productId?: string;
+    productId: string;
     productPrice?: number;
     imagePath?: string;
   }) => (
-    <div className={`group relative bg-white rounded-2xl overflow-hidden shadow-sm border hover:shadow-lg transition-all duration-300 ${featured ? 'md:col-span-2' : ''}`}>
+    <div className={`group relative card-enhanced bg-white rounded-2xl overflow-hidden shadow-sm border ${featured ? 'md:col-span-2' : ''}`}>
       {badge && (
         <Badge className="absolute top-4 left-4 z-10 bg-ember text-white">
           {badge}
@@ -94,10 +96,12 @@ export default function StorePage(){
       )}
       <div className={`aspect-square bg-gray-100 relative overflow-hidden ${featured ? 'md:aspect-[4/3]' : ''}`}>
         {imagePath ? (
-          <img 
+          <Image 
             src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${imagePath}`}
             alt={title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            sizes={featured ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
@@ -112,7 +116,7 @@ export default function StorePage(){
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <span className="text-xl font-serif text-ember">{price}</span>
             <Button 
-              className="btn-ember px-4 py-2 rounded-full text-sm self-start sm:self-auto"
+              className="btn-ember px-4 py-2 rounded-full text-sm self-start sm:self-auto focus-ring"
               disabled={comingSoon || loading === productId}
               onClick={() => productId && handleCheckout(productId, productPrice)}
             >
@@ -152,8 +156,8 @@ export default function StorePage(){
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
       {/* Hero Section */}
-      <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-serif font-medium mb-4 text-charcoal">Wine With Pete Store</h1>
+      <div className="text-center mb-16 animate-fade-in">
+        <h1 className="text-display mb-4 text-charcoal">Wine With Pete Store</h1>
         <p className="text-lg text-black/70 max-w-2xl mx-auto">
           Digital recipe cards, guides, and e-books for the slow living community. 
           Quality over quantity, meaning over mass production.
@@ -170,14 +174,7 @@ export default function StorePage(){
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {productsLoading ? (
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm border animate-pulse md:col-span-2">
-              <div className="aspect-square bg-gray-200"></div>
-              <div className="p-6">
-                <div className="h-6 bg-gray-200 rounded mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded mb-4"></div>
-                <div className="h-6 bg-gray-200 rounded w-20"></div>
-              </div>
-            </div>
+            <LoadingSkeletonLarge />
           ) : (
             (() => {
               const freeRecipeCards = products.filter(product => product.product_type === 'recipe_card' && product.is_active && product.price === 0);
@@ -186,17 +183,19 @@ export default function StorePage(){
               return freeRecipeCards;
             })()
               .map((product, index) => (
-                <ProductCard
-                  key={product.id}
-                  title={product.name}
-                  price={product.price === 0 ? "Free (Pay What You Want)" : `$${product.price}`}
-                  description={product.description || ''}
-                  badge="Free Sample"
-                  featured={true}
-                  productId={product.id}
-                  productPrice={product.price}
-                  imagePath={product.image_path}
-                />
+                product.id && (
+                  <ProductCard
+                    key={product.id}
+                    title={product.name}
+                    price={product.price === 0 ? "Free (Pay What You Want)" : `$${product.price}`}
+                    description={product.description || ''}
+                    badge="Free Sample"
+                    featured={true}
+                    productId={product.id}
+                    productPrice={product.price}
+                    imagePath={product.image_path || undefined}
+                  />
+                )
               ))
           )}
         </div>
@@ -213,14 +212,7 @@ export default function StorePage(){
         {productsLoading ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm border animate-pulse">
-                <div className="aspect-square bg-gray-200"></div>
-                <div className="p-6">
-                  <div className="h-6 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-4"></div>
-                  <div className="h-6 bg-gray-200 rounded w-20"></div>
-                </div>
-              </div>
+              <LoadingSkeleton key={i} />
             ))}
           </div>
         ) : (
@@ -228,16 +220,18 @@ export default function StorePage(){
             {products
               .filter(product => product.product_type === 'recipe_card' && product.is_active)
               .map((product, index) => (
-                <ProductCard
-                  key={product.id}
-                  title={product.name}
-                  price={product.price === 0 ? "Free (Pay What You Want)" : `$${product.price}`}
-                  description={product.description || ''}
-                  badge={product.price === 0 ? "Free Sample" : index === 0 ? "Popular" : index === 1 ? "New" : undefined}
-                  productId={product.id}
-                  productPrice={product.price}
-                  imagePath={product.image_path}
-                />
+                product.id && (
+                  <ProductCard
+                    key={product.id}
+                    title={product.name}
+                    price={product.price === 0 ? "Free (Pay What You Want)" : `$${product.price}`}
+                    description={product.description || ''}
+                    badge={product.price === 0 ? "Free Sample" : index === 0 ? "Popular" : index === 1 ? "New" : undefined}
+                    productId={product.id}
+                    productPrice={product.price}
+                    imagePath={product.image_path || undefined}
+                  />
+                )
               ))}
             {/* Show message if no products */}
             {products.filter(product => product.product_type === 'recipe_card' && product.is_active).length === 0 && (
@@ -298,21 +292,21 @@ export default function StorePage(){
         <div className="grid md:grid-cols-3 gap-6 mt-8">
           <div className="text-center">
             <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-              <img src="/images/icons/icon-fire.png" alt="Quality First" className="w-10 h-10" />
+              <Image src="/images/icons/icon-fire.png" alt="Quality First" width={40} height={40} />
             </div>
             <h4 className="font-medium mb-2 text-charcoal">Quality First</h4>
             <p className="text-sm text-black/70">Every resource is crafted for quality and alignment with our values.</p>
           </div>
           <div className="text-center">
             <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-              <img src="/images/icons/icon-growth.png" alt="Slow & Sustainable" className="w-10 h-10" />
+              <Image src="/images/icons/icon-growth.png" alt="Slow & Sustainable" width={40} height={40} />
             </div>
             <h4 className="font-medium mb-2 text-charcoal">Slow & Sustainable</h4>
             <p className="text-sm text-black/70">We prioritize thoughtful consumption and digital sustainability.</p>
           </div>
           <div className="text-center">
             <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-              <img src="/images/icons/icon-connection.png" alt="Community Focused" className="w-10 h-10" />
+              <Image src="/images/icons/icon-connection.png" alt="Community Focused" width={40} height={40} />
             </div>
             <h4 className="font-medium mb-2 text-charcoal">Community Focused</h4>
             <p className="text-sm text-black/70">Resources that bring people together and enhance connection.</p>

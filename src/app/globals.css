@@ -34,6 +34,58 @@ body{
 .border-ember { border-color: var(--wwp-ember); }
 .border-gold { border-color: var(--wwp-gold); }
 
+/* Typography Hierarchy */
+.text-display { 
+  font-size: clamp(2.5rem, 5vw, 4rem); 
+  line-height: 1.1; 
+  font-family: var(--font-playfair), Georgia, 'Times New Roman', serif; 
+  font-weight: 600; 
+}
+.text-hero { 
+  font-size: clamp(1.875rem, 4vw, 3rem); 
+  line-height: 1.2; 
+  font-family: var(--font-playfair), Georgia, 'Times New Roman', serif; 
+  font-weight: 500; 
+}
+.text-section { 
+  font-size: clamp(1.5rem, 3vw, 2.25rem); 
+  line-height: 1.3; 
+  font-family: var(--font-playfair), Georgia, 'Times New Roman', serif; 
+  font-weight: 500; 
+}
+
+/* Enhanced Spacing */
+.space-section { 
+  padding: clamp(4rem, 8vw, 8rem) 0; 
+}
+.space-content { 
+  padding: clamp(2rem, 4vw, 4rem) 0; 
+}
+
+/* Subtle Animations */
+.animate-fade-in { 
+  animation: fadeIn 0.6s ease-out; 
+}
+.animate-slide-up { 
+  animation: slideUp 0.8s ease-out; 
+}
+.animate-scale-in { 
+  animation: scaleIn 0.5s ease-out; 
+}
+
+@keyframes fadeIn { 
+  from { opacity: 0; } 
+  to { opacity: 1; } 
+}
+@keyframes slideUp { 
+  from { transform: translateY(20px); opacity: 0; } 
+  to { transform: translateY(0); opacity: 1; } 
+}
+@keyframes scaleIn { 
+  from { transform: scale(0.95); opacity: 0; } 
+  to { transform: scale(1); opacity: 1; } 
+}
+
 /* Hover effects */
 .hover-ember:hover { 
   background-color: var(--wwp-ember-light); 
@@ -44,27 +96,94 @@ body{
   transition: background-color 0.2s ease;
 }
 
-/* Button styles */
+/* Enhanced Button styles */
 .btn-ember {
   background-color: var(--wwp-ember);
   color: white;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.btn-ember::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+.btn-ember:hover::before {
+  left: 100%;
 }
 .btn-ember:hover {
   background-color: var(--wwp-ember-light);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(91, 35, 32, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(91, 35, 32, 0.4);
 }
 
 .btn-gold {
   background-color: var(--wwp-gold);
   color: white;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.btn-gold::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+.btn-gold:hover::before {
+  left: 100%;
 }
 .btn-gold:hover {
   background-color: var(--wwp-gold-light);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(201, 138, 43, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(201, 138, 43, 0.4);
+}
+
+/* Enhanced Card styles */
+.card-enhanced {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.card-enhanced::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(91, 35, 32, 0.05), rgba(201, 138, 43, 0.05));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.card-enhanced:hover::before {
+  opacity: 1;
+}
+.card-enhanced:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Focus states for accessibility */
+.focus-ring {
+  outline: none;
+  transition: all 0.2s ease;
+}
+.focus-ring:focus {
+  box-shadow: 0 0 0 3px rgba(91, 35, 32, 0.3);
+}
+.focus-ring:focus-visible {
+  box-shadow: 0 0 0 3px rgba(91, 35, 32, 0.5);
 }
 
 @theme inline {

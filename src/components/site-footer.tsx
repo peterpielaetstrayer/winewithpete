@@ -32,7 +32,7 @@ export function SiteFooter(){
             <div className="space-y-2 text-sm">
               <Link href="/join" className="block text-black/70 hover:text-ember transition-colors">Join Newsletter</Link>
               <Link href="/support" className="block text-black/70 hover:text-ember transition-colors">Support</Link>
-              <a href="mailto:hello@winewithpete.me" className="block text-black/70 hover:text-ember transition-colors">Contact</a>
+              <a href="mailto:pete@winewithpete.me" className="block text-black/70 hover:text-ember transition-colors">Contact</a>
             </div>
           </div>
         </div>
