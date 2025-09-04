@@ -13,6 +13,15 @@ interface KitResponse {
 }
 
 export async function addToKitList(subscriber: KitSubscriber): Promise<KitResponse> {
+  // Check if Kit API key is available
+  if (!process.env.KIT_API_KEY) {
+    console.log('Kit API key not found, skipping Kit integration');
+    return {
+      success: false,
+      error: 'Kit API key not configured'
+    };
+  }
+
   try {
     const response = await fetch('https://api.kit.co/v1/subscribers', {
       method: 'POST',

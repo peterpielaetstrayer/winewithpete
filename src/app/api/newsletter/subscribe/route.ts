@@ -32,22 +32,23 @@ export async function POST(request: NextRequest) {
     // Subscribe to newsletter in Supabase
     const subscriber = await subscribeToNewsletter(sanitizedData);
 
-    // Add to Kit list
-    const kitResult = await addToKitList({
-      email: sanitizedData.email,
-      name: sanitizedData.name,
-      tags: ['newsletter', 'website-signup']
-    });
-
-    // Send welcome email (try Kit first, fallback to Resend)
-    let emailSent = false;
-    if (kitResult.success) {
-      const kitEmailResult = await sendKitWelcomeEmail(sanitizedData.email, sanitizedData.name);
-      emailSent = kitEmailResult.success;
+    // Try to add to Kit list (but don't fail if it doesn't work)
+    let kitSynced = false;
+    try {
+      const kitResult = await addToKitList({
+        email: sanitizedData.email,
+        name: sanitizedData.name,
+        tags: ['newsletter', 'website-signup']
+      });
+      kitSynced = kitResult.success;
+    } catch (error) {
+      console.error('Kit integration failed:', error);
+      // Continue without failing the subscription
     }
 
-    // Fallback to Resend if Kit email fails
-    if (!emailSent) {
+    // Send welcome email (try Resend first since it's more reliable)
+    let emailSent = false;
+    try {
       const welcomeEmail = emailTemplates.newsletterWelcome(sanitizedData.name || 'Friend');
       await sendEmail({
         to: sanitizedData.email,
@@ -56,12 +57,15 @@ export async function POST(request: NextRequest) {
         text: welcomeEmail.text
       });
       emailSent = true;
+    } catch (error) {
+      console.error('Email sending failed:', error);
+      // Continue without failing the subscription
     }
 
     return NextResponse.json({
       success: true,
       data: subscriber,
-      kit_synced: kitResult.success,
+      kit_synced: kitSynced,
       email_sent: emailSent,
       message: 'Successfully subscribed to our newsletter!'
     });
