@@ -8,8 +8,9 @@ import { checkoutRateLimit } from '@/lib/rate-limit';
 export async function POST(request: NextRequest) {
   try {
     // Check environment variables
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
     const requiredEnvVars = {
-      SUPABASE_URL: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL,
+      SUPABASE_URL: supabaseUrl,
       SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
       STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     };

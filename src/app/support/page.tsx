@@ -17,6 +17,8 @@ export default function SupportPage(){
         body: JSON.stringify({
           productId: `support-${amount}`,
           quantity: 1,
+          customerEmail: 'supporter@example.com', // TODO: Collect from user
+          customerName: 'Supporter', // TODO: Collect from user
           customAmount: amount,
           customDescription: description,
         }),

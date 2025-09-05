@@ -34,6 +34,7 @@ export default function StorePage(){
   const handleCheckout = async (productId: string, productPrice: number) => {
     setLoading(productId);
     try {
+      // For now, use placeholder values - in a real app, you'd collect these from the user
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
@@ -42,6 +43,8 @@ export default function StorePage(){
         body: JSON.stringify({
           productId,
           quantity: 1,
+          customerEmail: 'customer@example.com', // TODO: Collect from user
+          customerName: 'Customer', // TODO: Collect from user
           customAmount: productPrice === 0 ? tipAmount : undefined,
         }),
       });
