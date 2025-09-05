@@ -23,27 +23,62 @@ export async function addToKitList(subscriber: KitSubscriber): Promise<KitRespon
   }
 
   try {
-    const response = await fetch('https://api.kit.co/v1/subscribers', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.KIT_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: subscriber.email,
-        name: subscriber.name,
-        tags: ['newsletter', 'website-signup', ...(subscriber.tags || [])],
-        // Add to your main list - you may need to adjust the list ID
-        list_id: 'main', // or your specific list ID
-      }),
+    const requestBody = {
+      email: subscriber.email,
+      name: subscriber.name,
+      tags: ['newsletter', 'website-signup', ...(subscriber.tags || [])],
+      // Kit uses 'list' instead of 'list_id'
+      list: 'main', // or your specific list ID
+    };
+
+    console.log('Kit API request:', {
+      url: 'https://api.kit.co/v1/subscribers',
+      body: requestBody,
+      hasApiKey: !!process.env.KIT_API_KEY
     });
 
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Kit API error:', response.status, errorData);
+    // Try different Kit API endpoints
+    const endpoints = [
+      'https://api.kit.co/v1/subscribers',
+      'https://api.kit.co/subscribers',
+      'https://kit.co/api/v1/subscribers',
+      'https://kit.co/api/subscribers'
+    ];
+
+    let response;
+    let lastError;
+
+    for (const endpoint of endpoints) {
+      try {
+        console.log(`Trying Kit API endpoint: ${endpoint}`);
+        response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.KIT_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (response.ok) {
+          console.log(`Success with endpoint: ${endpoint}`);
+          break;
+        } else {
+          const errorData = await response.text();
+          console.log(`Failed with ${endpoint}: ${response.status} - ${errorData}`);
+          lastError = { status: response.status, error: errorData };
+        }
+      } catch (error) {
+        console.log(`Error with ${endpoint}:`, error);
+        lastError = error;
+      }
+    }
+
+    if (!response || !response.ok) {
+      console.error('All Kit API endpoints failed');
       return {
         success: false,
-        error: `Kit API error: ${response.status}`
+        error: `Kit API failed: ${lastError?.status || 'Unknown error'}`
       };
     }
 
