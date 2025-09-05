@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { useState, useEffect } from 'react';
 import { Product } from '@/lib/types';
 
@@ -11,6 +12,10 @@ export default function StorePage() {
   const [loading, setLoading] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [customerName, setCustomerName] = useState('');
 
   useEffect(() => {
     fetchProducts();
@@ -29,8 +34,16 @@ export default function StorePage() {
     }
   };
 
-  const handleCheckout = async (product: Product) => {
-    setLoading(product.id);
+  const handleCheckoutClick = (product: Product) => {
+    setSelectedProduct(product);
+    setShowCheckoutForm(true);
+  };
+
+  const handleCheckoutSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedProduct) return;
+
+    setLoading(selectedProduct.id);
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
@@ -38,10 +51,10 @@ export default function StorePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          productId: product.id,
+          productId: selectedProduct.id,
           quantity: 1,
-          customerEmail: 'customer@example.com', // TODO: Collect from user
-          customerName: 'Customer', // TODO: Collect from user
+          customerEmail: customerEmail,
+          customerName: customerName,
         }),
       });
 
@@ -59,6 +72,13 @@ export default function StorePage() {
     } finally {
       setLoading(null);
     }
+  };
+
+  const closeCheckoutForm = () => {
+    setShowCheckoutForm(false);
+    setSelectedProduct(null);
+    setCustomerEmail('');
+    setCustomerName('');
   };
 
   if (productsLoading) {
@@ -133,7 +153,7 @@ export default function StorePage() {
                 </div>
                 
                 <Button
-                  onClick={() => handleCheckout(product)}
+                  onClick={() => handleCheckoutClick(product)}
                   disabled={loading === product.id}
                   className="btn-ember focus-ring"
                 >
@@ -144,6 +164,84 @@ export default function StorePage() {
           </div>
         ))}
       </div>
+
+      {/* Checkout Modal */}
+      {showCheckoutForm && selectedProduct && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-white rounded-2xl p-8 w-full max-w-md relative animate-scale-in">
+            {/* Close button */}
+            <button
+              onClick={closeCheckoutForm}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Form */}
+            <form onSubmit={handleCheckoutSubmit} className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-serif font-medium mb-2">Complete Your Purchase</h2>
+                <p className="text-black/70">{selectedProduct.name}</p>
+                <p className="text-xl font-semibold mt-2">
+                  {selectedProduct.price === 0 ? 'Free' : `$${selectedProduct.price}`}
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium mb-2">
+                    Email Address *
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    required
+                    className="focus-ring"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium mb-2">
+                    Full Name *
+                  </label>
+                  <Input
+                    id="name"
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Your Name"
+                    required
+                    className="focus-ring"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={closeCheckoutForm}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={loading === selectedProduct.id || !customerEmail || !customerName}
+                  className="btn-ember flex-1"
+                >
+                  {loading === selectedProduct.id ? 'Processing...' : 'Continue to Payment'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Philosophy Section */}
       <div className="text-center bg-cream rounded-2xl p-12">
