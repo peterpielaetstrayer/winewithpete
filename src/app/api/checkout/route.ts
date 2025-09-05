@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-import { createClient } from '@/lib/supabase/server';
+import { createServerSupabase } from '@/lib/supabase/server';
 import { CreateCheckoutSessionRequest } from '@/lib/types';
 import { checkoutSchema, validateEmail, validateName } from '@/lib/validations';
 import { checkoutRateLimit } from '@/lib/rate-limit';
@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
     const requiredEnvVars = {
       SUPABASE_URL: supabaseUrl,
-      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     };
 
@@ -101,75 +101,88 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Get product details from Supabase for regular products
-    const supabase = createClient();
-    console.log('Supabase client created, querying product:', productId);
-    
-    const { data: product, error: productError } = await supabase
-      .from('products')
-      .select('*')
-      .eq('id', productId)
-      .eq('is_active', true)
-      .single();
+    // For now, let's use hardcoded product data to test Stripe
+    // TODO: Fix Supabase RLS policies and restore product lookup
+    const product = {
+      id: productId,
+      name: 'Test Product',
+      description: 'Test product for checkout',
+      price: 0,
+      product_type: 'recipe_card' as const,
+      file_path: null,
+      image_path: null,
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
 
-    console.log('Product query result:', { product, productError });
-
-    if (productError || !product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
-    }
+    console.log('Using hardcoded product for testing:', product);
 
     // Handle free products with optional tips
     if (product.price === 0) {
       // For free products, allow custom amount (tip)
       const tipAmount = customAmount || 0;
       
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: product.name,
-                description: product.description || undefined,
+      console.log('Creating Stripe session for free product with tip:', tipAmount);
+      console.log('Stripe secret key available:', !!process.env.STRIPE_SECRET_KEY);
+      
+      try {
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ['card'],
+          line_items: [
+            {
+              price_data: {
+                currency: 'usd',
+                product_data: {
+                  name: product.name,
+                  description: product.description || undefined,
+                },
+                unit_amount: 0, // Free product
               },
-              unit_amount: 0, // Free product
+              quantity: 1,
             },
-            quantity: 1,
+            // Add tip if provided
+            ...(tipAmount > 0 ? [{
+              price_data: {
+                currency: 'usd',
+                product_data: {
+                  name: 'Tip for Wine With Pete',
+                  description: 'Thank you for supporting the community!',
+                },
+                unit_amount: Math.round(tipAmount * 100),
+              },
+              quantity: 1,
+            }] : []),
+          ],
+          mode: 'payment',
+          success_url: `${request.nextUrl.origin}/store/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${request.nextUrl.origin}/store?cancelled=true`,
+          customer_email: sanitizedEmail,
+          metadata: {
+            productId: product.id,
+            productName: product.name,
+            customerName: sanitizedName,
+            isFreeProduct: 'true',
+            tipAmount: tipAmount.toString(),
           },
-          // Add tip if provided
-          ...(tipAmount > 0 ? [{
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: 'Tip for Wine With Pete',
-                description: 'Thank you for supporting the community!',
-              },
-              unit_amount: Math.round(tipAmount * 100),
-            },
-            quantity: 1,
-          }] : []),
-        ],
-        mode: 'payment',
-        success_url: `${request.nextUrl.origin}/store/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${request.nextUrl.origin}/store?cancelled=true`,
-        customer_email: sanitizedEmail,
-        metadata: {
-          productId: product.id,
-          productName: product.name,
-          customerName: sanitizedName,
-          isFreeProduct: 'true',
-          tipAmount: tipAmount.toString(),
-        },
-      });
-
-      return NextResponse.json({ 
-        sessionId: session.id,
-        url: session.url 
-      });
+        });
+        
+        console.log('Stripe session created successfully:', session.id);
+        
+        return NextResponse.json({ 
+          sessionId: session.id,
+          url: session.url 
+        });
+      } catch (stripeError) {
+        console.error('Stripe error:', stripeError);
+        console.error('Stripe error details:', {
+          message: stripeError instanceof Error ? stripeError.message : 'Unknown error',
+          type: (stripeError as any)?.type,
+          code: (stripeError as any)?.code,
+          decline_code: (stripeError as any)?.decline_code
+        });
+        throw stripeError;
+      }
     }
 
     // Regular paid products
