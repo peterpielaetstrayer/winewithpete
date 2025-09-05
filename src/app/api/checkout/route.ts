@@ -7,6 +7,25 @@ import { checkoutRateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check environment variables
+    const requiredEnvVars = {
+      SUPABASE_URL: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    };
+
+    const missingVars = Object.entries(requiredEnvVars)
+      .filter(([key, value]) => !value)
+      .map(([key]) => key);
+
+    if (missingVars.length > 0) {
+      console.error('Missing environment variables:', missingVars);
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
     // Check rate limit
     const rateLimitResult = checkoutRateLimit(request);
     if (!rateLimitResult.success) {
@@ -83,12 +102,16 @@ export async function POST(request: NextRequest) {
 
     // Get product details from Supabase for regular products
     const supabase = createClient();
+    console.log('Supabase client created, querying product:', productId);
+    
     const { data: product, error: productError } = await supabase
       .from('products')
       .select('*')
       .eq('id', productId)
       .eq('is_active', true)
       .single();
+
+    console.log('Product query result:', { product, productError });
 
     if (productError || !product) {
       return NextResponse.json(
@@ -183,8 +206,16 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Checkout error:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
     return NextResponse.json(
-      { error: 'Failed to create checkout session' },
+      { 
+        error: 'Failed to create checkout session',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
