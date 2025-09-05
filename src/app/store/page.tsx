@@ -4,15 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { LoadingSkeleton, LoadingSkeletonLarge } from '@/components/loading-skeleton';
 import { useState, useEffect } from 'react';
 import { Product } from '@/lib/types';
 
-export default function StorePage(){
+export default function StorePage() {
   const [loading, setLoading] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
-  const [tipAmount, setTipAmount] = useState<number>(0);
 
   useEffect(() => {
     fetchProducts();
@@ -31,21 +29,19 @@ export default function StorePage(){
     }
   };
 
-  const handleCheckout = async (productId: string, productPrice: number) => {
-    setLoading(productId);
+  const handleCheckout = async (product: Product) => {
+    setLoading(product.id);
     try {
-      // For now, use placeholder values - in a real app, you'd collect these from the user
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          productId,
+          productId: product.id,
           quantity: 1,
           customerEmail: 'customer@example.com', // TODO: Collect from user
           customerName: 'Customer', // TODO: Collect from user
-          customAmount: productPrice === 0 ? tipAmount : undefined,
         }),
       });
 
@@ -65,270 +61,140 @@ export default function StorePage(){
     }
   };
 
-  const ProductCard = ({ 
-    title, 
-    price, 
-    description, 
-    badge, 
-    featured = false,
-    comingSoon = false,
-    productId,
-    productPrice = 0,
-    imagePath
-  }: {
-    title: string;
-    price: string;
-    description: string;
-    badge?: string;
-    featured?: boolean;
-    comingSoon?: boolean;
-    productId: string;
-    productPrice?: number;
-    imagePath?: string;
-  }) => (
-    <div className={`group relative card-enhanced bg-white rounded-2xl overflow-hidden shadow-sm border ${featured ? 'md:col-span-2' : ''}`}>
-      {badge && (
-        <Badge className="absolute top-4 left-4 z-10 bg-ember text-white">
-          {badge}
-        </Badge>
-      )}
-      {comingSoon && (
-        <Badge className="absolute top-4 right-4 z-10 bg-gray-500 text-white">
-          Coming Soon
-        </Badge>
-      )}
-      <div className={`aspect-square bg-gray-100 relative overflow-hidden ${featured ? 'md:aspect-[4/3]' : ''}`}>
-        {imagePath ? (
-          <Image 
-            src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${imagePath}`}
-            alt={title}
-            fill
-            className="object-cover"
-            sizes={featured ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
-            onError={(e) => {
-              const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${imagePath}`;
-              console.error('Image failed to load:', {
-                imagePath,
-                imageUrl,
-                supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL
-              });
-              // Hide the image and show placeholder
-              e.currentTarget.style.display = 'none';
-            }}
-          />
-        ) : null}
-        
-        {/* Fallback placeholder - always show this as backup */}
-        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-2 flex items-center justify-center">
-              <Image src="/images/icons/icon-wine.png" alt="Product" width={32} height={32} />
-            </div>
-            <div className="text-gray-400 text-sm">Product Image</div>
-          </div>
+  if (productsLoading) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-16">
+        <div className="text-center">
+          <h1 className="text-display animate-fade-in">The Store</h1>
+          <p className="mt-4 text-black/80 animate-fade-in">Loading products...</p>
         </div>
       </div>
-      <div className="p-6">
-        <h3 className="font-medium text-lg mb-2">{title}</h3>
-        <p className="text-sm text-black/70 mb-4 line-clamp-2">{description}</p>
-        <div className="space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <span className="text-xl font-serif text-ember">{price}</span>
-            <Button 
-              className="btn-ember px-4 py-2 rounded-full text-sm self-start sm:self-auto focus-ring"
-              disabled={comingSoon || loading === productId}
-              onClick={() => productId && handleCheckout(productId, productPrice)}
-            >
-              {loading === productId ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Processing...
-                </div>
-              ) : comingSoon ? 'Coming Soon' : productPrice === 0 ? 'Get Free Recipe' : 'Buy Now'}
-            </Button>
-          </div>
-          
-          {/* Tip input for free products */}
-          {productPrice === 0 && !comingSoon && (
-            <div className="space-y-2">
-              <label className="text-sm text-black/70">Optional tip to support the community:</label>
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={tipAmount || ''}
-                  onChange={(e) => setTipAmount(parseFloat(e.target.value) || 0)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ember focus:border-transparent"
-                />
-                <span className="text-sm text-black/70 self-center">USD</span>
-              </div>
-              <p className="text-xs text-black/50">Any amount helps support creating more content!</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+    );
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
       {/* Hero Section */}
-      <div className="text-center mb-16 animate-fade-in">
-        <h1 className="text-display mb-4 text-charcoal">Wine With Pete Store</h1>
-        <p className="text-lg text-black/70 max-w-2xl mx-auto">
-          Digital recipe cards, guides, and e-books for the slow living community. 
-          Quality over quantity, meaning over mass production.
+      <div className="text-center mb-16">
+        <h1 className="text-display animate-fade-in">The Store</h1>
+        <p className="mt-4 text-black/80 animate-fade-in max-w-2xl mx-auto">
+          Digital guides, recipe cards, and resources for building community around fire, food, and honest conversation.
         </p>
       </div>
 
-      {/* Featured Free Recipe Card */}
-      <div className="mb-16">
-        <div className="flex items-center gap-4 mb-8">
-          <h2 className="text-2xl font-serif text-charcoal">Featured Recipe Card</h2>
-          <Badge className="bg-green-600 text-white">
-            Free with Optional Tip
-          </Badge>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {productsLoading ? (
-            <LoadingSkeletonLarge />
-          ) : (
-            (() => {
-              const freeRecipeCards = products.filter(product => product.product_type === 'recipe_card' && product.is_active && product.price === 0);
-              console.log('All products:', products);
-              console.log('Free recipe cards:', freeRecipeCards);
-              return freeRecipeCards;
-            })()
-              .map((product, index) => (
-                product.id && (
-                  <ProductCard
-                    key={product.id}
-                    title={product.name}
-                    price={product.price === 0 ? "Free (Pay What You Want)" : `$${product.price}`}
-                    description={product.description || ''}
-                    badge="Free Sample"
-                    featured={true}
-                    productId={product.id}
-                    productPrice={product.price}
-                    imagePath={product.image_path || undefined}
-                  />
-                )
-              ))
-          )}
-        </div>
-      </div>
+      {/* Products Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        {products.map((product) => (
+          <div key={product.id} className="card-enhanced animate-scale-in">
+            {/* Product Image */}
+            <div className="aspect-square relative overflow-hidden">
+              {product.image_path ? (
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${product.image_path}`}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                  onError={(e) => {
+                    console.error('Image failed to load:', product.image_path);
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                  <div className="text-center text-gray-500">
+                    <div className="w-16 h-16 mx-auto mb-2 bg-gray-200 rounded-full flex items-center justify-center">
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    </div>
+                    <p className="text-sm">No Image</p>
+                  </div>
+                </div>
+              )}
+            </div>
 
-      {/* Digital Recipe Cards */}
-      <div className="mb-16">
-        <div className="flex items-center gap-4 mb-8">
-          <h2 className="text-2xl font-serif text-charcoal">Full Recipe Collections</h2>
-          <Badge variant="outline" className="text-ember border-ember">
-            Coming Soon
-          </Badge>
-        </div>
-        {productsLoading ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <LoadingSkeleton key={i} />
-            ))}
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products
-              .filter(product => product.product_type === 'recipe_card' && product.is_active)
-              .map((product, index) => (
-                product.id && (
-                  <ProductCard
-                    key={product.id}
-                    title={product.name}
-                    price={product.price === 0 ? "Free (Pay What You Want)" : `$${product.price}`}
-                    description={product.description || ''}
-                    badge={product.price === 0 ? "Free Sample" : index === 0 ? "Popular" : index === 1 ? "New" : undefined}
-                    productId={product.id}
-                    productPrice={product.price}
-                    imagePath={product.image_path || undefined}
-                  />
-                )
-              ))}
-            {/* Show message if no products */}
-            {products.filter(product => product.product_type === 'recipe_card' && product.is_active).length === 0 && (
-              <div className="col-span-full text-center py-12">
-                <p className="text-black/70 mb-4">No recipe cards available yet.</p>
-                <p className="text-sm text-black/50">Check back soon for our first collection!</p>
+            {/* Product Info */}
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-xl font-serif font-medium">{product.name}</h3>
+                <Badge variant="outline" className="text-ember border-ember">
+                  {product.product_type.replace('_', ' ')}
+                </Badge>
               </div>
-            )}
-          </div>
-        )}
-      </div>
+              
+              {product.description && (
+                <p className="text-black/70 mb-4 line-clamp-3">{product.description}</p>
+              )}
 
-      {/* Guides & E-books */}
-      <div className="mb-16">
-        <div className="flex items-center gap-4 mb-8">
-          <h2 className="text-2xl font-serif text-charcoal">Guides & E-books</h2>
-          <Badge variant="outline" className="text-ember border-ember">
-            Coming Soon
-          </Badge>
-        </div>
-        <div className="text-center py-12">
-          <p className="text-black/70 mb-4">More guides and e-books coming soon!</p>
-          <p className="text-sm text-black/50">We're working on bringing you thoughtful digital resources.</p>
-        </div>
-      </div>
-
-      {/* Coming Soon Section */}
-      <div className="mb-16">
-        <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
-          <h3 className="text-2xl font-serif font-medium mb-4 text-charcoal">More Coming Soon</h3>
-          <p className="text-black/70 mb-6 max-w-2xl mx-auto">
-            We&apos;re working on bringing you more thoughtful digital products that align with our mission. 
-            Think individual recipe cards, fire-starting guides, and curated wine education materials.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/join">
-              <Button variant="outline" className="border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6">
-                Get Notified
-              </Button>
-            </Link>
-            <Link href="/join">
-              <Button className="btn-ember px-6 rounded-full">
-                Join the Circle
-              </Button>
-            </Link>
+              <div className="flex items-center justify-between">
+                <div className="text-2xl font-semibold">
+                  {product.price === 0 ? 'Free' : `$${product.price}`}
+                </div>
+                
+                <Button
+                  onClick={() => handleCheckout(product)}
+                  disabled={loading === product.id}
+                  className="btn-ember focus-ring"
+                >
+                  {loading === product.id ? 'Processing...' : 'Get It'}
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
 
       {/* Philosophy Section */}
-      <div className="text-center bg-white rounded-2xl p-12 border">
-        <h3 className="text-2xl font-serif font-medium mb-4 text-charcoal">Our Store Philosophy</h3>
-        <p className="text-black/70 mb-6 max-w-3xl mx-auto">
-          We believe in quality over quantity. Every digital product we offer is carefully crafted 
-          to enhance your slow living journey. No mass production, no meaningless content. 
-          Just thoughtful resources that bring people together around fire, food, and conversation.
+      <div className="text-center bg-cream rounded-2xl p-12">
+        <h2 className="text-section mb-6">Why We Build This</h2>
+        <p className="text-black/80 max-w-3xl mx-auto mb-8">
+          Every product here is designed to help you create meaningful connections. 
+          Whether it's a recipe card for your next fire gathering or a guide to deeper conversations, 
+          these tools are built for real people, real moments, real community.
         </p>
-        <div className="grid md:grid-cols-3 gap-6 mt-8">
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
           <div className="text-center">
-            <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-              <Image src="/images/icons/icon-fire.png" alt="Quality First" width={40} height={40} />
+            <div className="w-16 h-16 mx-auto mb-4 bg-ember/10 rounded-full flex items-center justify-center">
+              <Image
+                src="/images/icons/icon-fire.png"
+                alt="Fire"
+                width={32}
+                height={32}
+                className="w-8 h-8"
+              />
             </div>
-            <h4 className="font-medium mb-2 text-charcoal">Quality First</h4>
-            <p className="text-sm text-black/70">Every resource is crafted for quality and alignment with our values.</p>
+            <h3 className="font-medium mb-2">Gather Around Fire</h3>
+            <p className="text-sm text-black/70">Recipes and guides for open-fire cooking</p>
           </div>
+          
           <div className="text-center">
-            <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-              <Image src="/images/icons/icon-growth.png" alt="Slow & Sustainable" width={40} height={40} />
+            <div className="w-16 h-16 mx-auto mb-4 bg-ember/10 rounded-full flex items-center justify-center">
+              <Image
+                src="/images/icons/icon-connection.png"
+                alt="Connection"
+                width={32}
+                height={32}
+                className="w-8 h-8"
+              />
             </div>
-            <h4 className="font-medium mb-2 text-charcoal">Slow & Sustainable</h4>
-            <p className="text-sm text-black/70">We prioritize thoughtful consumption and digital sustainability.</p>
+            <h3 className="font-medium mb-2">Build Connection</h3>
+            <p className="text-sm text-black/70">Tools for deeper, more honest conversations</p>
           </div>
+          
           <div className="text-center">
-            <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-              <Image src="/images/icons/icon-connection.png" alt="Community Focused" width={40} height={40} />
+            <div className="w-16 h-16 mx-auto mb-4 bg-ember/10 rounded-full flex items-center justify-center">
+              <Image
+                src="/images/icons/icon-community.png"
+                alt="Community"
+                width={32}
+                height={32}
+                className="w-8 h-8"
+              />
             </div>
-            <h4 className="font-medium mb-2 text-charcoal">Community Focused</h4>
-            <p className="text-sm text-black/70">Resources that bring people together and enhance connection.</p>
+            <h3 className="font-medium mb-2">Grow Community</h3>
+            <p className="text-sm text-black/70">Resources for building lasting relationships</p>
           </div>
         </div>
       </div>
