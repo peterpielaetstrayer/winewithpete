@@ -102,12 +102,23 @@ export default function StorePage(){
             fill
             className="object-cover"
             sizes={featured ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
+            onError={(e) => {
+              console.error('Image failed to load:', imagePath);
+              // Hide the image and show placeholder
+              e.currentTarget.style.display = 'none';
+            }}
           />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+        ) : null}
+        
+        {/* Fallback placeholder - always show this as backup */}
+        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 mx-auto mb-2 flex items-center justify-center">
+              <Image src="/images/icons/icon-wine.png" alt="Product" width={32} height={32} />
+            </div>
             <div className="text-gray-400 text-sm">Product Image</div>
           </div>
-        )}
+        </div>
       </div>
       <div className="p-6">
         <h3 className="font-medium text-lg mb-2">{title}</h3>
