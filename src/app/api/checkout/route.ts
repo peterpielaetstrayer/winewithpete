@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Validation failed', 
-          details: validationResult.error?.errors?.map(e => e.message) || [" Unknown validation error\]
+          details: validationResult.error?.errors?.map(e => e.message) || ['Unknown validation error']
         },
         { status: 400 }
       );
