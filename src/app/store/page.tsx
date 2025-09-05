@@ -103,7 +103,12 @@ export default function StorePage(){
             className="object-cover"
             sizes={featured ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
             onError={(e) => {
-              console.error('Image failed to load:', imagePath);
+              const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${imagePath}`;
+              console.error('Image failed to load:', {
+                imagePath,
+                imageUrl,
+                supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL
+              });
               // Hide the image and show placeholder
               e.currentTarget.style.display = 'none';
             }}
