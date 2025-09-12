@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 user_id: session.user.id,
                 email: session.user.email!,
                 name: session.user.user_metadata?.name || null,
-                subscription_tier: 'basic',
+                subscription_tier: 'free',
                 is_admin: false
               })
               .select()

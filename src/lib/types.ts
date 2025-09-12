@@ -131,7 +131,9 @@ export interface Package {
   description: string | null;
   cover_url: string | null;
   package_type: 'open_fire_menu' | 'pairing_guide' | 'gathering_kit';
+  difficulty_level: 'beginner' | 'intermediate' | 'advanced';
   serving_sizes: number[];
+  free_serving_sizes: number[];
   recipes: PackageRecipe[];
   shopping_list: ShoppingItem[] | null;
   wine_pairing: WinePairing | null;
@@ -169,7 +171,8 @@ export interface Member {
   user_id: string;
   email: string;
   name: string | null;
-  subscription_tier: 'basic' | 'premium' | 'founder';
+  subscription_tier: 'free' | 'premium' | 'founder';
+  is_admin: boolean;
   created_at: string;
   updated_at: string;
 }

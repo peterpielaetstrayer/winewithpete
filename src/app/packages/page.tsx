@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/auth-provider';
+import { canAccessPackage, isPremiumContent, getAvailableServingSizes } from '@/lib/access-control';
 import type { Package } from '@/lib/types';
 
 export default function PackagesPage() {
@@ -40,6 +41,9 @@ export default function PackagesPage() {
   }, [member]);
 
   const filteredPackages = packages.filter(pkg => {
+    // Check if user can access this package
+    if (!canAccessPackage(pkg, member)) return false;
+    
     if (filter === 'all') return true;
     return pkg.package_type === filter;
   });
@@ -131,14 +135,17 @@ export default function PackagesPage() {
                   </Badge>
                 </div>
 
-                {/* Member-only indicator */}
-                {!member && !pkg.published && (
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-ember text-white">
-                      Members Only
+                {/* Premium & Difficulty Badges */}
+                <div className="absolute top-4 right-4 flex flex-col gap-2">
+                  {isPremiumContent(pkg) && (
+                    <Badge className="bg-amber-500 text-white">
+                      Premium
                     </Badge>
-                  </div>
-                )}
+                  )}
+                  <Badge variant="outline" className="bg-white/90 text-ember border-ember capitalize">
+                    {pkg.difficulty_level}
+                  </Badge>
+                </div>
               </div>
 
               {/* Package Info */}
@@ -157,7 +164,10 @@ export default function PackagesPage() {
                     {(pkg.recipes as any[])?.length || 0} recipes
                   </span>
                   <span>
-                    Serves {pkg.serving_sizes.join(', ')}
+                    Serves {getAvailableServingSizes(pkg, member).join(', ')}
+                    {member?.subscription_tier === 'free' && isPremiumContent(pkg) && (
+                      <span className="text-amber-600 ml-1">(limited)</span>
+                    )}
                   </span>
                 </div>
 
