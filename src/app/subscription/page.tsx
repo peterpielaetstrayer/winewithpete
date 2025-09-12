@@ -129,33 +129,46 @@ export default function SubscriptionPage() {
       {/* Current Subscription */}
       <div className="mb-12">
         <h2 className="text-2xl font-serif font-medium mb-6">Current Subscription</h2>
-        <Card className={`p-6 border-2 ${currentTierInfo.bgColor} ${currentTierInfo.borderColor}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className={`p-3 rounded-full ${currentTierInfo.bgColor}`}>
-                <currentTierInfo.icon className={`w-6 h-6 ${currentTierInfo.color}`} />
+        <Card className={`relative overflow-hidden border-2 ${currentTierInfo.bgColor} ${currentTierInfo.borderColor} shadow-lg`}>
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-ember rounded-full translate-x-16 -translate-y-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-amber-400 rounded-full -translate-x-12 translate-y-12"></div>
+          </div>
+          
+          <div className="relative p-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                <div className={`p-4 rounded-2xl ${currentTierInfo.bgColor} shadow-md`}>
+                  <currentTierInfo.icon className={`w-8 h-8 ${currentTierInfo.color}`} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className={`text-2xl font-bold ${currentTierInfo.color}`}>
+                      {currentTierInfo.name}
+                    </h3>
+                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${currentTierInfo.bgColor} ${currentTierInfo.color}`}>
+                      Active
+                    </div>
+                  </div>
+                  <p className="text-gray-600 text-lg">{currentTierInfo.description}</p>
+                </div>
               </div>
-              <div>
-                <h3 className={`text-xl font-medium ${currentTierInfo.color}`}>
-                  {currentTierInfo.name}
-                </h3>
-                <p className="text-gray-600">{currentTierInfo.description}</p>
+              <div className="text-right">
+                <div className={`text-3xl font-bold ${currentTierInfo.color} mb-2`}>
+                  {currentTierInfo.price}
+                </div>
+                {currentTier !== 'free' && (
+                  <Button
+                    onClick={handleCancel}
+                    variant="outline"
+                    size="sm"
+                    className="hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors"
+                  >
+                    Cancel Subscription
+                  </Button>
+                )}
               </div>
-            </div>
-            <div className="text-right">
-              <div className={`text-2xl font-bold ${currentTierInfo.color}`}>
-                {currentTierInfo.price}
-              </div>
-              {currentTier !== 'free' && (
-                <Button
-                  onClick={handleCancel}
-                  variant="outline"
-                  size="sm"
-                  className="mt-2"
-                >
-                  Cancel
-                </Button>
-              )}
             </div>
           </div>
         </Card>
@@ -165,26 +178,37 @@ export default function SubscriptionPage() {
       {currentTier === 'free' && (
         <div className="mb-12">
           <h2 className="text-2xl font-serif font-medium mb-6">Available Upgrades</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {Object.entries(tierInfo).filter(([tier]) => tier !== 'free').map(([tier, info]) => (
-              <Card key={tier} className={`p-6 border-2 ${info.bgColor} ${info.borderColor} hover:shadow-lg transition-shadow`}>
-                <div className="text-center">
-                  <div className={`inline-flex p-3 rounded-full ${info.bgColor} mb-4`}>
-                    <info.icon className={`w-8 h-8 ${info.color}`} />
+              <Card key={tier} className={`relative overflow-hidden border-2 ${info.bgColor} ${info.borderColor} hover:shadow-xl transition-all duration-300 hover:scale-105 group`}>
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-ember rounded-full translate-x-12 -translate-y-12"></div>
+                  <div className="absolute bottom-0 left-0 w-16 h-16 bg-amber-400 rounded-full -translate-x-8 translate-y-8"></div>
+                </div>
+                
+                <div className="relative p-8 text-center">
+                  <div className={`inline-flex p-4 rounded-2xl ${info.bgColor} mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    <info.icon className={`w-10 h-10 ${info.color}`} />
                   </div>
-                  <h3 className={`text-xl font-medium ${info.color} mb-2`}>
+                  
+                  <h3 className={`text-2xl font-bold ${info.color} mb-3`}>
                     {info.name}
                   </h3>
-                  <div className={`text-3xl font-bold ${info.color} mb-2`}>
+                  
+                  <div className={`text-4xl font-bold ${info.color} mb-4`}>
                     {info.price}
                   </div>
-                  <p className="text-gray-600 mb-6">{info.description}</p>
                   
-                  <div className="space-y-3 mb-6">
+                  <p className="text-gray-600 mb-8 text-lg">{info.description}</p>
+                  
+                  <div className="space-y-4 mb-8">
                     {info.features.map((feature, index) => (
-                      <div key={index} className="flex items-center gap-3">
-                        <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{feature}</span>
+                      <div key={index} className="flex items-center gap-3 text-left">
+                        <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                          <Check className="w-4 h-4 text-green-600" />
+                        </div>
+                        <span className="text-gray-700 font-medium">{feature}</span>
                       </div>
                     ))}
                   </div>
@@ -192,9 +216,23 @@ export default function SubscriptionPage() {
                   <Button
                     onClick={() => handleUpgrade(tier as 'premium' | 'founder')}
                     disabled={isLoading}
-                    className={`w-full ${info.color === 'text-ember' ? 'bg-ember hover:bg-ember/90 text-white' : 'bg-amber-500 hover:bg-amber-600 text-white'}`}
+                    className={`w-full py-4 text-lg font-semibold transition-all duration-300 hover:scale-105 ${
+                      info.color === 'text-ember' 
+                        ? 'bg-ember hover:bg-ember/90 text-white hover:shadow-xl hover:shadow-ember/25' 
+                        : 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white hover:shadow-xl hover:shadow-amber-500/25'
+                    }`}
                   >
-                    {isLoading ? 'Processing...' : `Upgrade to ${info.name}`}
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Processing...
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-2">
+                        <info.icon className="w-5 h-5" />
+                        Upgrade to {info.name}
+                      </div>
+                    )}
                   </Button>
                 </div>
               </Card>

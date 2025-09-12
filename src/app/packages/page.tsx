@@ -9,6 +9,7 @@ import { useAuth } from '@/components/auth-provider';
 import { canAccessPackage, isPremiumContent, getAvailableServingSizes } from '@/lib/access-control';
 import { useSubscription } from '@/hooks/use-subscription';
 import PaywallModal from '@/components/paywall-modal';
+import { Star, Crown } from 'lucide-react';
 import type { Package } from '@/lib/types';
 
 export default function PackagesPage() {
@@ -229,6 +230,42 @@ export default function PackagesPage() {
                     🍷 Paired with {pkg.wine_pairing.wine}
                   </div>
                 )}
+
+                {/* Upgrade Button for Free Members */}
+                {member?.subscription_tier === 'free' && !canAccessContent(pkg) && (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-1 mb-3">
+                        <div className={`w-2 h-2 rounded-full ${
+                          getRequiredTier(pkg) === 'premium' ? 'bg-ember' : 'bg-amber-500'
+                        }`}></div>
+                        <p className="text-sm text-gray-600">
+                          Requires {getRequiredTier(pkg) === 'premium' ? 'Premium' : 'Founder'} membership
+                        </p>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUpgrade(getRequiredTier(pkg) as 'premium' | 'founder');
+                        }}
+                        className={`group w-full text-sm font-semibold py-3 px-4 rounded-xl transition-all duration-200 hover:scale-105 ${
+                          getRequiredTier(pkg) === 'premium' 
+                            ? 'bg-ember text-white hover:bg-ember/90 hover:shadow-lg hover:shadow-ember/25' 
+                            : 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 hover:shadow-lg hover:shadow-amber-500/25'
+                        }`}
+                      >
+                        <div className="flex items-center justify-center gap-2">
+                          {getRequiredTier(pkg) === 'premium' ? (
+                            <Star className="w-4 h-4" />
+                          ) : (
+                            <Crown className="w-4 h-4" />
+                          )}
+                          <span>Upgrade to {getRequiredTier(pkg) === 'premium' ? 'Premium' : 'Founder'}</span>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -248,6 +285,70 @@ export default function PackagesPage() {
               ? 'No packages available at the moment.' 
               : 'No packages match the selected filter.'}
           </p>
+        </div>
+      )}
+
+      {/* Upgrade Prompts for Free Members */}
+      {member?.subscription_tier === 'free' && (
+        <div className="mt-16 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-ember/5 via-amber-50/50 to-ember/10 rounded-3xl p-12 text-center border border-ember/20 shadow-lg">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-0 left-0 w-32 h-32 bg-ember rounded-full -translate-x-16 -translate-y-16"></div>
+              <div className="absolute bottom-0 right-0 w-24 h-24 bg-amber-400 rounded-full translate-x-12 translate-y-12"></div>
+              <div className="absolute top-1/2 left-1/2 w-16 h-16 bg-ember/30 rounded-full -translate-x-8 -translate-y-8"></div>
+            </div>
+            
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-ember/10 text-ember rounded-full text-sm font-medium mb-6">
+                <Star className="w-4 h-4" />
+                Free Member
+              </div>
+              
+              <h2 className="text-3xl font-serif font-bold mb-4 bg-gradient-to-r from-ember to-amber-600 bg-clip-text text-transparent">
+                Unlock Premium Packages
+              </h2>
+              
+              <p className="text-black/80 max-w-2xl mx-auto mb-8 text-lg leading-relaxed">
+                You're currently on the Free tier. Upgrade to Premium or Founder to access intermediate and advanced packages, 
+                scale recipes to larger serving sizes, and get exclusive wine pairing recommendations.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+                <button
+                  onClick={() => handleUpgrade('premium')}
+                  className="group relative px-8 py-4 bg-ember text-white rounded-xl font-semibold hover:bg-ember/90 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-ember/25"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <Star className="w-5 h-5" />
+                    <span>Upgrade to Premium</span>
+                  </div>
+                  <div className="text-sm opacity-90 mt-1">$19/month</div>
+                </button>
+                
+                <button
+                  onClick={() => handleUpgrade('founder')}
+                  className="group relative px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-amber-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-amber-500/25"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <Crown className="w-5 h-5" />
+                    <span>Upgrade to Founder</span>
+                  </div>
+                  <div className="text-sm opacity-90 mt-1">$39/month</div>
+                </button>
+              </div>
+              
+              <div className="flex items-center justify-center gap-2 text-sm text-black/60">
+                <span>Need help choosing?</span>
+                <Link 
+                  href="/subscription" 
+                  className="text-ember hover:text-ember/80 font-medium underline hover:no-underline transition-colors"
+                >
+                  Compare all plans
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

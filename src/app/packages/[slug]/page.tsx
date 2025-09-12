@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/auth-provider';
+import { useSubscription } from '@/hooks/use-subscription';
+import { canAccessPackage, isPremiumContent, getAvailableServingSizes } from '@/lib/access-control';
+import PaywallModal from '@/components/paywall-modal';
 import type { Package, ShoppingItem, Ingredient } from '@/lib/types';
 
 // Utility functions for shopping list aggregation
@@ -59,7 +62,12 @@ export default function PackageDetailPage() {
   const [loading, setLoading] = useState(true);
   const [servingSize, setServingSize] = useState(4);
   const [shoppingList, setShoppingList] = useState<ShoppingItem[]>([]);
+  const [paywallModal, setPaywallModal] = useState<{
+    isOpen: boolean;
+    packageData: Package | null;
+  }>({ isOpen: false, packageData: null });
   const { member } = useAuth();
+  const { upgradeSubscription, getRequiredTier, canAccessContent } = useSubscription();
 
   useEffect(() => {
     async function loadData() {
@@ -138,6 +146,14 @@ export default function PackageDetailPage() {
     }
   };
 
+  const handleUpgrade = (tier: 'premium' | 'founder') => {
+    upgradeSubscription(tier);
+  };
+
+  const closePaywallModal = () => {
+    setPaywallModal({ isOpen: false, packageData: null });
+  };
+
   if (loading) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-16">
@@ -165,9 +181,10 @@ export default function PackageDetailPage() {
   }
 
   // Check access permissions
-  const hasAccess = member || packageData.published;
+  const hasAccess = canAccessPackage(packageData, member);
+  const userCanAccessContent = member ? canAccessContent(packageData) : false;
 
-  if (!hasAccess) {
+  if (!member) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-16">
         <div className="text-center">
@@ -178,6 +195,32 @@ export default function PackageDetailPage() {
           <Link href="/join" className="btn-ember mt-6 inline-block">
             Join Wine With Pete
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasAccess) {
+    return (
+      <div className="mx-auto max-w-4xl px-4 py-16">
+        <div className="text-center">
+          <h1 className="text-display">Upgrade Required</h1>
+          <p className="mt-4 text-black/80">
+            This package requires {getRequiredTier(packageData)} membership.
+          </p>
+          <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => handleUpgrade(getRequiredTier(packageData) as 'premium' | 'founder')}
+              className={`${
+                getRequiredTier(packageData) === 'premium' ? 'btn-ember' : 'btn-amber'
+              }`}
+            >
+              Upgrade to {getRequiredTier(packageData) === 'premium' ? 'Premium' : 'Founder'}
+            </button>
+            <Link href="/subscription" className="btn-outline">
+              View All Plans
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -241,7 +284,7 @@ export default function PackageDetailPage() {
             <div className="mb-6">
               <label className="block text-sm font-medium mb-3">Serving Size</label>
               <div className="flex gap-2">
-                {packageData.serving_sizes.map((size) => (
+                {getAvailableServingSizes(packageData, member).map((size) => (
                   <button
                     key={size}
                     onClick={() => setServingSize(size)}
@@ -255,6 +298,17 @@ export default function PackageDetailPage() {
                   </button>
                 ))}
               </div>
+              {member?.subscription_tier === 'free' && isPremiumContent(packageData) && (
+                <p className="text-sm text-amber-600 mt-2">
+                  Limited to 4 servings on Free tier. 
+                  <button
+                    onClick={() => setPaywallModal({ isOpen: true, packageData })}
+                    className="underline hover:no-underline ml-1"
+                  >
+                    Upgrade to access larger serving sizes
+                  </button>
+                </p>
+              )}
             </div>
 
             {/* Action Buttons */}
@@ -442,6 +496,18 @@ export default function PackageDetailPage() {
           h3 { font-size: 14pt; }
         }
       `}</style>
+
+      {/* Paywall Modal */}
+      {paywallModal.packageData && (
+        <PaywallModal
+          isOpen={paywallModal.isOpen}
+          onClose={closePaywallModal}
+          currentTier={member?.subscription_tier || 'free'}
+          requiredTier={getRequiredTier(paywallModal.packageData)}
+          contentName={paywallModal.packageData.name}
+          onUpgrade={handleUpgrade}
+        />
+      )}
     </div>
   );
 }

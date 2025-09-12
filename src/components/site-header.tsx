@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useAuth } from './auth-provider';
+import SubscriptionStatus from './subscription-status';
 
 export function SiteHeader(){
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,13 +20,14 @@ export function SiteHeader(){
         <Link href="/" className="text-xl font-serif font-semibold">Wine With Pete</Link>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex gap-6">
+        <nav className="hidden md:flex gap-6 items-center">
           {link('/about','About')}
           {link('/events','Events')}
           {link('/archive','Essays')}
           {member ? link('/hub','Hub') : null}
           {link('/store','Store')}
           {link('/support','Support')}
+          {member && <SubscriptionStatus />}
           {member ? (
             <button 
               onClick={signOut}
@@ -59,6 +61,11 @@ export function SiteHeader(){
             {member ? link('/hub','Hub') : null}
             {link('/store','Store')}
             {link('/support','Support')}
+            {member && (
+              <div className="py-2">
+                <SubscriptionStatus />
+              </div>
+            )}
             {member ? (
               <button 
                 onClick={signOut}

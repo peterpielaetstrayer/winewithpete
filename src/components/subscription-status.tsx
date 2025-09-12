@@ -10,22 +10,28 @@ const tierInfo = {
     name: 'Free',
     icon: Check,
     color: 'text-gray-600',
-    bgColor: 'bg-gray-100',
-    borderColor: 'border-gray-200'
+    bgColor: 'bg-gray-50',
+    borderColor: 'border-gray-200',
+    iconBg: 'bg-gray-100',
+    iconColor: 'text-gray-500'
   },
   premium: {
     name: 'Premium',
     icon: Star,
     color: 'text-ember',
-    bgColor: 'bg-ember/10',
-    borderColor: 'border-ember'
+    bgColor: 'bg-ember/5',
+    borderColor: 'border-ember/30',
+    iconBg: 'bg-ember/10',
+    iconColor: 'text-ember'
   },
   founder: {
     name: 'Founder',
     icon: Crown,
     color: 'text-amber-600',
-    bgColor: 'bg-amber-100',
-    borderColor: 'border-amber-200'
+    bgColor: 'bg-amber-50',
+    borderColor: 'border-amber-200',
+    iconBg: 'bg-amber-100',
+    iconColor: 'text-amber-600'
   }
 };
 
@@ -34,24 +40,35 @@ export default function SubscriptionStatus() {
 
   if (!member) {
     return (
-      <Link href="/join" className="text-ember hover:text-ember/80 text-sm font-medium">
+      <Link 
+        href="/join" 
+        className="inline-flex items-center gap-2 px-3 py-1.5 bg-ember text-white text-sm font-medium rounded-lg hover:bg-ember/90 transition-colors"
+      >
+        <Star className="w-4 h-4" />
         Join Now
       </Link>
     );
   }
 
   const tier = member.subscription_tier;
-  const tierInfo = tierInfo[tier];
+  const currentTierInfo = tierInfo[tier];
 
   return (
-    <Link href="/subscription" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-      <tierInfo.icon className={`w-4 h-4 ${tierInfo.color}`} />
-      <Badge 
-        variant="outline" 
-        className={`${tierInfo.bgColor} ${tierInfo.color} ${tierInfo.borderColor} border`}
-      >
-        {tierInfo.name}
-      </Badge>
+    <Link 
+      href="/subscription" 
+      className="group flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-black/5 transition-all duration-200"
+    >
+      <div className={`p-1.5 rounded-md ${currentTierInfo.iconBg}`}>
+        <currentTierInfo.icon className={`w-3.5 h-3.5 ${currentTierInfo.iconColor}`} />
+      </div>
+      <div className="flex flex-col items-start">
+        <span className={`text-xs font-medium ${currentTierInfo.color}`}>
+          {currentTierInfo.name}
+        </span>
+        <span className="text-xs text-gray-500 group-hover:text-gray-700">
+          Manage
+        </span>
+      </div>
     </Link>
   );
 }
