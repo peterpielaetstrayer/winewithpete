@@ -1,9 +1,11 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useAuth } from './auth-provider';
 
 export function SiteHeader(){
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { member, signOut } = useAuth();
   
   const link = (href:string, label:string) => (
     <Link href={href} className="text-sm tracking-wide hover:opacity-80 transition-opacity focus-ring rounded-md px-2 py-1">{label}</Link>
@@ -19,9 +21,18 @@ export function SiteHeader(){
           {link('/about','About')}
           {link('/events','Events')}
           {link('/archive','Essays')}
-          {link('/store','Store')}
+          {member ? link('/hub','Hub') : link('/store','Store')}
           {link('/support','Support')}
-          {link('/join','Join')}
+          {member ? (
+            <button 
+              onClick={signOut}
+              className="text-sm tracking-wide hover:opacity-80 transition-opacity focus-ring rounded-md px-2 py-1"
+            >
+              Sign Out
+            </button>
+          ) : (
+            link('/join','Join')
+          )}
         </nav>
         
         {/* Mobile Menu Button */}
@@ -42,9 +53,18 @@ export function SiteHeader(){
             {link('/about','About')}
             {link('/events','Events')}
             {link('/archive','Essays')}
-            {link('/store','Store')}
+            {member ? link('/hub','Hub') : link('/store','Store')}
             {link('/support','Support')}
-            {link('/join','Join')}
+            {member ? (
+              <button 
+                onClick={signOut}
+                className="text-sm tracking-wide hover:opacity-80 transition-opacity focus-ring rounded-md px-2 py-1 text-left"
+              >
+                Sign Out
+              </button>
+            ) : (
+              link('/join','Join')
+            )}
           </nav>
         </div>
       )}

@@ -102,6 +102,78 @@ export interface StripeWebhookEvent {
   };
 }
 
+// Package types
+export interface Recipe {
+  id: string;
+  name: string;
+  description: string | null;
+  cook_time_minutes: number | null;
+  serves_base: number;
+  ingredients: Ingredient[];
+  instructions: string[];
+  tags: string[];
+  difficulty: 'easy' | 'medium' | 'hard';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Ingredient {
+  item: string;
+  amount: number;
+  unit: string;
+  notes?: string;
+}
+
+export interface Package {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  cover_url: string | null;
+  package_type: 'open_fire_menu' | 'pairing_guide' | 'gathering_kit';
+  serving_sizes: number[];
+  recipes: PackageRecipe[];
+  shopping_list: ShoppingItem[] | null;
+  wine_pairing: WinePairing | null;
+  menu_card_url: string | null;
+  published: boolean;
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PackageRecipe {
+  recipe_id: string;
+  serves_factor: number;
+  recipe?: Recipe; // Populated when fetched with join
+}
+
+export interface ShoppingItem {
+  item: string;
+  amount: number;
+  unit: string;
+  notes?: string;
+  category?: string;
+}
+
+export interface WinePairing {
+  wine: string;
+  reasoning: string;
+  alternates: string[];
+  temp?: string;
+  notes?: string;
+}
+
+export interface Member {
+  id: string;
+  user_id: string;
+  email: string;
+  name: string | null;
+  subscription_tier: 'basic' | 'premium' | 'founder';
+  created_at: string;
+  updated_at: string;
+}
+
 // API response types
 export interface ApiResponse<T> {
   data?: T;

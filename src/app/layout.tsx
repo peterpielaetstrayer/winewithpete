@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import './globals.css';
-import { SiteHeader } from '@/components/site-header';
-import { SiteFooter } from '@/components/site-footer';
+import { AuthProvider } from '@/components/auth-provider';
+import { ClientWrapper } from '@/components/client-wrapper';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -71,9 +71,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${inter.variable} ${playfair.variable} min-h-screen flex flex-col font-sans`}>
-        <SiteHeader />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
+        <AuthProvider>
+          <ClientWrapper>{children}</ClientWrapper>
+        </AuthProvider>
       </body>
     </html>
   );

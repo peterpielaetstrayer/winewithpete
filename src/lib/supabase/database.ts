@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import type { Event, EventRSVP, Product, Order, OrderItem, NewsletterSubscriber, RSVPFormData, NewsletterFormData } from '../types';
+import type { Event, EventRSVP, Product, Order, OrderItem, NewsletterSubscriber, RSVPFormData, NewsletterFormData, Package, Recipe, Member, ShoppingItem, Ingredient } from '../types';
 
 // Create Supabase client with proper environment variables
 const supabase = createClient(
@@ -179,4 +179,148 @@ export async function getOrder(id: string) {
 
   if (error) throw error;
   return data;
+}
+
+// Packages
+export async function getPackages(memberOnly = false) {
+  let query = supabase
+    .from('packages')
+    .select(`
+      *,
+      recipes:packages.recipes->recipe_id (*)
+    `)
+    .order('created_at', { ascending: false });
+
+  if (!memberOnly) {
+    query = query.eq('published', true);
+  }
+
+  const { data, error } = await query;
+
+  if (error) throw error;
+  return data as Package[];
+}
+
+export async function getPackage(slug: string) {
+  const { data, error } = await supabase
+    .from('packages')
+    .select(`
+      *,
+      recipes
+    `)
+    .eq('slug', slug)
+    .single();
+
+  if (error) throw error;
+
+  // Fetch full recipe details
+  if (data?.recipes) {
+    const recipeIds = (data.recipes as any[]).map(r => r.recipe_id);
+    const { data: recipes, error: recipesError } = await supabase
+      .from('recipes')
+      .select('*')
+      .in('id', recipeIds);
+
+    if (!recipesError && recipes) {
+      // Merge recipe data with package recipe data
+      data.recipes = (data.recipes as any[]).map(pr => ({
+        ...pr,
+        recipe: recipes.find(r => r.id === pr.recipe_id)
+      }));
+    }
+  }
+
+  return data as Package;
+}
+
+export async function getRecipes() {
+  const { data, error } = await supabase
+    .from('recipes')
+    .select('*')
+    .order('name');
+
+  if (error) throw error;
+  return data as Recipe[];
+}
+
+export async function getRecipe(id: string) {
+  const { data, error } = await supabase
+    .from('recipes')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data as Recipe;
+}
+
+// Members
+export async function getMember(userId: string) {
+  const { data, error } = await supabase
+    .from('members')
+    .select('*')
+    .eq('user_id', userId)
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
+  return data as Member | null;
+}
+
+export async function createMember(memberData: {
+  user_id: string;
+  email: string;
+  name?: string;
+  subscription_tier?: 'basic' | 'premium' | 'founder';
+}) {
+  const { data, error } = await supabase
+    .from('members')
+    .insert(memberData)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as Member;
+}
+
+// Utility functions for shopping list aggregation
+export function aggregateShoppingList(
+  packageData: Package,
+  servingSize: number = 4
+): ShoppingItem[] {
+  if (!packageData.recipes) return [];
+
+  const aggregated: Map<string, ShoppingItem> = new Map();
+
+  packageData.recipes.forEach((packageRecipe) => {
+    if (!packageRecipe.recipe?.ingredients) return;
+
+    const recipe = packageRecipe.recipe;
+    const scaleFactor = (servingSize / recipe.serves_base) * packageRecipe.serves_factor;
+
+    recipe.ingredients.forEach((ingredient: Ingredient) => {
+      const key = `${ingredient.item}_${ingredient.unit}`;
+      const scaledAmount = ingredient.amount * scaleFactor;
+
+      if (aggregated.has(key)) {
+        const existing = aggregated.get(key)!;
+        existing.amount += scaledAmount;
+      } else {
+        aggregated.set(key, {
+          item: ingredient.item,
+          amount: scaledAmount,
+          unit: ingredient.unit,
+          notes: ingredient.notes,
+        });
+      }
+    });
+  });
+
+  return Array.from(aggregated.values()).sort((a, b) => a.item.localeCompare(b.item));
+}
+
+export function formatShoppingAmount(amount: number): string {
+  // Round to reasonable precision
+  if (amount % 1 === 0) return amount.toString();
+  if (amount < 1) return amount.toFixed(2).replace(/\.?0+$/, '');
+  return amount.toFixed(1).replace(/\.0$/, '');
 }
