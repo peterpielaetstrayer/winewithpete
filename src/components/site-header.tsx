@@ -5,7 +5,9 @@ import { useAuth } from './auth-provider';
 
 export function SiteHeader(){
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { member, signOut } = useAuth();
+  const { member, signOut, loading } = useAuth();
+  
+  console.log('SiteHeader - member:', member, 'loading:', loading);
   
   const link = (href:string, label:string) => (
     <Link href={href} className="text-sm tracking-wide hover:opacity-80 transition-opacity focus-ring rounded-md px-2 py-1">{label}</Link>

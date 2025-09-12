@@ -22,6 +22,17 @@ async function verifyAdmin(request: NextRequest) {
     return { error: 'Invalid token', user: null };
   }
   
+  // Check if user is admin
+  const { data: member, error: memberError } = await supabase
+    .from('members')
+    .select('is_admin')
+    .eq('user_id', user.id)
+    .single();
+  
+  if (memberError || !member?.is_admin) {
+    return { error: 'Admin privileges required', user: null };
+  }
+  
   return { error: null, user };
 }
 

@@ -8,6 +8,8 @@ export default function HubPage() {
   const { member, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('packages');
 
+  console.log('HubPage: member:', member, 'loading:', loading);
+
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-16">

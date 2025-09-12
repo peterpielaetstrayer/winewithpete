@@ -13,6 +13,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'products' | 'events' | 'orders'>('products');
   const [user, setUser] = useState<any>(null);
+  const [member, setMember] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,8 +29,20 @@ export default function AdminPage() {
       const { supabase } = await import('@/lib/supabase/client');
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      
       if (user) {
-        fetchData();
+        // Check if user is admin
+        const { data: memberData } = await supabase
+          .from('members')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+        
+        setMember(memberData);
+        
+        if (memberData?.is_admin) {
+          fetchData();
+        }
       }
     } catch (error) {
       console.error('Auth check error:', error);
@@ -59,7 +72,21 @@ export default function AdminPage() {
       }
 
       setUser(data.user);
-      fetchData();
+      
+      // Check if user is admin
+      const { data: memberData } = await supabase
+        .from('members')
+        .select('*')
+        .eq('user_id', data.user.id)
+        .single();
+      
+      setMember(memberData);
+      
+      if (memberData?.is_admin) {
+        fetchData();
+      } else {
+        setLoginError('Access denied. Admin privileges required.');
+      }
     } catch (error) {
       setLoginError('Login failed. Please try again.');
     }
@@ -69,16 +96,17 @@ export default function AdminPage() {
     const { supabase } = await import('@/lib/supabase/client');
     await supabase.auth.signOut();
     setUser(null);
+    setMember(null);
     setProducts([]);
     setEvents([]);
     setOrders([]);
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && member?.is_admin) {
       fetchData();
     }
-  }, [user]);
+  }, [user, member]);
 
   const fetchData = async () => {
     try {
@@ -213,6 +241,27 @@ export default function AdminPage() {
             </Button>
           </form>
         </Card>
+      </div>
+    );
+  }
+
+  // Check if user is authenticated but not admin
+  if (user && member && !member.is_admin) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-16">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-serif text-charcoal mb-2">Access Denied</h1>
+          <p className="text-black/70">You don't have admin privileges to access this page.</p>
+        </div>
+        
+        <div className="text-center">
+          <button 
+            onClick={handleLogout}
+            className="btn-ember px-6 py-2 rounded-lg"
+          >
+            Sign Out
+          </button>
+        </div>
       </div>
     );
   }
