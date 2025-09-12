@@ -26,6 +26,7 @@ export default function JoinPage() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted:', { email, password, name, isSignUp });
     setLoading(true);
     setMessage('');
 
@@ -78,7 +79,13 @@ export default function JoinPage() {
   };
 
   return (
-    <div className="mx-auto max-w-md px-4 py-16">
+    <div 
+      className="mx-auto max-w-md px-4 py-16" 
+      onClick={(e) => {
+        console.log('Main container clicked', e.target);
+      }}
+      style={{ position: 'relative', zIndex: 1 }}
+    >
       <div className="text-center mb-8">
         <h1 className="text-display mb-4">Join Wine With Pete</h1>
         <p className="text-black/80">
@@ -86,28 +93,50 @@ export default function JoinPage() {
         </p>
       </div>
 
-      <div className="card-enhanced p-8">
-        <form onSubmit={handleAuth} className="space-y-6">
-          <div className="flex gap-2 mb-6">
+      <div className="card-enhanced p-8" style={{ position: 'relative', zIndex: 1 }}>
+        <form onSubmit={handleAuth} className="space-y-6" style={{ position: 'relative', zIndex: 2 }}>
+          <div className="flex gap-2 mb-6" style={{ position: 'relative', zIndex: 10 }}>
             <button
               type="button"
-              onClick={() => setIsSignUp(true)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Switching to sign up');
+                setIsSignUp(true);
+              }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Mouse down on sign up');
+              }}
               className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
                 isSignUp
                   ? 'bg-ember text-white'
                   : 'bg-black/5 text-black/70 hover:bg-black/10'
               }`}
+              style={{ pointerEvents: 'auto', zIndex: 10, position: 'relative' }}
             >
               Sign Up
             </button>
             <button
               type="button"
-              onClick={() => setIsSignUp(false)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Switching to sign in');
+                setIsSignUp(false);
+              }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Mouse down on sign in');
+              }}
               className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
                 !isSignUp
                   ? 'bg-ember text-white'
                   : 'bg-black/5 text-black/70 hover:bg-black/10'
               }`}
+              style={{ pointerEvents: 'auto', zIndex: 10, position: 'relative' }}
             >
               Sign In
             </button>
@@ -118,13 +147,17 @@ export default function JoinPage() {
               <label htmlFor="name" className="block text-sm font-medium mb-2">
                 Full Name
               </label>
-              <Input
+              <input
                 id="name"
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  console.log('Name changed:', e.target.value);
+                  setName(e.target.value);
+                }}
                 placeholder="Your Name"
-                className="focus-ring"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{ pointerEvents: 'auto', zIndex: 10 }}
               />
             </div>
           )}
@@ -133,14 +166,18 @@ export default function JoinPage() {
             <label htmlFor="email" className="block text-sm font-medium mb-2">
               Email Address
             </label>
-            <Input
+            <input
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                console.log('Email changed:', e.target.value);
+                setEmail(e.target.value);
+              }}
               placeholder="your@email.com"
               required
-              className="focus-ring"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{ pointerEvents: 'auto', zIndex: 10 }}
             />
           </div>
 
@@ -148,14 +185,18 @@ export default function JoinPage() {
             <label htmlFor="password" className="block text-sm font-medium mb-2">
               Password
             </label>
-            <Input
+            <input
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                console.log('Password changed:', e.target.value);
+                setPassword(e.target.value);
+              }}
               placeholder="••••••••"
               required
-              className="focus-ring"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{ pointerEvents: 'auto', zIndex: 10 }}
             />
           </div>
 
