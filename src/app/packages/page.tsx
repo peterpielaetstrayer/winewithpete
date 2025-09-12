@@ -105,41 +105,41 @@ export default function PackagesPage() {
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-ember/5">
       <div className="container mx-auto px-4 py-16">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-black mb-4">
+        <div className="text-center mb-8 md:mb-12">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-4">
             Wine & Fire Packages
           </h1>
-          <p className="text-xl text-black/70 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-black/70 max-w-2xl mx-auto px-4">
             Curated experiences that bring together the warmth of fire, the richness of wine, and the joy of gathering.
           </p>
         </div>
 
         {/* Upgrade Prompts for Free Members */}
         {member?.subscription_tier === 'free' && (
-          <div className="mb-12 p-8 bg-gradient-to-r from-ember/10 to-amber-500/10 rounded-2xl border border-ember/20">
+          <div className="mb-8 md:mb-12 p-6 md:p-8 bg-gradient-to-r from-ember/10 to-amber-500/10 rounded-2xl border border-ember/20">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-black mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-black mb-4">
                 Unlock Premium Packages
               </h2>
-              <p className="text-black/70 mb-6 max-w-2xl mx-auto">
+              <p className="text-black/70 mb-6 max-w-2xl mx-auto text-sm md:text-base">
                 Upgrade to access intermediate and advanced packages with exclusive recipes, wine pairings, and serving options.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
                   onClick={() => handleUpgrade('premium')}
-                  className="group bg-ember text-white px-8 py-4 rounded-xl font-semibold hover:bg-ember/90 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-ember/25"
+                  className="group bg-ember text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold hover:bg-ember/90 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-ember/25 text-sm md:text-base"
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <Star className="w-5 h-5" />
+                    <Star className="w-4 h-4 md:w-5 md:h-5" />
                     <span>Upgrade to Premium - $19/month</span>
                   </div>
                 </button>
                 <button
                   onClick={() => handleUpgrade('founder')}
-                  className="group bg-gradient-to-r from-amber-500 to-amber-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-amber-600 hover:to-amber-700 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-amber-500/25"
+                  className="group bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold hover:from-amber-600 hover:to-amber-700 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-amber-500/25 text-sm md:text-base"
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <Crown className="w-5 h-5" />
+                    <Crown className="w-4 h-4 md:w-5 md:h-5" />
                     <span>Upgrade to Founder - $39/month</span>
                   </div>
                 </button>
@@ -149,13 +149,13 @@ export default function PackagesPage() {
         )}
 
         {/* Filter Navigation */}
-        <div className="mb-8">
-          <nav className="flex flex-wrap gap-2 justify-center">
+        <div className="mb-6 md:mb-8">
+          <nav className="flex flex-wrap gap-2 justify-center px-4">
             {packageTypes.map((type) => (
               <button
                 key={type.id}
                 onClick={() => setFilter(type.id)}
-                className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
+                className={`px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium transition-all duration-200 text-sm md:text-base ${
                   filter === type.id
                     ? 'bg-ember text-white shadow-lg shadow-ember/25'
                     : 'bg-white/80 text-black/70 hover:bg-ember/10 hover:text-ember'
@@ -168,7 +168,7 @@ export default function PackagesPage() {
         </div>
 
         {/* Packages Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {filteredPackages.map((pkg) => {
             const canAccess = canAccessContent(pkg);
             const isLocked = !canAccess;

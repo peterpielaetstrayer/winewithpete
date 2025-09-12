@@ -16,8 +16,8 @@ export function SiteHeader(){
   
   return (
     <header className="w-full bg-white/80 backdrop-blur border-b border-black/5">
-      <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="text-xl font-serif font-semibold">Wine With Pete</Link>
+      <div className="mx-auto max-w-6xl px-4 py-3 md:py-4 flex items-center justify-between">
+        <Link href="/" className="text-lg md:text-xl font-serif font-semibold">Wine With Pete</Link>
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex gap-6 items-center">
