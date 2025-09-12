@@ -62,6 +62,17 @@ export function canAccessPackage(packageData: Package, member: Member | null): b
   return access.canAccessPackage;
 }
 
+// New function to check if package should be visible (but not necessarily accessible)
+export function shouldShowPackage(packageData: Package, member: Member | null): boolean {
+  // Show all packages to members, only published packages to non-members
+  if (!member) {
+    return packageData.published;
+  }
+  
+  // Members can see all packages (published and unpublished)
+  return true;
+}
+
 export function getAvailableServingSizes(packageData: Package, member: Member | null): number[] {
   const access = getAccessLevel(member);
   

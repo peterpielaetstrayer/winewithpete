@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/auth-provider';
-import { canAccessPackage, isPremiumContent, getAvailableServingSizes } from '@/lib/access-control';
+import { canAccessPackage, isPremiumContent, getAvailableServingSizes, shouldShowPackage } from '@/lib/access-control';
 import { useSubscription } from '@/hooks/use-subscription';
 import PaywallModal from '@/components/paywall-modal';
 import { Star, Crown } from 'lucide-react';
@@ -50,8 +50,8 @@ export default function PackagesPage() {
   }, [member]);
 
   const filteredPackages = packages.filter(pkg => {
-    // Check if user can access this package
-    if (!canAccessPackage(pkg, member)) return false;
+    // Check if package should be visible (but not necessarily accessible)
+    if (!shouldShowPackage(pkg, member)) return false;
     
     if (filter === 'all') return true;
     return pkg.package_type === filter;
@@ -71,312 +71,286 @@ export default function PackagesPage() {
       return;
     }
 
-    if (!canAccessContent(pkg)) {
-      // Show paywall modal
+    if (canAccessContent(pkg)) {
+      // User can access this package, navigate to it
+      window.location.href = `/packages/${pkg.slug}`;
+    } else {
+      // User cannot access this package, show paywall
       setPaywallModal({ isOpen: true, packageData: pkg });
-      return;
     }
-
-    // Allow access to package
-    window.location.href = `/packages/${pkg.slug}`;
   };
 
-  const handleUpgrade = (tier: 'premium' | 'founder') => {
-    upgradeSubscription(tier);
-  };
-
-  const closePaywallModal = () => {
-    setPaywallModal({ isOpen: false, packageData: null });
+  const handleUpgrade = async (tier: 'premium' | 'founder') => {
+    try {
+      await upgradeSubscription(tier);
+    } catch (error) {
+      console.error('Error upgrading subscription:', error);
+    }
   };
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-16">
-        <div className="text-center">
-          <h1 className="text-display animate-fade-in">Loading Packages...</h1>
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-ember/5">
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ember mx-auto mb-4"></div>
+            <p className="text-black/60">Loading packages...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="text-display animate-fade-in">Open-Fire Packages</h1>
-        <p className="mt-4 text-black/80 animate-fade-in max-w-2xl mx-auto">
-          Curated collections of recipes, shopping lists, and wine pairings designed for cooking over open fire.
-          {!member && (
-            <span className="block mt-2 text-ember">
-              <Link href="/join" className="underline hover:no-underline">
-                Join as a member
-              </Link> to access all packages.
-            </span>
-          )}
-        </p>
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="mb-8">
-        <nav className="flex flex-wrap justify-center gap-2">
-          {packageTypes.map((type) => (
-            <button
-              key={type.id}
-              onClick={() => setFilter(type.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                filter === type.id
-                  ? 'bg-ember text-white'
-                  : 'bg-black/5 text-black/70 hover:bg-black/10'
-              }`}
-            >
-              {type.label}
-            </button>
-          ))}
-        </nav>
-      </div>
-
-      {/* Packages Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredPackages.map((pkg) => (
-          <div 
-            key={pkg.id} 
-            onClick={() => handlePackageClick(pkg)}
-            className="group cursor-pointer"
-          >
-            <div className="card-enhanced animate-scale-in h-full">
-              {/* Package Image */}
-              <div className="aspect-video relative overflow-hidden">
-                {pkg.cover_url ? (
-                  <Image
-                    src={pkg.cover_url}
-                    alt={pkg.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-ember/10 to-ember/5 flex items-center justify-center">
-                    <svg className="w-16 h-16 text-ember/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </div>
-                )}
-                
-                {/* Package Type Badge */}
-                <div className="absolute top-4 left-4">
-                  <Badge variant="outline" className="bg-white/90 text-ember border-ember">
-                    {pkg.package_type.replace('_', ' ')}
-                  </Badge>
-                </div>
-
-                {/* Premium & Difficulty Badges */}
-                <div className="absolute top-4 right-4 flex flex-col gap-2">
-                  {isPremiumContent(pkg) && (
-                    <Badge className="bg-amber-500 text-white">
-                      Premium
-                    </Badge>
-                  )}
-                  <Badge variant="outline" className="bg-white/90 text-ember border-ember capitalize">
-                    {pkg.difficulty_level}
-                  </Badge>
-                </div>
-              </div>
-
-              {/* Package Info */}
-              <div className="p-6">
-                <h3 className="text-xl font-serif font-medium mb-2 group-hover:text-ember transition-colors">
-                  {pkg.name}
-                </h3>
-                
-                {pkg.description && (
-                  <p className="text-black/70 mb-4 line-clamp-3">{pkg.description}</p>
-                )}
-
-                {/* Recipe Count & Serving Sizes */}
-                <div className="flex items-center justify-between text-sm text-black/60">
-                  <span>
-                    {(pkg.recipes as any[])?.length || 0} recipes
-                  </span>
-                  <span>
-                    Serves {getAvailableServingSizes(pkg, member).join(', ')}
-                    {member?.subscription_tier === 'free' && isPremiumContent(pkg) && (
-                      <span className="text-amber-600 ml-1">(limited)</span>
-                    )}
-                  </span>
-                </div>
-
-                {/* Tags */}
-                {pkg.tags && pkg.tags.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {pkg.tags.slice(0, 3).map((tag, index) => (
-                      <span 
-                        key={index}
-                        className="text-xs bg-black/5 text-black/60 px-2 py-1 rounded"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                    {pkg.tags.length > 3 && (
-                      <span className="text-xs text-black/40">
-                        +{pkg.tags.length - 3} more
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {/* Wine Pairing Hint */}
-                {pkg.wine_pairing && (
-                  <div className="mt-4 text-sm text-ember">
-                    🍷 Paired with {pkg.wine_pairing.wine}
-                  </div>
-                )}
-
-                {/* Upgrade Button for Free Members */}
-                {member?.subscription_tier === 'free' && !canAccessContent(pkg) && (
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <div className="text-center">
-                      <div className="flex items-center justify-center gap-1 mb-3">
-                        <div className={`w-2 h-2 rounded-full ${
-                          getRequiredTier(pkg) === 'premium' ? 'bg-ember' : 'bg-amber-500'
-                        }`}></div>
-                        <p className="text-sm text-gray-600">
-                          Requires {getRequiredTier(pkg) === 'premium' ? 'Premium' : 'Founder'} membership
-                        </p>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleUpgrade(getRequiredTier(pkg) as 'premium' | 'founder');
-                        }}
-                        className={`group w-full text-sm font-semibold py-3 px-4 rounded-xl transition-all duration-200 hover:scale-105 ${
-                          getRequiredTier(pkg) === 'premium' 
-                            ? 'bg-ember text-white hover:bg-ember/90 hover:shadow-lg hover:shadow-ember/25' 
-                            : 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 hover:shadow-lg hover:shadow-amber-500/25'
-                        }`}
-                      >
-                        <div className="flex items-center justify-center gap-2">
-                          {getRequiredTier(pkg) === 'premium' ? (
-                            <Star className="w-4 h-4" />
-                          ) : (
-                            <Crown className="w-4 h-4" />
-                          )}
-                          <span>Upgrade to {getRequiredTier(pkg) === 'premium' ? 'Premium' : 'Founder'}</span>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {filteredPackages.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-black/40 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-medium text-black/60 mb-2">No packages found</h3>
-          <p className="text-black/50">
-            {filter === 'all' 
-              ? 'No packages available at the moment.' 
-              : 'No packages match the selected filter.'}
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-ember/5">
+      <div className="container mx-auto px-4 py-16">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-black mb-4">
+            Wine & Fire Packages
+          </h1>
+          <p className="text-xl text-black/70 max-w-2xl mx-auto">
+            Curated experiences that bring together the warmth of fire, the richness of wine, and the joy of gathering.
           </p>
         </div>
-      )}
 
-      {/* Upgrade Prompts for Free Members */}
-      {member?.subscription_tier === 'free' && (
-        <div className="mt-16 relative overflow-hidden">
-          <div className="bg-gradient-to-br from-ember/5 via-amber-50/50 to-ember/10 rounded-3xl p-12 text-center border border-ember/20 shadow-lg">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-5">
-              <div className="absolute top-0 left-0 w-32 h-32 bg-ember rounded-full -translate-x-16 -translate-y-16"></div>
-              <div className="absolute bottom-0 right-0 w-24 h-24 bg-amber-400 rounded-full translate-x-12 translate-y-12"></div>
-              <div className="absolute top-1/2 left-1/2 w-16 h-16 bg-ember/30 rounded-full -translate-x-8 -translate-y-8"></div>
-            </div>
-            
-            <div className="relative">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-ember/10 text-ember rounded-full text-sm font-medium mb-6">
-                <Star className="w-4 h-4" />
-                Free Member
-              </div>
-              
-              <h2 className="text-3xl font-serif font-bold mb-4 bg-gradient-to-r from-ember to-amber-600 bg-clip-text text-transparent">
+        {/* Upgrade Prompts for Free Members */}
+        {member?.subscription_tier === 'free' && (
+          <div className="mb-12 p-8 bg-gradient-to-r from-ember/10 to-amber-500/10 rounded-2xl border border-ember/20">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-black mb-4">
                 Unlock Premium Packages
               </h2>
-              
-              <p className="text-black/80 max-w-2xl mx-auto mb-8 text-lg leading-relaxed">
-                You're currently on the Free tier. Upgrade to Premium or Founder to access intermediate and advanced packages, 
-                scale recipes to larger serving sizes, and get exclusive wine pairing recommendations.
+              <p className="text-black/70 mb-6 max-w-2xl mx-auto">
+                Upgrade to access intermediate and advanced packages with exclusive recipes, wine pairings, and serving options.
               </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
                   onClick={() => handleUpgrade('premium')}
-                  className="group relative px-8 py-4 bg-ember text-white rounded-xl font-semibold hover:bg-ember/90 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-ember/25"
+                  className="group bg-ember text-white px-8 py-4 rounded-xl font-semibold hover:bg-ember/90 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-ember/25"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <Star className="w-5 h-5" />
-                    <span>Upgrade to Premium</span>
+                    <span>Upgrade to Premium - $19/month</span>
                   </div>
-                  <div className="text-sm opacity-90 mt-1">$19/month</div>
                 </button>
-                
                 <button
                   onClick={() => handleUpgrade('founder')}
-                  className="group relative px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-amber-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-amber-500/25"
+                  className="group bg-gradient-to-r from-amber-500 to-amber-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-amber-600 hover:to-amber-700 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-amber-500/25"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <Crown className="w-5 h-5" />
-                    <span>Upgrade to Founder</span>
+                    <span>Upgrade to Founder - $39/month</span>
                   </div>
-                  <div className="text-sm opacity-90 mt-1">$39/month</div>
                 </button>
-              </div>
-              
-              <div className="flex items-center justify-center gap-2 text-sm text-black/60">
-                <span>Need help choosing?</span>
-                <Link 
-                  href="/subscription" 
-                  className="text-ember hover:text-ember/80 font-medium underline hover:no-underline transition-colors"
-                >
-                  Compare all plans
-                </Link>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Call to Action for Non-Members */}
-      {!member && (
-        <div className="mt-16 bg-cream rounded-2xl p-12 text-center">
-          <h2 className="text-section mb-6">Join the Community</h2>
-          <p className="text-black/80 max-w-2xl mx-auto mb-8">
-            Become a member to access our complete library of open-fire packages, 
-            scale recipes to any serving size, and get exclusive wine pairing recommendations.
-          </p>
-          <Link href="/join" className="btn-ember">
-            Join Wine With Pete
-          </Link>
+        {/* Filter Navigation */}
+        <div className="mb-8">
+          <nav className="flex flex-wrap gap-2 justify-center">
+            {packageTypes.map((type) => (
+              <button
+                key={type.id}
+                onClick={() => setFilter(type.id)}
+                className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
+                  filter === type.id
+                    ? 'bg-ember text-white shadow-lg shadow-ember/25'
+                    : 'bg-white/80 text-black/70 hover:bg-ember/10 hover:text-ember'
+                }`}
+              >
+                {type.label}
+              </button>
+            ))}
+          </nav>
         </div>
-      )}
+
+        {/* Packages Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredPackages.map((pkg) => {
+            const canAccess = canAccessContent(pkg);
+            const isLocked = !canAccess;
+            
+            return (
+              <div 
+                key={pkg.id} 
+                onClick={() => handlePackageClick(pkg)}
+                className={`group ${canAccess ? 'cursor-pointer' : 'cursor-default'}`}
+              >
+                <div className={`card-enhanced animate-scale-in h-full ${isLocked ? 'opacity-75' : ''}`}>
+                  {/* Package Image */}
+                  <div className="aspect-video relative overflow-hidden">
+                    {pkg.cover_url ? (
+                      <Image
+                        src={pkg.cover_url}
+                        alt={pkg.name}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className={`object-cover transition-transform duration-300 ${canAccess ? 'group-hover:scale-105' : ''}`}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-ember/10 to-ember/5 flex items-center justify-center">
+                        <svg className="w-16 h-16 text-ember/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </div>
+                    )}
+                    
+                    {/* Lock Overlay for Premium Content */}
+                    {isLocked && (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <div className="text-center text-white">
+                          <div className="w-12 h-12 mx-auto mb-2 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                          </div>
+                          <p className="text-sm font-medium">
+                            {getRequiredTier(pkg) === 'premium' ? 'Premium' : 'Founder'} Required
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Package Type Badge */}
+                    <div className="absolute top-4 left-4">
+                      <Badge variant="outline" className="bg-white/90 text-ember border-ember">
+                        {pkg.package_type.replace('_', ' ')}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Package Info */}
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="text-xl font-bold text-black group-hover:text-ember transition-colors">
+                        {pkg.name}
+                      </h3>
+                      <div className="flex items-center gap-1">
+                        <div className={`w-2 h-2 rounded-full ${
+                          pkg.difficulty_level === 'beginner' ? 'bg-green-500' :
+                          pkg.difficulty_level === 'intermediate' ? 'bg-ember' : 'bg-amber-500'
+                        }`}></div>
+                        <span className="text-sm text-black/60 capitalize">
+                          {pkg.difficulty_level}
+                        </span>
+                      </div>
+                    </div>
+
+                    {pkg.description && (
+                      <p className="text-black/70 mb-4 line-clamp-3">{pkg.description}</p>
+                    )}
+
+                    {/* Recipe Count & Serving Sizes */}
+                    <div className="flex items-center justify-between text-sm text-black/60">
+                      <span>
+                        {(pkg.recipes as any[])?.length || 0} recipes
+                      </span>
+                      <span>
+                        {canAccess ? (
+                          <>
+                            Serves {getAvailableServingSizes(pkg, member).join(', ')}
+                            {member?.subscription_tier === 'free' && isPremiumContent(pkg) && (
+                              <span className="text-amber-600 ml-1">(limited)</span>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-gray-400">
+                            Upgrade to see serving sizes
+                          </span>
+                        )}
+                      </span>
+                    </div>
+
+                    {/* Tags */}
+                    {pkg.tags && pkg.tags.length > 0 && (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {pkg.tags.slice(0, 3).map((tag, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-ember/10 text-ember text-xs rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                        {pkg.tags.length > 3 && (
+                          <span className="px-3 py-1 bg-black/10 text-black/60 text-xs rounded-full">
+                            +{pkg.tags.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Wine Pairing */}
+                    {pkg.wine_pairing && (
+                      <div className="mt-4 text-sm text-ember">
+                        🍷 Paired with {pkg.wine_pairing.wine}
+                      </div>
+                    )}
+
+                    {/* Upgrade Button for Locked Packages */}
+                    {isLocked && (
+                      <div className="mt-4 pt-4 border-t border-gray-100">
+                        <div className="text-center">
+                          <div className="flex items-center justify-center gap-1 mb-3">
+                            <div className={`w-2 h-2 rounded-full ${
+                              getRequiredTier(pkg) === 'premium' ? 'bg-ember' : 'bg-amber-500'
+                            }`}></div>
+                            <p className="text-sm text-gray-600">
+                              Requires {getRequiredTier(pkg) === 'premium' ? 'Premium' : 'Founder'} membership
+                            </p>
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUpgrade(getRequiredTier(pkg) as 'premium' | 'founder');
+                            }}
+                            className={`group w-full text-sm font-semibold py-3 px-4 rounded-xl transition-all duration-200 hover:scale-105 ${
+                              getRequiredTier(pkg) === 'premium' 
+                                ? 'bg-ember text-white hover:bg-ember/90 hover:shadow-lg hover:shadow-ember/25' 
+                                : 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 hover:shadow-lg hover:shadow-amber-500/25'
+                            }`}
+                          >
+                            <div className="flex items-center justify-center gap-2">
+                              {getRequiredTier(pkg) === 'premium' ? (
+                                <Star className="w-4 h-4" />
+                              ) : (
+                                <Crown className="w-4 h-4" />
+                              )}
+                              <span>Upgrade to {getRequiredTier(pkg) === 'premium' ? 'Premium' : 'Founder'}</span>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {filteredPackages.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-black/40 mb-4">
+              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-black/60 mb-2">No packages found</h3>
+            <p className="text-black/40">Try adjusting your filter or check back later for new packages.</p>
+          </div>
+        )}
+      </div>
 
       {/* Paywall Modal */}
-      {paywallModal.packageData && (
-        <PaywallModal
-          isOpen={paywallModal.isOpen}
-          onClose={closePaywallModal}
-          currentTier={member?.subscription_tier || 'free'}
-          requiredTier={getRequiredTier(paywallModal.packageData)}
-          contentName={paywallModal.packageData.name}
-          onUpgrade={handleUpgrade}
-        />
-      )}
+      <PaywallModal
+        isOpen={paywallModal.isOpen}
+        onClose={() => setPaywallModal({ isOpen: false, packageData: null })}
+        packageData={paywallModal.packageData}
+      />
     </div>
   );
 }
