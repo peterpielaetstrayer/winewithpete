@@ -7,13 +7,21 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/components/auth-provider';
 import { canAccessPackage, isPremiumContent, getAvailableServingSizes } from '@/lib/access-control';
+import { useSubscription } from '@/hooks/use-subscription';
+import PaywallModal from '@/components/paywall-modal';
 import type { Package } from '@/lib/types';
 
 export default function PackagesPage() {
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
+  const [paywallModal, setPaywallModal] = useState<{
+    isOpen: boolean;
+    packageData: Package | null;
+  }>({ isOpen: false, packageData: null });
+  
   const { member } = useAuth();
+  const { upgradeSubscription, getRequiredTier, canAccessContent } = useSubscription();
 
   useEffect(() => {
     async function loadData() {
@@ -54,6 +62,31 @@ export default function PackagesPage() {
     { id: 'pairing_guide', label: 'Pairing Guides' },
     { id: 'gathering_kit', label: 'Gathering Kits' }
   ];
+
+  const handlePackageClick = (pkg: Package) => {
+    if (!member) {
+      // Redirect to join page for non-members
+      window.location.href = '/join';
+      return;
+    }
+
+    if (!canAccessContent(pkg)) {
+      // Show paywall modal
+      setPaywallModal({ isOpen: true, packageData: pkg });
+      return;
+    }
+
+    // Allow access to package
+    window.location.href = `/packages/${pkg.slug}`;
+  };
+
+  const handleUpgrade = (tier: 'premium' | 'founder') => {
+    upgradeSubscription(tier);
+  };
+
+  const closePaywallModal = () => {
+    setPaywallModal({ isOpen: false, packageData: null });
+  };
 
   if (loading) {
     return (
@@ -104,10 +137,10 @@ export default function PackagesPage() {
       {/* Packages Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredPackages.map((pkg) => (
-          <Link 
+          <div 
             key={pkg.id} 
-            href={`/packages/${pkg.slug}`}
-            className="group"
+            onClick={() => handlePackageClick(pkg)}
+            className="group cursor-pointer"
           >
             <div className="card-enhanced animate-scale-in h-full">
               {/* Package Image */}
@@ -198,7 +231,7 @@ export default function PackagesPage() {
                 )}
               </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 
@@ -230,6 +263,18 @@ export default function PackagesPage() {
             Join Wine With Pete
           </Link>
         </div>
+      )}
+
+      {/* Paywall Modal */}
+      {paywallModal.packageData && (
+        <PaywallModal
+          isOpen={paywallModal.isOpen}
+          onClose={closePaywallModal}
+          currentTier={member?.subscription_tier || 'free'}
+          requiredTier={getRequiredTier(paywallModal.packageData)}
+          contentName={paywallModal.packageData.name}
+          onUpgrade={handleUpgrade}
+        />
       )}
     </div>
   );
