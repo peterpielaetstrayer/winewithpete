@@ -24,6 +24,7 @@ export function SiteHeader(){
           {link('/about','About')}
           {link('/events','Events')}
           {link('/archive','Essays')}
+          {link('/art','Art')}
           {member ? link('/hub','Hub') : null}
           {link('/store','Store')}
           {link('/support','Support')}
@@ -58,6 +59,7 @@ export function SiteHeader(){
             {link('/about','About')}
             {link('/events','Events')}
             {link('/archive','Essays')}
+            {link('/art','Art')}
             {member ? link('/hub','Hub') : null}
             {link('/store','Store')}
             {link('/support','Support')}
