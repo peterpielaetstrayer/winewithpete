@@ -220,6 +220,26 @@ export function Lightbox({
             <p className="text-stone-700 leading-relaxed">{artwork.description}</p>
           </div>
         )}
+
+        {/* Future Buy Section - Hidden for now but ready for extension */}
+        {artwork.sales && (artwork.sales.printable || artwork.sales.nftMintable) && (
+          <div className="p-4 border-t border-stone-200 bg-stone-50">
+            <h3 className="text-sm font-medium text-stone-800 mb-3">Available for Purchase</h3>
+            <div className="space-y-2">
+              {artwork.sales.printable && (
+                <div className="text-sm text-stone-600">
+                  <span className="font-medium">Prints:</span> {artwork.sales.printSkus?.join(', ')}
+                </div>
+              )}
+              {artwork.sales.nftMintable && (
+                <div className="text-sm text-stone-600">
+                  <span className="font-medium">NFT:</span> Available for minting
+                </div>
+              )}
+              {/* Future: Add actual buy buttons here */}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

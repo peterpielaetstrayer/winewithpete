@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Artwork } from '../_data/artworks';
 import { ArtworkCard } from './ArtworkCard';
 import { Filters } from './Filters';
@@ -59,6 +59,18 @@ export function Gallery({ artworks, availableTags }: GalleryProps) {
       window.history.pushState(null, '', `#${nextArtwork.id}`);
     }
   };
+
+  // Handle deep linking on page load
+  useEffect(() => {
+    const hash = window.location.hash.slice(1); // Remove the # symbol
+    if (hash) {
+      const artwork = filteredArtworks.find(art => art.id === hash);
+      if (artwork) {
+        setSelectedArtwork(artwork);
+        setIsLightboxOpen(true);
+      }
+    }
+  }, [filteredArtworks]);
 
   return (
     <div className="space-y-8">

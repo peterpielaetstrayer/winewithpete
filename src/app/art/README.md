@@ -10,14 +10,16 @@ The Art Wallboard is a responsive, accessible gallery that displays digital artw
 
 ```
 src/app/art/
-├── page.tsx                    # Main art page with metadata
+├── page.tsx                    # Main art page with metadata and query params
 ├── _components/
-│   ├── Gallery.tsx            # Main gallery component with filtering
-│   ├── Lightbox.tsx           # Accessible modal for artwork viewing
+│   ├── Gallery.tsx            # Main gallery component with filtering and deep linking
+│   ├── Lightbox.tsx           # Accessible modal with future buy section
 │   ├── Filters.tsx            # Tag-based filtering component
 │   └── ArtworkCard.tsx        # Individual artwork card with hover effects
 ├── _data/
-│   └── artworks.ts            # Artwork data and helper functions
+│   └── artworks.ts            # Artwork data with Zod validation
+├── _lib/
+│   └── getArtworks.ts         # Data fetching with Supabase hooks
 └── README.md                  # This file
 
 public/images/art/
@@ -46,7 +48,20 @@ Add the artwork to the `artworks` array in `src/app/art/_data/artworks.ts`:
   src: "/images/art/my-new-artwork.jpg", // image path
   alt: "Description of the artwork", // alt text for accessibility
   description: "Optional longer description...", // shown in lightbox
-  dominantHex: "#8B4513"          // optional color for loading placeholder
+  dominantHex: "#8B4513",         // optional color for loading placeholder
+  // Future-ready fields:
+  status: "published",             // "draft" | "published" | "archived"
+  curationScore: 0.85,            // 0 to 1, for sorting
+  provenance: {                   // AI generation metadata
+    seed: 42,
+    model: "focusedart-v1",
+    promptHash: "abc123"
+  },
+  sales: {                        // Future e-commerce
+    printable: true,
+    printSkus: ["8x10", "12x16"],
+    nftMintable: false
+  }
 }
 ```
 
@@ -68,6 +83,22 @@ The gallery supports deep linking to individual artworks:
 - Example: `/art#digital-dreams-01`
 - Automatically opens the lightbox for the specified artwork
 - Copy link button in lightbox generates shareable URLs
+- Test deep link: `/art#test-deep-link`
+
+## Query Parameters
+
+The gallery supports URL query parameters for advanced filtering:
+- `?sort=curation` - Sort by curation score (highest first)
+- `?sort=year` - Sort by year (newest first)
+- `?sort=title` - Sort alphabetically by title
+- `?status=published` - Show only published artworks
+- `?status=draft` - Show only draft artworks
+- `?status=archived` - Show only archived artworks
+
+Examples:
+- `/art?sort=curation` - Show best curated pieces first
+- `/art?status=draft` - Show only draft artworks
+- `/art?sort=year&status=published` - Show published artworks sorted by year
 
 ## Accessibility Features
 
@@ -87,35 +118,38 @@ The gallery supports deep linking to individual artworks:
 ## Future Enhancements
 
 ### Supabase Integration
-The `getArtworks()` function is ready for Supabase integration:
+The `getArtworks()` function in `_lib/getArtworks.ts` is ready for Supabase integration:
 
 ```typescript
-// TODO: Replace with Supabase fetch
-export async function getArtworks(): Promise<Artwork[]> {
+// TODO: Replace with local data fetch
+export async function getArtworks(options: GetArtworksOptions = {}): Promise<Artwork[]> {
   const { data } = await supabase
     .from('artworks')
     .select('*')
-    .order('created_at', { ascending: false });
+    .eq('status', options.status || 'published')
+    .order(options.sort === 'curation' ? 'curation_score' : 'created_at', { ascending: false });
   return data || [];
 }
 ```
 
-### Pagination
-Server function ready for pagination:
-
-```typescript
-// Future pagination support
-export async function getArtworksPaginated(page: number, limit: number) {
-  // Implementation for paginated loading
-}
-```
-
 ### E-commerce Integration
-The structure supports adding:
-- Print availability
-- NFT minting
-- Purchase buttons
-- Price display
+The structure already supports:
+- **Print Sales**: `sales.printable` and `sales.printSkus` fields
+- **NFT Minting**: `sales.nftMintable` and `sales.nftRef` fields
+- **Buy Section**: Hidden in lightbox, ready to be activated
+- **Curation Scoring**: `curationScore` field for quality-based sorting
+
+### AI Generation Metadata
+The `provenance` field tracks:
+- **Seed**: Random seed used for generation
+- **Model**: AI model version (e.g., "focusedart-v1")
+- **Prompt Hash**: Hash of the generation prompt
+
+### Data Validation
+Zod schema validates all artwork data in development:
+- Type safety for all fields
+- Runtime validation in dev mode
+- Clear error messages for invalid data
 
 ## Styling
 

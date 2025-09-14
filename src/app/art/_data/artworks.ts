@@ -1,15 +1,33 @@
-export type Artwork = {
-  id: string; // slug-safe
-  title: string;
-  year: number;
-  medium: string; // "AI + post"
-  tags: string[];
-  aspectRatio: number; // width/height for skeleton sizing
-  src: string; // /public/images/art/<id>.jpg
-  alt: string;
-  description?: string;
-  dominantHex?: string; // optional for placeholder
-};
+import { z } from 'zod';
+
+// Zod schema for runtime validation (dev-only)
+export const ArtworkSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  year: z.number(),
+  medium: z.string(),
+  tags: z.array(z.string()),
+  aspectRatio: z.number(),
+  src: z.string(),
+  alt: z.string(),
+  description: z.string().optional(),
+  dominantHex: z.string().optional(),
+  status: z.enum(['draft', 'published', 'archived']).optional(),
+  curationScore: z.number().min(0).max(1).optional(),
+  provenance: z.object({
+    seed: z.number().optional(),
+    model: z.string().optional(),
+    promptHash: z.string().optional(),
+  }).optional(),
+  sales: z.object({
+    printable: z.boolean().optional(),
+    printSkus: z.array(z.string()).optional(),
+    nftMintable: z.boolean().optional(),
+    nftRef: z.string().optional(),
+  }).optional(),
+});
+
+export type Artwork = z.infer<typeof ArtworkSchema>;
 
 export const artworks: Artwork[] = [
   {
@@ -22,7 +40,19 @@ export const artworks: Artwork[] = [
     src: "/images/art/digital-dreams-01.jpg",
     alt: "Abstract digital composition with flowing organic shapes in warm earth tones",
     description: "An exploration of digital consciousness through organic forms that seem to breathe and pulse with life.",
-    dominantHex: "#8B4513"
+    dominantHex: "#8B4513",
+    status: "published",
+    curationScore: 0.85,
+    provenance: {
+      seed: 42,
+      model: "focusedart-v1",
+      promptHash: "abc123def456"
+    },
+    sales: {
+      printable: true,
+      printSkus: ["8x10", "12x16", "18x24"],
+      nftMintable: false
+    }
   },
   {
     id: "wine-country-sunset",
@@ -34,7 +64,20 @@ export const artworks: Artwork[] = [
     src: "/images/art/wine-country-sunset.jpg",
     alt: "Rolling hills at sunset with warm golden light filtering through vineyard rows",
     description: "A meditation on the golden hour in wine country, where time seems to slow and the world glows.",
-    dominantHex: "#D2691E"
+    dominantHex: "#D2691E",
+    status: "published",
+    curationScore: 0.92,
+    provenance: {
+      seed: 17,
+      model: "focusedart-v1",
+      promptHash: "def456ghi789"
+    },
+    sales: {
+      printable: true,
+      printSkus: ["12x20", "16x24", "24x36"],
+      nftMintable: true,
+      nftRef: "0x123...abc"
+    }
   },
   {
     id: "philosophical-portrait",
@@ -154,7 +197,42 @@ export const artworks: Artwork[] = [
     src: "/images/art/conversation-flowers.jpg",
     alt: "Organic forms that bloom like flowers, representing the growth of ideas through conversation",
     description: "Ideas that bloom and grow through conversation, like flowers opening to the sun.",
-    dominantHex: "#FF6347"
+    dominantHex: "#FF6347",
+    status: "published",
+    curationScore: 0.78,
+    provenance: {
+      seed: 99,
+      model: "focusedart-v1",
+      promptHash: "ghi789jkl012"
+    },
+    sales: {
+      printable: true,
+      printSkus: ["8x8", "12x12", "16x16"],
+      nftMintable: false
+    }
+  },
+  {
+    id: "test-deep-link",
+    title: "Test Deep Link",
+    year: 2024,
+    medium: "AI + post",
+    tags: ["experiments"],
+    aspectRatio: 1.0,
+    src: "/images/art/digital-dreams-01.jpg", // Reuse existing image for test
+    alt: "Test artwork for deep linking functionality",
+    description: "This is a test artwork to verify that deep linking works correctly. Visit /art#test-deep-link to see it open automatically.",
+    dominantHex: "#8B4513",
+    status: "published",
+    curationScore: 0.5,
+    provenance: {
+      seed: 1,
+      model: "focusedart-test",
+      promptHash: "test123"
+    },
+    sales: {
+      printable: false,
+      nftMintable: false
+    }
   }
 ];
 
