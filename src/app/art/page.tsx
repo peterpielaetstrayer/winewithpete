@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { SiteHeader } from '@/components/site-header';
 import { Gallery } from './_components/Gallery';
 import { getArtworks, getAllTags } from './_data/artworks';
 
@@ -55,8 +54,6 @@ export default async function ArtPage() {
 
   return (
     <div className="min-h-screen bg-[var(--wwp-cream)]">
-      <SiteHeader />
-      
       <main className="space-section">
         <div className="mx-auto max-w-6xl px-4">
           {/* Header Section */}
