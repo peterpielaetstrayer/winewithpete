@@ -11,6 +11,11 @@
   --wwp-ember-light:#7a3a35;
   --wwp-gold-light:#d4a547;
   --wwp-cream-dark:#f0ebe5;
+  /* December Reset Colors */
+  --dr-cream:#F5F1E8;
+  --dr-sage:#A8B5A0;
+  --dr-terracotta:#C97D60;
+  --dr-charcoal:#3A3A3A;
 }
 
 body{ 
@@ -24,6 +29,15 @@ body{
   font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
 }
 
+.font-crimson {
+  font-family: var(--font-crimson), Georgia, 'Times New Roman', serif;
+}
+
+/* December Reset specific typography */
+.text-dr-headline {
+  font-family: var(--font-crimson), Georgia, 'Times New Roman', serif;
+}
+
 /* Custom utility classes */
 .text-ember { color: var(--wwp-ember); }
 .text-gold { color: var(--wwp-gold); }
@@ -33,6 +47,17 @@ body{
 .bg-cream { background-color: var(--wwp-cream); }
 .border-ember { border-color: var(--wwp-ember); }
 .border-gold { border-color: var(--wwp-gold); }
+/* December Reset Utilities */
+.text-dr-cream { color: var(--dr-cream); }
+.text-dr-sage { color: var(--dr-sage); }
+.text-dr-terracotta { color: var(--dr-terracotta); }
+.text-dr-charcoal { color: var(--dr-charcoal); }
+.bg-dr-cream { background-color: var(--dr-cream); }
+.bg-dr-sage { background-color: var(--dr-sage); }
+.bg-dr-terracotta { background-color: var(--dr-terracotta); }
+.bg-dr-charcoal { background-color: var(--dr-charcoal); }
+.border-dr-terracotta { border-color: var(--dr-terracotta); }
+.border-dr-sage { border-color: var(--dr-sage); }
 
 /* Typography Hierarchy */
 .text-display { 
