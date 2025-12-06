@@ -37,26 +37,28 @@ export async function POST(request: NextRequest) {
     // Try to subscribe to newsletter in Supabase (but don't fail if it's down)
     let subscriber = null;
     let supabaseSuccess = false;
+    let supabaseError: string | null = null;
     try {
       subscriber = await subscribeToNewsletter(sanitizedData);
       supabaseSuccess = true;
       console.log('Successfully saved to Supabase');
     } catch (error) {
-      console.error('Supabase subscription failed:', error);
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      supabaseError = error instanceof Error ? error.message : String(error);
+      console.error('Supabase subscription failed:', supabaseError);
       
       // Check if it's a connection/database issue
-      if (errorMessage.includes('fetch') || errorMessage.includes('network') || errorMessage.includes('ECONNREFUSED')) {
+      if (supabaseError.includes('fetch') || supabaseError.includes('network') || supabaseError.includes('ECONNREFUSED')) {
         console.warn('Supabase appears to be down or paused. Continuing with Kit subscription only.');
       } else {
         // For other errors (like duplicates), we might want to continue
-        console.warn('Supabase error (non-critical):', errorMessage);
+        console.warn('Supabase error (non-critical):', supabaseError);
       }
       // Continue without failing - we'll try Kit.co instead
     }
 
     // Try to add to Kit list (primary method if Supabase is down)
     let kitSynced = false;
+    let kitError: string | null = null;
     try {
       const kitResult = await addToKitList({
         email: sanitizedData.email,
@@ -66,18 +68,33 @@ export async function POST(request: NextRequest) {
       kitSynced = kitResult.success;
       if (kitSynced) {
         console.log('Successfully saved to Kit.co');
+      } else {
+        kitError = kitResult.error || 'Kit.co API failed';
       }
     } catch (error) {
-      console.error('Kit integration failed:', error);
+      kitError = error instanceof Error ? error.message : String(error);
+      console.error('Kit integration failed:', kitError);
       // Continue without failing the subscription
     }
 
     // If both Supabase and Kit failed, that's a problem
     if (!supabaseSuccess && !kitSynced) {
+      // Log detailed errors for debugging
+      console.error('CRITICAL: Both subscription methods failed', {
+        supabase_error: supabaseError,
+        kit_error: kitError,
+        email: sanitizedData.email.substring(0, 3) + '***',
+      });
+      
       return NextResponse.json(
         { 
           error: 'Unable to save subscription. Please try again later or contact support.',
-          details: 'Both Supabase and Kit.co subscriptions failed'
+          details: 'Both Supabase and Kit.co subscriptions failed',
+          // Include errors in response for debugging (will be visible in browser console)
+          debug: {
+            supabase: supabaseError?.substring(0, 100) || 'Unknown error',
+            kit: kitError?.substring(0, 100) || 'Unknown error',
+          }
         },
         { status: 500 }
       );
