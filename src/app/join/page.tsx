@@ -21,16 +21,29 @@ export default function JoinPage(){
         body: JSON.stringify({ email }),
       });
 
-      const result = await response.json();
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      let result;
+      
+      if (contentType && contentType.includes('application/json')) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        throw new Error('Server returned non-JSON response');
+      }
 
       if (response.ok) {
         setIsSubmitted(true);
       } else {
-        alert(result.error || 'Failed to subscribe');
+        // Show detailed error if available
+        const errorMsg = result.error || result.details || 'Failed to subscribe';
+        console.error('Subscription error:', result);
+        alert(errorMsg + (result.debug ? '\n\nCheck console for details' : ''));
       }
     } catch (error) {
       console.error('Newsletter subscription error:', error);
-      alert('Failed to subscribe. Please try again.');
+      alert('Failed to subscribe. Please try again. Check console for details.');
     } finally {
       setIsSubmitting(false);
     }

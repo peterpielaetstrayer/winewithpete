@@ -43,8 +43,20 @@ export async function POST(request: NextRequest) {
       supabaseSuccess = true;
       console.log('Successfully saved to Supabase');
     } catch (error) {
-      supabaseError = error instanceof Error ? error.message : String(error);
-      console.error('Supabase subscription failed:', supabaseError);
+      if (error instanceof Error) {
+        supabaseError = error.message;
+      } else if (error && typeof error === 'object' && 'message' in error) {
+        supabaseError = String(error.message);
+      } else if (error && typeof error === 'object' && 'code' in error) {
+        supabaseError = `Code: ${error.code} - ${JSON.stringify(error)}`;
+      } else {
+        supabaseError = JSON.stringify(error);
+      }
+      console.error('Supabase subscription failed:', {
+        error: supabaseError,
+        fullError: error,
+        errorType: error?.constructor?.name,
+      });
       
       // Check if it's a connection/database issue
       if (supabaseError.includes('fetch') || supabaseError.includes('network') || supabaseError.includes('ECONNREFUSED')) {
@@ -77,27 +89,41 @@ export async function POST(request: NextRequest) {
       // Continue without failing the subscription
     }
 
-    // If both Supabase and Kit failed, that's a problem
-    if (!supabaseSuccess && !kitSynced) {
-      // Log detailed errors for debugging
-      console.error('CRITICAL: Both subscription methods failed', {
-        supabase_error: supabaseError,
-        kit_error: kitError,
+    // If Supabase succeeded, we're good (Kit is optional)
+    if (supabaseSuccess) {
+      // Success! Kit.co is optional, so even if it failed, we succeeded
+      console.log('Subscription successful via Supabase', {
+        kit_synced: kitSynced,
         email: sanitizedData.email.substring(0, 3) + '***',
       });
-      
-      return NextResponse.json(
-        { 
-          error: 'Unable to save subscription. Please try again later or contact support.',
-          details: 'Both Supabase and Kit.co subscriptions failed',
-          // Include errors in response for debugging (will be visible in browser console)
-          debug: {
-            supabase: supabaseError?.substring(0, 100) || 'Unknown error',
-            kit: kitError?.substring(0, 100) || 'Unknown error',
-          }
-        },
-        { status: 500 }
-      );
+    } else {
+      // Supabase failed - check if Kit worked as backup
+      if (kitSynced) {
+        console.log('Subscription successful via Kit.co (Supabase failed)', {
+          supabase_error: supabaseError?.substring(0, 50),
+          email: sanitizedData.email.substring(0, 3) + '***',
+        });
+      } else {
+        // Both failed - this is a problem
+        console.error('CRITICAL: Both subscription methods failed', {
+          supabase_error: supabaseError,
+          kit_error: kitError,
+          email: sanitizedData.email.substring(0, 3) + '***',
+        });
+        
+        return NextResponse.json(
+          { 
+            error: 'Unable to save subscription. Please try again later or contact support.',
+            details: 'Both Supabase and Kit.co subscriptions failed',
+            // Include errors in response for debugging (will be visible in browser console)
+            debug: {
+              supabase: supabaseError?.substring(0, 100) || 'Unknown error',
+              kit: kitError?.substring(0, 100) || 'Unknown error',
+            }
+          },
+          { status: 500 }
+        );
+      }
     }
 
     // Send welcome email (try Resend first since it's more reliable)
