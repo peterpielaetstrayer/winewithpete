@@ -65,19 +65,20 @@ export async function addToKitList(subscriber: KitSubscriber): Promise<KitRespon
       console.log('Form endpoint error:', formError);
     }
 
-    // Fallback to API endpoints if form submission doesn't work
+    // Use Kit.co V4 API (their current API)
     const requestBody = {
       email: subscriber.email,
       name: subscriber.name,
       tags: ['newsletter', 'website-signup', ...(subscriber.tags || [])],
     };
 
-    // Try different Kit API endpoints
+    // Kit.co V4 API endpoints (based on their documentation)
     const endpoints = [
-      'https://api.kit.co/v1/subscribers',
-      'https://api.kit.co/subscribers',
-      'https://kit.co/api/v1/subscribers',
-      'https://kit.co/api/subscribers'
+      'https://api.kit.co/v4/subscribers',
+      'https://api.kit.co/v4/contacts',
+      'https://api.kit.co/v4/audience/subscribers',
+      // Fallback to V3 if V4 doesn't work
+      'https://api.kit.co/v3/subscribers',
     ];
 
     let response;
@@ -91,6 +92,7 @@ export async function addToKitList(subscriber: KitSubscriber): Promise<KitRespon
           headers: {
             'Authorization': `Bearer ${process.env.KIT_API_KEY}`,
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
           },
           body: JSON.stringify(requestBody),
         });
