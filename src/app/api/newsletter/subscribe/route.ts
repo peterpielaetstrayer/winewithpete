@@ -34,10 +34,28 @@ export async function POST(request: NextRequest) {
       name: name ? name.trim() : undefined,
     };
 
-    // Subscribe to newsletter in Supabase
-    const subscriber = await subscribeToNewsletter(sanitizedData);
+    // Try to subscribe to newsletter in Supabase (but don't fail if it's down)
+    let subscriber = null;
+    let supabaseSuccess = false;
+    try {
+      subscriber = await subscribeToNewsletter(sanitizedData);
+      supabaseSuccess = true;
+      console.log('Successfully saved to Supabase');
+    } catch (error) {
+      console.error('Supabase subscription failed:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      // Check if it's a connection/database issue
+      if (errorMessage.includes('fetch') || errorMessage.includes('network') || errorMessage.includes('ECONNREFUSED')) {
+        console.warn('Supabase appears to be down or paused. Continuing with Kit subscription only.');
+      } else {
+        // For other errors (like duplicates), we might want to continue
+        console.warn('Supabase error (non-critical):', errorMessage);
+      }
+      // Continue without failing - we'll try Kit.co instead
+    }
 
-    // Try to add to Kit list (but don't fail if it doesn't work)
+    // Try to add to Kit list (primary method if Supabase is down)
     let kitSynced = false;
     try {
       const kitResult = await addToKitList({
@@ -46,9 +64,23 @@ export async function POST(request: NextRequest) {
         tags: ['newsletter', 'website-signup']
       });
       kitSynced = kitResult.success;
+      if (kitSynced) {
+        console.log('Successfully saved to Kit.co');
+      }
     } catch (error) {
       console.error('Kit integration failed:', error);
       // Continue without failing the subscription
+    }
+
+    // If both Supabase and Kit failed, that's a problem
+    if (!supabaseSuccess && !kitSynced) {
+      return NextResponse.json(
+        { 
+          error: 'Unable to save subscription. Please try again later or contact support.',
+          details: 'Both Supabase and Kit.co subscriptions failed'
+        },
+        { status: 500 }
+      );
     }
 
     // Send welcome email (try Resend first since it's more reliable)
@@ -70,6 +102,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: subscriber,
+      supabase_synced: supabaseSuccess,
       kit_synced: kitSynced,
       email_sent: emailSent,
       message: 'Successfully subscribed to our newsletter!'
