@@ -23,19 +23,54 @@ export async function addToKitList(subscriber: KitSubscriber): Promise<KitRespon
   }
 
   try {
+    // Try form-specific submission first (using form ID from embed code)
+    const formId = process.env.KIT_FORM_ID || '7051ff142e';
+    
+    // Try form submission endpoint first
+    const formEndpoint = `https://wine-with-pete.kit.com/${formId}/subscribe`;
+    
+    const formRequestBody = {
+      email: subscriber.email,
+      name: subscriber.name,
+    };
+
+    console.log('Kit API request:', {
+      formEndpoint,
+      body: formRequestBody,
+      hasApiKey: !!process.env.KIT_API_KEY,
+      formId,
+    });
+
+    // Try form submission endpoint first
+    try {
+      const formResponse = await fetch(formEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formRequestBody),
+      });
+
+      if (formResponse.ok) {
+        const formResult = await formResponse.json();
+        console.log('Successfully submitted via form endpoint:', formResult);
+        return {
+          success: true,
+          data: formResult
+        };
+      } else {
+        console.log(`Form endpoint failed: ${formResponse.status}`);
+      }
+    } catch (formError) {
+      console.log('Form endpoint error:', formError);
+    }
+
+    // Fallback to API endpoints if form submission doesn't work
     const requestBody = {
       email: subscriber.email,
       name: subscriber.name,
       tags: ['newsletter', 'website-signup', ...(subscriber.tags || [])],
-      // Kit uses 'list' instead of 'list_id'
-      list: 'main', // or your specific list ID
     };
-
-    console.log('Kit API request:', {
-      url: 'https://api.kit.co/v1/subscribers',
-      body: requestBody,
-      hasApiKey: !!process.env.KIT_API_KEY
-    });
 
     // Try different Kit API endpoints
     const endpoints = [
