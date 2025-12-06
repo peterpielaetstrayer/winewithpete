@@ -149,6 +149,14 @@ Visit [resend.com](https://resend.com) to:
 - Check delivery status
 - See open/click rates (with Pro plan)
 - Manage API keys
+- Domain verification
+
+**Important:** Resend does NOT have:
+- ❌ Visual campaign builder (use our `/admin` page instead)
+- ❌ Automation workflows in their UI (use scheduled jobs/API)
+- ❌ Broadcast interface (use our admin UI or API)
+
+Resend is API-first - you send emails programmatically, and they handle delivery.
 
 ## Limits & Pricing
 
@@ -189,12 +197,30 @@ Visit [resend.com](https://resend.com) to:
 - Verify API key is correct
 - Check rate limits (100/day on free tier)
 
+## Automation Options
+
+**Resend doesn't have built-in automation workflows.** Here are your options:
+
+### Option 1: Manual (Easiest)
+- Use the `/admin` campaigns tab to send when you want
+- Simple and works immediately
+
+### Option 2: Scheduled Jobs
+- Set up Vercel Cron or similar to call `/api/campaigns/send` on a schedule
+- Example: Weekly newsletter every Monday at 9am
+
+### Option 3: Use Another Service
+- If you need visual automation workflows, consider:
+  - ConvertKit (has automation builder)
+  - Mailchimp (has automation workflows)
+  - But you'd need to sync subscribers manually
+
 ## Next Steps
 
-1. **Test the campaign API** - Send a test email to yourself
-2. **Create email templates** - Build reusable templates for common campaigns
-3. **Build admin UI** - Use the `/admin` page to send campaigns visually
-4. **Set up automation** - Schedule weekly newsletters (cron job or Vercel Cron)
+1. **Test the campaign API** - Send a test email to yourself via `/admin`
+2. **Create email templates** - Build reusable templates in `src/lib/email.ts`
+3. **Use the admin UI** - Go to `/admin` → Campaigns tab to send campaigns
+4. **Set up automation** (optional) - Schedule weekly newsletters with Vercel Cron
 
-That's it! Resend is simple - you send emails via API, and it handles delivery.
+**Summary:** Resend is API-first - great for developers, but you'll use our admin UI or API for campaigns. Their dashboard is for monitoring, not creating campaigns.
 
