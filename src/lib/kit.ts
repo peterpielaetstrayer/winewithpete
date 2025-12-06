@@ -102,7 +102,12 @@ export async function addToKitList(subscriber: KitSubscriber): Promise<KitRespon
           break;
         } else {
           const errorData = await response.text();
-          console.log(`Failed with ${endpoint}: ${response.status} - ${errorData}`);
+          console.error(`Failed with ${endpoint}: ${response.status}`, {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorData,
+            headers: Object.fromEntries(response.headers.entries()),
+          });
           lastError = { status: response.status, error: errorData };
         }
       } catch (error) {

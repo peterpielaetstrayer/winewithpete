@@ -78,12 +78,16 @@ export async function POST(request: NextRequest) {
     try {
       results.steps.kit_test = {
         status: 'testing',
+        api_key_configured: !!process.env.KIT_API_KEY,
+        api_key_length: process.env.KIT_API_KEY?.length || 0,
+        api_key_preview: process.env.KIT_API_KEY ? process.env.KIT_API_KEY.substring(0, 10) + '...' : 'not set',
       };
       const kitResult = await addToKitList({
         email: email.trim().toLowerCase(),
         tags: ['test'],
       });
       results.steps.kit_test = {
+        ...results.steps.kit_test,
         status: kitResult.success ? 'success' : 'failed',
         result: kitResult,
       };
@@ -91,6 +95,7 @@ export async function POST(request: NextRequest) {
       results.steps.kit_test = {
         status: 'error',
         error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
       };
     }
 
