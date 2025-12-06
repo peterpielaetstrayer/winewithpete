@@ -3,6 +3,15 @@ import { addToKitList } from '@/lib/kit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if API key is configured
+    if (!process.env.KIT_API_KEY) {
+      console.error('KIT_API_KEY not configured in environment');
+      return NextResponse.json(
+        { error: 'Email service not configured. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json();
     const { email, tags } = body;
 
@@ -49,8 +58,16 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Kit subscription error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Full error details:', {
+      message: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json(
-      { error: 'Failed to subscribe. Please try again.' },
+      { 
+        error: 'Failed to subscribe. Please try again.',
+        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
+      },
       { status: 500 }
     );
   }

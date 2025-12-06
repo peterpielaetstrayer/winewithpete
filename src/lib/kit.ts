@@ -46,7 +46,7 @@ export async function addToKitList(subscriber: KitSubscriber): Promise<KitRespon
     ];
 
     let response;
-    let lastError;
+    let lastError: { status?: number; error?: string | any } | Error | null = null;
 
     for (const endpoint of endpoints) {
       try {
@@ -70,15 +70,33 @@ export async function addToKitList(subscriber: KitSubscriber): Promise<KitRespon
         }
       } catch (error) {
         console.log(`Error with ${endpoint}:`, error);
-        lastError = error;
+        lastError = error instanceof Error ? error : { error: String(error) };
       }
     }
 
     if (!response || !response.ok) {
-      console.error('All Kit API endpoints failed');
+      console.error('All Kit API endpoints failed', {
+        lastError,
+        hasApiKey: !!process.env.KIT_API_KEY,
+        apiKeyLength: process.env.KIT_API_KEY?.length,
+      });
+      
+      let errorMessage = 'Kit API failed: All endpoints returned errors';
+      if (lastError) {
+        if (lastError instanceof Error) {
+          errorMessage = `Kit API failed: ${lastError.message}`;
+        } else if (lastError.status || lastError.error) {
+          const status = lastError.status || 'Unknown';
+          const error = typeof lastError.error === 'string' 
+            ? lastError.error.substring(0, 100) 
+            : 'Unknown error';
+          errorMessage = `Kit API failed: ${status} - ${error}`;
+        }
+      }
+      
       return {
         success: false,
-        error: `Kit API failed: ${lastError?.status || 'Unknown error'}`
+        error: errorMessage
       };
     }
 
