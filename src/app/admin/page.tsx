@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Product, Event, Order } from '@/lib/types';
 
 export default function AdminPage() {
@@ -11,12 +13,20 @@ export default function AdminPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'products' | 'events' | 'orders'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'events' | 'orders' | 'campaigns'>('products');
   const [user, setUser] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+  
+  // Campaign state
+  const [campaignSubject, setCampaignSubject] = useState('');
+  const [campaignHtml, setCampaignHtml] = useState('');
+  const [campaignText, setCampaignText] = useState('');
+  const [campaignLimit, setCampaignLimit] = useState('');
+  const [campaignSending, setCampaignSending] = useState(false);
+  const [campaignResult, setCampaignResult] = useState<{success: boolean; message: string; sent?: number; failed?: number; total?: number} | null>(null);
 
   useEffect(() => {
     checkUser();
@@ -244,7 +254,7 @@ export default function AdminPage() {
 
       {/* Tabs */}
       <div className="flex gap-4 mb-8 border-b">
-        {(['products', 'events', 'orders'] as const).map((tab) => (
+        {(['products', 'events', 'orders', 'campaigns'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -254,7 +264,7 @@ export default function AdminPage() {
                 : 'text-black/70 hover:text-charcoal'
             }`}
           >
-            {tab} ({tab === 'products' ? products.length : tab === 'events' ? events.length : orders.length})
+            {tab} {tab !== 'campaigns' && `(${tab === 'products' ? products.length : tab === 'events' ? events.length : orders.length})`}
           </button>
         ))}
       </div>
@@ -365,6 +375,180 @@ export default function AdminPage() {
               </Card>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Campaigns Tab */}
+      {activeTab === 'campaigns' && (
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-serif text-charcoal mb-2">Email Campaigns</h2>
+            <p className="text-black/70">Send email campaigns to all newsletter subscribers using Resend</p>
+          </div>
+
+          <Card className="p-6">
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setCampaignSending(true);
+                setCampaignResult(null);
+
+                try {
+                  const response = await fetch('/api/campaigns/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      subject: campaignSubject,
+                      html: campaignHtml,
+                      text: campaignText || undefined,
+                      limit: campaignLimit ? parseInt(campaignLimit) : undefined,
+                    }),
+                  });
+
+                  const data = await response.json();
+
+                  if (response.ok) {
+                    setCampaignResult({
+                      success: true,
+                      message: data.message || 'Campaign sent successfully!',
+                      sent: data.sent,
+                      failed: data.failed,
+                      total: data.total,
+                    });
+                    // Clear form
+                    setCampaignSubject('');
+                    setCampaignHtml('');
+                    setCampaignText('');
+                    setCampaignLimit('');
+                  } else {
+                    setCampaignResult({
+                      success: false,
+                      message: data.error || 'Failed to send campaign',
+                    });
+                  }
+                } catch (error) {
+                  setCampaignResult({
+                    success: false,
+                    message: error instanceof Error ? error.message : 'Failed to send campaign',
+                  });
+                } finally {
+                  setCampaignSending(false);
+                }
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label htmlFor="subject" className="block text-sm font-medium text-charcoal mb-1">
+                  Subject Line *
+                </label>
+                <Input
+                  id="subject"
+                  value={campaignSubject}
+                  onChange={(e) => setCampaignSubject(e.target.value)}
+                  placeholder="Weekly Newsletter - December 6"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="html" className="block text-sm font-medium text-charcoal mb-1">
+                  HTML Content *
+                </label>
+                <Textarea
+                  id="html"
+                  value={campaignHtml}
+                  onChange={(e) => setCampaignHtml(e.target.value)}
+                  placeholder='<h1>Hello {name}!</h1><p>Your weekly update...</p>'
+                  rows={12}
+                  required
+                  className="font-mono text-sm"
+                />
+                <p className="text-xs text-black/60 mt-1">
+                  Use {'{name}'} to personalize with subscriber names
+                </p>
+              </div>
+
+              <div>
+                <label htmlFor="text" className="block text-sm font-medium text-charcoal mb-1">
+                  Plain Text Content (Optional)
+                </label>
+                <Textarea
+                  id="text"
+                  value={campaignText}
+                  onChange={(e) => setCampaignText(e.target.value)}
+                  placeholder="Plain text version for email clients that don't support HTML"
+                  rows={6}
+                />
+                <p className="text-xs text-black/60 mt-1">
+                  Recommended: Include plain text for better deliverability
+                </p>
+              </div>
+
+              <div>
+                <label htmlFor="limit" className="block text-sm font-medium text-charcoal mb-1">
+                  Test Limit (Optional)
+                </label>
+                <Input
+                  id="limit"
+                  type="number"
+                  value={campaignLimit}
+                  onChange={(e) => setCampaignLimit(e.target.value)}
+                  placeholder="Leave empty to send to all subscribers"
+                  min="1"
+                />
+                <p className="text-xs text-black/60 mt-1">
+                  Test with a small number before sending to everyone
+                </p>
+              </div>
+
+              {campaignResult && (
+                <div
+                  className={`p-4 rounded-md ${
+                    campaignResult.success
+                      ? 'bg-green-50 text-green-800 border border-green-200'
+                      : 'bg-red-50 text-red-800 border border-red-200'
+                  }`}
+                >
+                  <p className="font-medium">{campaignResult.message}</p>
+                  {campaignResult.success && campaignResult.total && (
+                    <p className="text-sm mt-1">
+                      Sent: {campaignResult.sent} | Failed: {campaignResult.failed || 0} | Total: {campaignResult.total}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <Button
+                  type="submit"
+                  className="btn-ember"
+                  disabled={campaignSending || !campaignSubject || !campaignHtml}
+                >
+                  {campaignSending ? 'Sending...' : 'Send Campaign'}
+                </Button>
+                {campaignResult?.success && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setCampaignResult(null)}
+                  >
+                    Clear Result
+                  </Button>
+                )}
+              </div>
+            </form>
+          </Card>
+
+          <Card className="p-6 bg-amber-50 border-amber-200">
+            <h3 className="font-medium text-charcoal mb-2">💡 Tips</h3>
+            <ul className="text-sm text-black/70 space-y-1 list-disc list-inside">
+              <li>Always test with limit: 1 before sending to all subscribers</li>
+              <li>Include both HTML and plain text for better deliverability</li>
+              <li>Use {'{name}'} in your content to personalize emails</li>
+              <li>Keep subject lines clear and engaging</li>
+              <li>Check Resend dashboard for delivery status and analytics</li>
+            </ul>
+          </Card>
         </div>
       )}
     </div>
