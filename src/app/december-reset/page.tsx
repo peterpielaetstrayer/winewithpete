@@ -342,15 +342,13 @@ export default function DecemberResetPage() {
                 </li>
               </ul>
               <a
-                href={GUMROAD_PRODUCT_URL}
+                href="https://gumroad.com/l/december-reset"
                 target="_blank"
                 rel="noopener noreferrer"
                 data-gumroad-single-product="true"
-                className="block"
+                className="cta-button block w-full bg-dr-terracotta hover:bg-dr-terracotta/90 text-white text-lg py-6 rounded-lg font-medium transition-all hover:scale-105 shadow-lg hover:shadow-xl min-h-[56px] text-center"
               >
-                <Button className="w-full bg-dr-terracotta hover:bg-dr-terracotta/90 text-white text-lg py-6 rounded-lg font-medium transition-all hover:scale-105 shadow-lg hover:shadow-xl min-h-[56px]">
-                  Get the Complete Guide — $37
-                </Button>
+                Get the Complete Guide — $37
               </a>
             </div>
           </div>
@@ -465,17 +463,13 @@ export default function DecemberResetPage() {
               className="flex-1 w-full sm:w-auto"
             />
             <a
-              href={GUMROAD_PRODUCT_URL}
+              href="https://gumroad.com/l/december-reset"
               target="_blank"
               rel="noopener noreferrer"
               data-gumroad-single-product="true"
+              className="cta-button w-full sm:w-auto border-2 border-dr-terracotta text-dr-terracotta hover:bg-dr-terracotta hover:text-white text-lg px-8 py-6 rounded-lg font-medium transition-all hover:scale-105 min-h-[56px] inline-flex items-center justify-center"
             >
-              <Button
-                variant="outline"
-                className="w-full sm:w-auto border-2 border-dr-terracotta text-dr-terracotta hover:bg-dr-terracotta hover:text-white text-lg px-8 py-6 rounded-lg font-medium transition-all hover:scale-105 min-h-[56px]"
-              >
-                Get the Complete Method — $37
-              </Button>
+              Get the Complete Method — $37
             </a>
           </div>
 
