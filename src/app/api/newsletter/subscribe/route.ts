@@ -7,7 +7,16 @@ import { sendEmail, emailTemplates } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError);
+      return NextResponse.json(
+        { error: 'Invalid request body. Expected JSON.' },
+        { status: 400 }
+      );
+    }
     
     // Basic validation
     if (!body.email || typeof body.email !== 'string') {
@@ -172,6 +181,8 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error) {
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
+    } else {
+      console.error('Non-Error object:', JSON.stringify(error, null, 2));
     }
     
     // Handle duplicate subscription
@@ -190,10 +201,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check for Supabase connection errors
+    if (error instanceof Error && (
+      error.message.includes('fetch') || 
+      error.message.includes('network') || 
+      error.message.includes('ECONNREFUSED') ||
+      error.message.includes('SUPABASE_URL') ||
+      error.message.includes('SUPABASE_ANON_KEY')
+    )) {
+      return NextResponse.json(
+        { 
+          error: 'Database connection error. Please try again later.',
+          details: 'Service temporarily unavailable'
+        },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json(
       { 
         error: 'Failed to subscribe. Please try again.',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
+        // Include error type for debugging
+        error_type: error instanceof Error ? error.constructor.name : typeof error
       },
       { status: 500 }
     );

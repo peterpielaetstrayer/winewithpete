@@ -2,9 +2,16 @@ import { createClient } from '@supabase/supabase-js';
 import type { Event, EventRSVP, Product, Order, OrderItem, NewsletterSubscriber, RSVPFormData, NewsletterFormData } from '../types';
 
 // Create Supabase client with proper environment variables
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.warn('Supabase credentials not fully configured. Some features may not work.');
+}
+
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY!
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseKey || 'placeholder-key'
 );
 
 // Events
@@ -116,6 +123,13 @@ export async function getProduct(id: string) {
 
 // Newsletter
 export async function subscribeToNewsletter(subscriberData: NewsletterFormData) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+  
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Supabase credentials not configured');
+  }
+
   const { data, error } = await supabase
     .from('newsletter_subscribers')
     .insert({
