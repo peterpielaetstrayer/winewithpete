@@ -49,7 +49,13 @@ export async function POST(request: NextRequest) {
     });
 
     if (!loopsResponse.ok) {
-      const errorData = await loopsResponse.text();
+      let errorData: any;
+      try {
+        errorData = await loopsResponse.json();
+      } catch {
+        errorData = await loopsResponse.text();
+      }
+      
       console.error('Loops API error:', {
         status: loopsResponse.status,
         statusText: loopsResponse.statusText,
@@ -57,13 +63,27 @@ export async function POST(request: NextRequest) {
         email: sanitizedEmail.substring(0, 3) + '***',
       });
       
-      // Handle duplicate email (409 conflict)
-      if (loopsResponse.status === 409) {
+      // Handle duplicate email - Loops may return 400 or 409
+      const errorMessage = typeof errorData === 'string' 
+        ? errorData.toLowerCase() 
+        : (errorData?.message || errorData?.error || '').toLowerCase();
+      
+      const isDuplicate = 
+        loopsResponse.status === 409 ||
+        loopsResponse.status === 400 && (
+          errorMessage.includes('already exists') ||
+          errorMessage.includes('duplicate') ||
+          errorMessage.includes('already subscribed') ||
+          errorMessage.includes('contact already')
+        );
+      
+      if (isDuplicate) {
+        // Return 200 for duplicates so form shows success message
         return NextResponse.json({
           success: true,
           message: 'You\'re already subscribed! Check your email for the Quick Start Guide.',
           already_subscribed: true,
-        });
+        }, { status: 200 });
       }
 
       return NextResponse.json(

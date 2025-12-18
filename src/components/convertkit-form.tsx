@@ -51,13 +51,13 @@ export function ConvertKitForm({
 
       const result = await response.json();
 
-      if (response.ok) {
+      if (response.ok || result.success) {
         setIsSubmitted(true);
         if (onSuccess) {
           onSuccess();
         }
       } else {
-        setError(result.error || 'Failed to subscribe. Please try again.');
+        setError(result.error || result.message || 'Failed to subscribe. Please try again.');
       }
     } catch (err) {
       console.error('Loops subscription error:', err);
