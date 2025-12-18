@@ -128,17 +128,30 @@ export async function POST(request: NextRequest) {
 
     // Send welcome email (try Resend first since it's more reliable)
     let emailSent = false;
+    let emailError: string | null = null;
     try {
-      const welcomeEmail = emailTemplates.newsletterWelcome(sanitizedData.name || 'Friend');
-      await sendEmail({
-        to: sanitizedData.email,
-        subject: welcomeEmail.subject,
-        html: welcomeEmail.html,
-        text: welcomeEmail.text
-      });
-      emailSent = true;
+      if (!process.env.RESEND_API_KEY) {
+        emailError = 'RESEND_API_KEY not configured';
+        console.warn('Cannot send welcome email: RESEND_API_KEY not set');
+      } else {
+        const welcomeEmail = emailTemplates.newsletterWelcome(sanitizedData.name || 'Friend');
+        const emailResult = await sendEmail({
+          to: sanitizedData.email,
+          subject: welcomeEmail.subject,
+          html: welcomeEmail.html,
+          text: welcomeEmail.text
+        });
+        emailSent = emailResult !== null;
+        if (!emailSent) {
+          emailError = 'Email sending returned null (check logs for details)';
+        }
+      }
     } catch (error) {
-      console.error('Email sending failed:', error);
+      emailError = error instanceof Error ? error.message : String(error);
+      console.error('Email sending failed:', {
+        error: emailError,
+        email: sanitizedData.email.substring(0, 3) + '***',
+      });
       // Continue without failing the subscription
     }
 
@@ -148,6 +161,7 @@ export async function POST(request: NextRequest) {
       supabase_synced: supabaseSuccess,
       kit_synced: kitSynced,
       email_sent: emailSent,
+      email_error: emailError || undefined,
       message: 'Successfully subscribed to our newsletter!'
     });
 

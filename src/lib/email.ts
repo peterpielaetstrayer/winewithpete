@@ -8,6 +8,12 @@ interface EmailData {
 }
 
 export async function sendEmail(emailData: EmailData) {
+  // Check if API key is configured
+  if (!process.env.RESEND_API_KEY) {
+    console.error('RESEND_API_KEY not configured - cannot send email');
+    return null;
+  }
+
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -26,14 +32,31 @@ export async function sendEmail(emailData: EmailData) {
 
     if (!response.ok) {
       const errorData = await response.text();
-      throw new Error(`Resend API error: ${response.status} - ${errorData}`);
+      const errorMessage = `Resend API error: ${response.status} - ${errorData}`;
+      console.error('Email sending failed:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData,
+        to: emailData.to,
+        subject: emailData.subject,
+      });
+      throw new Error(errorMessage);
     }
 
     const result = await response.json();
-    console.log('Email sent successfully:', result);
+    console.log('Email sent successfully:', {
+      id: result.id,
+      to: emailData.to,
+      subject: emailData.subject,
+    });
     return result;
   } catch (error) {
-    console.error('Email sending failed:', error);
+    console.error('Email sending failed:', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      to: emailData.to,
+      subject: emailData.subject,
+    });
     // Don't throw - we don't want email failures to break the app
     return null;
   }
