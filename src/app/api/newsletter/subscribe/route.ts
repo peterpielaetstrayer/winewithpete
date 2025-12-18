@@ -52,17 +52,61 @@ export async function POST(request: NextRequest) {
       supabaseSuccess = true;
       console.log('Successfully saved to Supabase');
     } catch (error) {
+      // Extract error information
+      let errorCode = '';
+      let errorMessage = '';
+      
       if (error instanceof Error) {
-        supabaseError = error.message;
-      } else if (error && typeof error === 'object' && 'message' in error) {
-        supabaseError = String(error.message);
-      } else if (error && typeof error === 'object' && 'code' in error) {
-        supabaseError = `Code: ${error.code} - ${JSON.stringify(error)}`;
+        errorMessage = error.message;
+        // Check for Supabase error code in the error object
+        if ('code' in error) {
+          errorCode = String(error.code);
+        }
+      } else if (error && typeof error === 'object') {
+        if ('message' in error) {
+          errorMessage = String(error.message);
+        }
+        if ('code' in error) {
+          errorCode = String(error.code);
+        }
+        // Supabase errors sometimes have details
+        if ('details' in error) {
+          errorMessage += ' ' + String(error.details);
+        }
       } else {
-        supabaseError = JSON.stringify(error);
+        errorMessage = JSON.stringify(error);
       }
+      
+      supabaseError = errorMessage;
+      
+      // Check if it's a duplicate email error
+      // Supabase/PostgreSQL returns code '23505' for unique constraint violations
+      const lowerMessage = errorMessage.toLowerCase();
+      
+      if (
+        errorCode === '23505' ||
+        lowerMessage.includes('duplicate') ||
+        lowerMessage.includes('unique') ||
+        lowerMessage.includes('already exists') ||
+        lowerMessage.includes('violates unique constraint') ||
+        lowerMessage.includes('duplicate key value')
+      ) {
+        isDuplicate = true;
+        console.log('Duplicate email detected:', sanitizedData.email.substring(0, 3) + '***');
+        // Return early with success message for duplicates
+        return NextResponse.json(
+          { 
+            success: true,
+            message: 'This email is already subscribed to our newsletter!',
+            already_subscribed: true
+          },
+          { status: 200 }
+        );
+      }
+      
       console.error('Supabase subscription failed:', {
         error: supabaseError,
+        errorCode,
         fullError: error,
         errorType: error?.constructor?.name,
       });
