@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { ConvertKitForm } from '@/components/convertkit-form';
-import { Button } from '@/components/ui/button';
 import { ScrollToFormButton } from '@/components/scroll-to-form-button';
 
 export const metadata: Metadata = {
@@ -20,11 +19,20 @@ export const metadata: Metadata = {
     url: 'https://winewithpete.me/december-reset',
     siteName: 'Wine With Pete',
     type: 'website',
+    images: [
+      {
+        url: '/images/hero/hero-campfire.png.png',
+        width: 1200,
+        height: 630,
+        alt: 'The December Reset - Return to Your Baseline',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'The December Reset | Wine With Pete',
     description: 'A gentle, structured reset to rebuild the clarity, stability, and presence you\'ve been missing.',
+    images: ['/images/hero/hero-campfire.png.png'],
   },
   robots: {
     index: true,
@@ -33,8 +41,6 @@ export const metadata: Metadata = {
 };
 
 // Using Kit.co for email capture (form ID: 7051ff142e)
-// Gumroad product URL
-const GUMROAD_PRODUCT_URL = process.env.NEXT_PUBLIC_GUMROAD_PRODUCT_URL || 'https://gumroad.com/l/december-reset';
 
 export default function DecemberResetPage() {
 
@@ -341,15 +347,16 @@ export default function DecemberResetPage() {
                   <span>Complete appendix</span>
                 </li>
               </ul>
-              <a
-                href="https://gumroad.com/l/december-reset"
-                target="_blank"
-                rel="noopener noreferrer"
-                data-gumroad-single-product="true"
-                className="cta-button block w-full bg-dr-terracotta hover:bg-dr-terracotta/90 text-white text-lg py-6 rounded-lg font-medium transition-all hover:scale-105 shadow-lg hover:shadow-xl min-h-[56px] text-center"
-              >
-                Get the Complete Guide — $37
-              </a>
+            <a
+              href="https://gumroad.com/l/december-reset"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-gumroad-single-product="true"
+              className="cta-button block w-full bg-dr-terracotta hover:bg-dr-terracotta/90 text-white text-lg py-6 rounded-lg font-medium transition-all hover:scale-105 shadow-lg hover:shadow-xl min-h-[56px] text-center focus:outline-none focus:ring-2 focus:ring-dr-terracotta focus:ring-offset-2"
+              aria-label="Purchase The Complete Guide for $37 on Gumroad"
+            >
+              Get the Complete Guide — $37
+            </a>
             </div>
           </div>
         </div>
@@ -467,7 +474,8 @@ export default function DecemberResetPage() {
               target="_blank"
               rel="noopener noreferrer"
               data-gumroad-single-product="true"
-              className="cta-button w-full sm:w-auto border-2 border-dr-terracotta text-dr-terracotta hover:bg-dr-terracotta hover:text-white text-lg px-8 py-6 rounded-lg font-medium transition-all hover:scale-105 min-h-[56px] inline-flex items-center justify-center"
+              className="cta-button w-full sm:w-auto border-2 border-dr-terracotta text-dr-terracotta hover:bg-dr-terracotta hover:text-white text-lg px-8 py-6 rounded-lg font-medium transition-all hover:scale-105 min-h-[56px] inline-flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-dr-terracotta focus:ring-offset-2"
+              aria-label="Purchase The Complete Method for $37 on Gumroad"
             >
               Get the Complete Method — $37
             </a>

@@ -30,10 +30,8 @@ export function ConvertKitForm({
     setIsSubmitting(true);
 
     try {
-      // Form ID is not needed for Kit.co API, but we keep it for compatibility
-
-      // Use Kit API for December Reset
-      const response = await fetch('/api/kit/subscribe', {
+      // Use Loops API for December Reset
+      const response = await fetch('/api/loops/subscribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +60,7 @@ export function ConvertKitForm({
         setError(result.error || 'Failed to subscribe. Please try again.');
       }
     } catch (err) {
-      console.error('Kit subscription error:', err);
+      console.error('Loops subscription error:', err);
       setError('Failed to subscribe. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -76,7 +74,7 @@ export function ConvertKitForm({
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
-          <span>Check your email for the Quick Start Guide!</span>
+          <span>Check your email! Your Quick Start Guide is on its way.</span>
         </div>
       </div>
     );
