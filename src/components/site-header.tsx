@@ -16,11 +16,11 @@ export function SiteHeader(){
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex gap-6">
+          {link('/start-here','Start Here')}
+          {link('/essays','Essays')}
+          {link('/gatherings','Gatherings')}
+          {link('/recipes','Recipes')}
           {link('/about','About')}
-          {link('/events','Events')}
-          {link('/archive','Essays')}
-          {link('/store','Store')}
-          {link('/support','Support')}
           {link('/join','Join')}
         </nav>
         
@@ -39,11 +39,11 @@ export function SiteHeader(){
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-black/5">
           <nav className="px-4 py-4 flex flex-col gap-4">
+            {link('/start-here','Start Here')}
+            {link('/essays','Essays')}
+            {link('/gatherings','Gatherings')}
+            {link('/recipes','Recipes')}
             {link('/about','About')}
-            {link('/events','Events')}
-            {link('/archive','Essays')}
-            {link('/store','Store')}
-            {link('/support','Support')}
             {link('/join','Join')}
           </nav>
         </div>

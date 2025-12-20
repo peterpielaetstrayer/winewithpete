@@ -19,10 +19,11 @@ export function SiteFooter(){
           <div>
             <h4 className="font-medium mb-4 text-charcoal">Explore</h4>
             <div className="space-y-2 text-sm">
+              <Link href="/start-here" className="block text-black/70 hover:text-ember transition-colors">Start Here</Link>
+              <Link href="/essays" className="block text-black/70 hover:text-ember transition-colors">Essays</Link>
+              <Link href="/gatherings" className="block text-black/70 hover:text-ember transition-colors">Gatherings</Link>
+              <Link href="/recipes" className="block text-black/70 hover:text-ember transition-colors">Recipes</Link>
               <Link href="/about" className="block text-black/70 hover:text-ember transition-colors">About</Link>
-              <Link href="/events" className="block text-black/70 hover:text-ember transition-colors">Events</Link>
-              <Link href="/archive" className="block text-black/70 hover:text-ember transition-colors">Essays</Link>
-              <Link href="/store" className="block text-black/70 hover:text-ember transition-colors">Store</Link>
             </div>
           </div>
           

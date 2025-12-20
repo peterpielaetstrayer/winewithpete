@@ -20,7 +20,7 @@ export default function NotFound() {
               </Button>
             </Link>
             <div className="text-sm text-black/60">
-              <p>Or explore our <Link href="/events" className="text-ember hover:underline">events</Link> or <Link href="/store" className="text-ember hover:underline">store</Link></p>
+              <p>Or explore our <Link href="/gatherings" className="text-ember hover:underline">gatherings</Link> or <Link href="/recipes" className="text-ember hover:underline">recipes</Link></p>
             </div>
           </div>
         </div>

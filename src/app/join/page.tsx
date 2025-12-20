@@ -146,6 +146,21 @@ export default function JoinPage(){
         </div>
       </div>
 
+      {/* Lead Magnet Section */}
+      <div className="bg-white py-16">
+        <div className="mx-auto max-w-2xl px-4">
+          <div className="bg-cream rounded-2xl p-12 shadow-sm border text-center mb-8">
+            <h2 className="text-3xl font-serif font-medium mb-4 text-charcoal">
+              Get a free Fire Ritual recipe card
+            </h2>
+            <p className="text-lg text-black/70 mb-6 leading-relaxed">
+              When you join the Circle, you&apos;ll receive a free Fire Ritual recipe card, 
+              plus weekly insights, recipe cards, and invitations to gather.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Newsletter Signup */}
       <div className="bg-white py-16">
         <div className="mx-auto max-w-2xl px-4">

@@ -34,15 +34,18 @@ export default function AboutPage(){
             <div>
               <h2 className="text-2xl font-serif font-semibold mb-4">Who is Pete?</h2>
               <p className="text-black/80 leading-relaxed mb-4">
-                Pete is a writer, community builder, and believer in the power of slow conversation. 
-                After years of feeling disconnected in a hyper-connected world, he started hosting 
+                After years of feeling disconnected in a hyper-connected world, I started hosting 
                 small gatherings around fire and food, where people could share stories, ask hard questions, 
                 and build genuine connections.
               </p>
-              <p className="text-black/80 leading-relaxed">
-                What started as informal beach fires with friends has grown into a community of people 
+              <p className="text-black/80 leading-relaxed mb-4">
+                What began as informal beach fires with friends has grown into a community of people 
                 who value depth over breadth, quality over quantity, and the kind of conversations that 
                 stay with you long after the fire burns out.
+              </p>
+              <p className="text-black/80 leading-relaxed">
+                I&apos;m a writer, community builder, and believer in the power of slow conversation. 
+                This project is my attempt to create spaces where we can pause, listen deeply, and turn toward what matters.
               </p>
             </div>
             <div className="aspect-[4/3] rounded-xl overflow-hidden">
@@ -57,7 +60,7 @@ export default function AboutPage(){
 
         <div className="bg-white rounded-2xl p-8 shadow-sm border mb-8">
           <h2 className="text-2xl font-serif font-semibold mb-4">What We Do</h2>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
               <h3 className="text-lg font-medium mb-2">🔥 Open Fire Sundays</h3>
               <p className="text-black/70 text-sm">
@@ -73,6 +76,19 @@ export default function AboutPage(){
               </p>
             </div>
           </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-8 shadow-sm border mb-8">
+          <h2 className="text-2xl font-serif font-semibold mb-4">What We&apos;re Becoming</h2>
+          <p className="text-black/80 leading-relaxed mb-4">
+            Wine With Pete is evolving into a platform for essays, gatherings, recipes, and media that support slow living and genuine connection. 
+            We&apos;re building something that extends beyond individual events into a movement toward more meaningful relationships.
+          </p>
+          <p className="text-black/80 leading-relaxed">
+            Through weekly essays, curated gatherings, fire-friendly recipes, and thoughtful content, 
+            we&apos;re creating resources and experiences that help people slow down, connect authentically, 
+            and build communities around what truly matters.
+          </p>
         </div>
 
         <div className="bg-white rounded-2xl p-8 shadow-sm border mb-8">

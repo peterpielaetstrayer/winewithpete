@@ -14,8 +14,8 @@ async function SuccessContent({ sessionId }: { sessionId: string }) {
         <div className="text-center">
           <h1 className="text-2xl font-serif text-charcoal mb-4">Payment Not Found</h1>
           <p className="text-black/70 mb-6">We couldn&apos;t find your payment session.</p>
-          <Link href="/store">
-            <Button className="btn-ember">Back to Store</Button>
+          <Link href="/recipes">
+            <Button className="btn-ember">Back to Recipes</Button>
           </Link>
         </div>
       );
@@ -68,14 +68,14 @@ async function SuccessContent({ sessionId }: { sessionId: string }) {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/store">
+            <Link href="/recipes">
               <Button variant="outline" className="border-ember text-ember hover:bg-ember hover:text-white">
                 Continue Shopping
               </Button>
             </Link>
-            <Link href="/events">
+            <Link href="/gatherings">
               <Button className="btn-ember">
-                Join an Event
+                See Gatherings
               </Button>
             </Link>
           </div>
@@ -111,8 +111,8 @@ export default async function SuccessPage({
         <div className="text-center">
           <h1 className="text-2xl font-serif text-charcoal mb-4">Invalid Session</h1>
           <p className="text-black/70 mb-6">No session ID provided.</p>
-          <Link href="/store">
-            <Button className="btn-ember">Back to Store</Button>
+          <Link href="/recipes">
+            <Button className="btn-ember">Back to Recipes</Button>
           </Link>
         </div>
       </div>
