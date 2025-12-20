@@ -89,8 +89,8 @@ async function SuccessContent({ sessionId }: { sessionId: string }) {
       <div className="text-center">
         <h1 className="text-2xl font-serif text-charcoal mb-4">Something went wrong</h1>
         <p className="text-black/70 mb-6">We&apos;re having trouble processing your payment confirmation.</p>
-        <Link href="/store">
-          <Button className="btn-ember">Back to Store</Button>
+        <Link href="/recipes">
+          <Button className="btn-ember">Back to Recipes</Button>
         </Link>
       </div>
     );

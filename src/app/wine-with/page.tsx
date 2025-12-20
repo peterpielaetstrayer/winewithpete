@@ -23,7 +23,7 @@ export default function WineWithLanding(){
           >
             Apply to host
           </Button>
-          <Link className="underline" href="/events">See how events work →</Link>
+          <Link className="underline" href="/gatherings">See how events work →</Link>
         </div>
         <ul className="mt-10 list-disc pl-6 space-y-2 text-sm opacity-80">
           <li>Fire setup guides & conversation decks</li>

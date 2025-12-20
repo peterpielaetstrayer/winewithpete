@@ -204,7 +204,7 @@ export async function POST(request: NextRequest) {
       ],
       mode: 'payment',
       success_url: `${request.nextUrl.origin}/store/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${request.nextUrl.origin}/store?cancelled=true`,
+      cancel_url: `${request.nextUrl.origin}/recipes?cancelled=true`,
       customer_email: customerEmail,
       metadata: {
         productId: product.id,
