@@ -32,7 +32,8 @@ export async function GET(request: NextRequest) {
   // Check 3: Loops API connection
   if (process.env.LOOPS_API_KEY) {
     try {
-      const testResponse = await fetch('https://app.loops.so/api/v1/contacts/list', {
+      // Test 1: Test API key validity
+      const listResponse = await fetch('https://app.loops.so/api/v1/contacts/list', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${process.env.LOOPS_API_KEY}`,
@@ -40,14 +41,65 @@ export async function GET(request: NextRequest) {
         },
       });
 
+      let listData: any;
+      try {
+        listData = await listResponse.json();
+      } catch {
+        listData = await listResponse.text();
+      }
+
       results.checks.loops_api = {
-        status: testResponse.ok ? 'connected' : 'error',
-        statusCode: testResponse.status,
-        statusText: testResponse.statusText,
-        message: testResponse.ok 
+        status: listResponse.ok ? 'connected' : 'error',
+        statusCode: listResponse.status,
+        statusText: listResponse.statusText,
+        message: listResponse.ok 
           ? 'Loops API is accessible and API key is valid'
           : 'Loops API returned an error. Check your API key.',
+        response: listData,
       };
+
+      // Test 2: Try creating a test contact (will fail if mailing list doesn't exist)
+      if (listResponse.ok) {
+        try {
+          const testEmail = `test-${Date.now()}@example.com`;
+          const createResponse = await fetch('https://app.loops.so/api/v1/contacts/create', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.LOOPS_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: testEmail,
+              source: 'test',
+              mailingLists: {
+                'december-reset-leads': true,
+              },
+            }),
+          });
+
+          let createData: any;
+          try {
+            createData = await createResponse.json();
+          } catch {
+            createData = await createResponse.text();
+          }
+
+          results.checks.create_contact = {
+            status: createResponse.ok ? 'success' : 'error',
+            statusCode: createResponse.status,
+            statusText: createResponse.statusText,
+            message: createResponse.ok
+              ? 'Contact creation test successful'
+              : 'Contact creation failed. Check mailing list name.',
+            response: createData,
+          };
+        } catch (error) {
+          results.checks.create_contact = {
+            status: 'error',
+            error: error instanceof Error ? error.message : String(error),
+          };
+        }
+      }
     } catch (error) {
       results.checks.loops_api = {
         status: 'error',

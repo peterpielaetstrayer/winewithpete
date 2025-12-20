@@ -32,21 +32,61 @@ export async function POST(request: NextRequest) {
 
     const sanitizedEmail = email.trim().toLowerCase();
 
+    // Prepare request payload
+    // Try with mailing list first, fallback to just email if that fails
+    const requestPayload = {
+      email: sanitizedEmail,
+      source: 'december-reset-landing',
+      mailingLists: {
+        'december-reset-leads': true,
+      },
+    };
+    
+    // Alternative format (if object doesn't work, try array)
+    // const requestPayloadAlt = {
+    //   email: sanitizedEmail,
+    //   source: 'december-reset-landing',
+    //   mailingLists: ['december-reset-leads'],
+    // };
+
+    console.log('Calling Loops API:', {
+      endpoint: 'https://app.loops.so/api/v1/contacts/create',
+      hasApiKey: !!process.env.LOOPS_API_KEY,
+      apiKeyLength: process.env.LOOPS_API_KEY?.length || 0,
+      payload: { ...requestPayload, email: sanitizedEmail.substring(0, 3) + '***' },
+    });
+
     // Call Loops API to create contact
-    const loopsResponse = await fetch('https://app.loops.so/api/v1/contacts/create', {
+    let loopsResponse = await fetch('https://app.loops.so/api/v1/contacts/create', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.LOOPS_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
+      body: JSON.stringify(requestPayload),
+    });
+
+    // If first attempt fails with 400, try without mailing list (in case list doesn't exist)
+    if (!loopsResponse.ok && loopsResponse.status === 400) {
+      console.log('First attempt failed with 400, trying without mailing list...');
+      const fallbackPayload = {
         email: sanitizedEmail,
         source: 'december-reset-landing',
-        mailingLists: {
-          'december-reset-leads': true,
+      };
+      
+      loopsResponse = await fetch('https://app.loops.so/api/v1/contacts/create', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.LOOPS_API_KEY}`,
+          'Content-Type': 'application/json',
         },
-      }),
-    });
+        body: JSON.stringify(fallbackPayload),
+      });
+      
+      if (loopsResponse.ok) {
+        console.log('Success with fallback (no mailing list)');
+      }
+    }
 
     if (!loopsResponse.ok) {
       let errorData: any;
@@ -86,11 +126,21 @@ export async function POST(request: NextRequest) {
         }, { status: 200 });
       }
 
+      // Return detailed error for debugging
+      const errorResponse = {
+        error: 'Failed to subscribe. Please try again.',
+        details: errorData,
+        status: loopsResponse.status,
+        statusText: loopsResponse.statusText,
+      };
+
+      console.error('Returning error response:', {
+        ...errorResponse,
+        errorDataString: typeof errorData === 'string' ? errorData : JSON.stringify(errorData),
+      });
+
       return NextResponse.json(
-        { 
-          error: 'Failed to subscribe. Please try again.',
-          details: process.env.NODE_ENV === 'development' ? errorData : undefined,
-        },
+        errorResponse,
         { status: loopsResponse.status }
       );
     }
