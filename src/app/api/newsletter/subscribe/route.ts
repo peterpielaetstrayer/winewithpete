@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { subscribeToNewsletter } from '@/lib/supabase/database';
 import { newsletterSchema, validateEmail, validateName } from '@/lib/validations';
-import { addToKitList, sendKitWelcomeEmail } from '@/lib/kit';
 import { sendEmail, emailTemplates } from '@/lib/email';
 // import type { NewsletterFormData } from '@/lib/types';
 
@@ -91,7 +90,6 @@ export async function POST(request: NextRequest) {
         lowerMessage.includes('violates unique constraint') ||
         lowerMessage.includes('duplicate key value')
       ) {
-        isDuplicate = true;
         console.log('Duplicate email detected:', sanitizedData.email.substring(0, 3) + '***');
         // Return early with success message for duplicates
         return NextResponse.json(
@@ -113,71 +111,87 @@ export async function POST(request: NextRequest) {
       
       // Check if it's a connection/database issue
       if (supabaseError.includes('fetch') || supabaseError.includes('network') || supabaseError.includes('ECONNREFUSED')) {
-        console.warn('Supabase appears to be down or paused. Continuing with Kit subscription only.');
+        console.warn('Supabase appears to be down or paused. Cannot continue without database.');
       } else {
         // For other errors (like duplicates), we might want to continue
         console.warn('Supabase error (non-critical):', supabaseError);
       }
-      // Continue without failing - we'll try Kit.co instead
     }
 
-    // Try to add to Kit list (primary method if Supabase is down)
-    let kitSynced = false;
-    let kitError: string | null = null;
-    try {
-      const kitResult = await addToKitList({
-        email: sanitizedData.email,
-        name: sanitizedData.name,
-        tags: ['newsletter', 'website-signup']
+    // If Supabase failed, we can't continue
+    if (!supabaseSuccess) {
+      console.error('CRITICAL: Supabase subscription failed', {
+        supabase_error: supabaseError,
+        email: sanitizedData.email.substring(0, 3) + '***',
       });
-      kitSynced = kitResult.success;
-      if (kitSynced) {
-        console.log('Successfully saved to Kit.co');
+      
+      return NextResponse.json(
+        { 
+          error: 'Unable to save subscription. Please try again later or contact support.',
+          details: 'Database connection failed',
+          debug: {
+            supabase: supabaseError?.substring(0, 100) || 'Unknown error',
+          }
+        },
+        { status: 500 }
+      );
+    }
+
+    // Sync to Loops for email marketing (optional, but recommended)
+    let loopsSynced = false;
+    let loopsError: string | null = null;
+    try {
+      if (process.env.LOOPS_API_KEY) {
+        const loopsPayload = {
+          email: sanitizedData.email,
+          firstName: sanitizedData.name?.split(' ')[0] || undefined,
+          lastName: sanitizedData.name?.split(' ').slice(1).join(' ') || undefined,
+          source: 'website-newsletter',
+        };
+
+        const loopsResponse = await fetch('https://app.loops.so/api/v1/contacts/create', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.LOOPS_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(loopsPayload),
+        });
+
+        if (loopsResponse.ok) {
+          loopsSynced = true;
+          console.log('Successfully synced to Loops');
+        } else {
+          const errorData = await loopsResponse.json().catch(() => ({ message: 'Unknown error' }));
+          loopsError = errorData?.message || `Loops API error: ${loopsResponse.status}`;
+          
+          // Don't fail if it's a duplicate (that's okay)
+          if (loopsResponse.status === 409 || loopsResponse.status === 400) {
+            const errorMsg = (errorData?.message || '').toLowerCase();
+            if (errorMsg.includes('already exists') || errorMsg.includes('duplicate')) {
+              loopsSynced = true; // Consider duplicate as success
+              console.log('Email already in Loops (duplicate)');
+            }
+          }
+          
+          if (!loopsSynced) {
+            console.warn('Loops sync failed (non-critical):', loopsError);
+          }
+        }
       } else {
-        kitError = kitResult.error || 'Kit.co API failed';
+        loopsError = 'LOOPS_API_KEY not configured';
+        console.warn('Loops API key not set, skipping Loops sync');
       }
     } catch (error) {
-      kitError = error instanceof Error ? error.message : String(error);
-      console.error('Kit integration failed:', kitError);
+      loopsError = error instanceof Error ? error.message : String(error);
+      console.warn('Loops integration failed (non-critical):', loopsError);
       // Continue without failing the subscription
     }
 
-    // If Supabase succeeded, we're good (Kit is optional)
-    if (supabaseSuccess) {
-      // Success! Kit.co is optional, so even if it failed, we succeeded
-      console.log('Subscription successful via Supabase', {
-        kit_synced: kitSynced,
-        email: sanitizedData.email.substring(0, 3) + '***',
-      });
-    } else {
-      // Supabase failed - check if Kit worked as backup
-      if (kitSynced) {
-        console.log('Subscription successful via Kit.co (Supabase failed)', {
-          supabase_error: supabaseError?.substring(0, 50),
-          email: sanitizedData.email.substring(0, 3) + '***',
-        });
-      } else {
-        // Both failed - this is a problem
-        console.error('CRITICAL: Both subscription methods failed', {
-          supabase_error: supabaseError,
-          kit_error: kitError,
-          email: sanitizedData.email.substring(0, 3) + '***',
-        });
-        
-        return NextResponse.json(
-          { 
-            error: 'Unable to save subscription. Please try again later or contact support.',
-            details: 'Both Supabase and Kit.co subscriptions failed',
-            // Include errors in response for debugging (will be visible in browser console)
-            debug: {
-              supabase: supabaseError?.substring(0, 100) || 'Unknown error',
-              kit: kitError?.substring(0, 100) || 'Unknown error',
-            }
-          },
-          { status: 500 }
-        );
-      }
-    }
+    console.log('Subscription successful via Supabase', {
+      loops_synced: loopsSynced,
+      email: sanitizedData.email.substring(0, 3) + '***',
+    });
 
     // Send welcome email (try Resend first since it's more reliable)
     let emailSent = false;
@@ -212,9 +226,10 @@ export async function POST(request: NextRequest) {
       success: true,
       data: subscriber,
       supabase_synced: supabaseSuccess,
-      kit_synced: kitSynced,
+      loops_synced: loopsSynced,
       email_sent: emailSent,
       email_error: emailError || undefined,
+      loops_error: loopsError || undefined,
       message: 'Successfully subscribed to our newsletter!'
     });
 
