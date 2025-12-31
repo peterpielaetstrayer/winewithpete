@@ -72,7 +72,7 @@ export default function BaselineMethodPage() {
 
           <div className="space-y-4">
             <a
-              href="https://gumroad.com/l/baseline-method"
+              href="https://8413493499309.gumroad.com/l/baseline-method"
               target="_blank"
               rel="noopener noreferrer"
               data-gumroad-single-product="true"
@@ -316,7 +316,7 @@ export default function BaselineMethodPage() {
 
           <div className="flex flex-col items-center gap-4 max-w-2xl mx-auto">
             <a
-              href="https://gumroad.com/l/baseline-method"
+              href="https://8413493499309.gumroad.com/l/baseline-method"
               target="_blank"
               rel="noopener noreferrer"
               data-gumroad-single-product="true"
