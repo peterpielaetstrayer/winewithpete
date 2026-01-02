@@ -37,7 +37,14 @@ export default function StartHerePage() {
       }
 
       if (response.ok) {
-        setIsSubmitted(true);
+        // Check if it's a duplicate subscription
+        if (result.already_subscribed) {
+          alert('You\'re already subscribed! Check your email for our latest updates.');
+          setEmail(''); // Clear the form
+          setName(''); // Clear the form
+        } else {
+          setIsSubmitted(true);
+        }
       } else {
         const errorMsg = result.error || result.details || 'Failed to subscribe';
         alert(errorMsg);

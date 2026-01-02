@@ -34,7 +34,13 @@ export default function JoinPage(){
       }
 
       if (response.ok) {
-        setIsSubmitted(true);
+        // Check if it's a duplicate subscription
+        if (result.already_subscribed) {
+          alert('You\'re already subscribed! Check your email for our latest updates.');
+          setEmail(''); // Clear the form
+        } else {
+          setIsSubmitted(true);
+        }
       } else {
         // Show detailed error if available
         const errorMsg = result.error || result.details || 'Failed to subscribe';
