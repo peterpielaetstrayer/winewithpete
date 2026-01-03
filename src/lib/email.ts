@@ -22,7 +22,7 @@ export async function sendEmail(emailData: EmailData) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Wine With Pete <pete@winewithpete.me>',
+        from: 'Pete <pete@winewithpete.me>',
         to: [emailData.to],
         subject: emailData.subject,
         html: emailData.html,
@@ -99,23 +99,58 @@ export const emailTemplates = {
   }),
 
   newsletterWelcome: (name: string) => ({
-    subject: 'Welcome to the Wine With Pete Circle',
+    subject: 'Glad you\'re here',
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #5b2320;">Welcome to the Circle!</h1>
-        <p>Hi ${name},</p>
-        <p>You're now part of our community. You'll receive:</p>
-        <ul>
-          <li>Weekly philosophical insights</li>
-          <li>Fire-friendly recipe cards</li>
-          <li>Event invitations</li>
-          <li>Community reflections</li>
+      <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px; line-height: 1.6; color: #333;">
+        <p>Hey there,</p>
+        <p>I'm really glad you found your way here.</p>
+        <p>The Circle is a small, intentional space. It's where I share things that don't always fit neatly on social media or in longer essays. Thoughts in progress. Recipes meant to be cooked over fire or slow heat. Invitations to gather, reflect, and pay attention.</p>
+        <p>Here's what you can expect, at a human pace:</p>
+        <ul style="list-style: none; padding-left: 0;">
+          <li style="margin-bottom: 8px;">• Weekly reflections — short, grounded ideas about ritual, attention, food, and being human</li>
+          <li style="margin-bottom: 8px;">• Fire-friendly recipe cards — simple, nourishing things meant to be shared</li>
+          <li style="margin-bottom: 8px;">• Occasional invitations — dinners, gatherings, or moments worth showing up for</li>
+          <li style="margin-bottom: 8px;">• Community notes — reflections that come from cooking, hosting, and listening</li>
         </ul>
-        <p>Start by reading our latest essays: <a href="https://winewithpete.substack.com">winewithpete.substack.com</a></p>
-        <p>Welcome to the fire,</p>
-        <p>— Pete</p>
+        <p>This is different from my longer essays on Substack. Those are more structured. The Circle is closer to a journal you open once a week.</p>
+        <p>If you'd like to explore a bit right now, you can:</p>
+        <ul style="list-style: none; padding-left: 0;">
+          <li style="margin-bottom: 8px;">• Read the essays <a href="https://winewithpete.substack.com" style="color: #5b2320; text-decoration: underline;">here</a></li>
+          <li style="margin-bottom: 8px;">• Browse recent recipes <a href="https://winewithpete.me/recipes" style="color: #5b2320; text-decoration: underline;">here</a></li>
+        </ul>
+        <p>No rush. No algorithm to satisfy. Come and go as you need.</p>
+        <p>Mostly, I just want you to know this: you're welcome here. You don't need to optimize anything. Just show up when it feels right.</p>
+        <p>Glad you're in the Circle.</p>
+        <p>Warmly,<br>Pete</p>
       </div>
     `,
-    text: `Welcome to Wine With Pete! You'll receive weekly insights, recipe cards, and event invitations.`
+    text: `Hey there,
+
+I'm really glad you found your way here.
+
+The Circle is a small, intentional space. It's where I share things that don't always fit neatly on social media or in longer essays. Thoughts in progress. Recipes meant to be cooked over fire or slow heat. Invitations to gather, reflect, and pay attention.
+
+Here's what you can expect, at a human pace:
+
+• Weekly reflections — short, grounded ideas about ritual, attention, food, and being human
+• Fire-friendly recipe cards — simple, nourishing things meant to be shared
+• Occasional invitations — dinners, gatherings, or moments worth showing up for
+• Community notes — reflections that come from cooking, hosting, and listening
+
+This is different from my longer essays on Substack. Those are more structured. The Circle is closer to a journal you open once a week.
+
+If you'd like to explore a bit right now, you can:
+
+• Read the essays here: https://winewithpete.substack.com
+• Browse recent recipes here: https://winewithpete.me/recipes
+
+No rush. No algorithm to satisfy. Come and go as you need.
+
+Mostly, I just want you to know this: you're welcome here. You don't need to optimize anything. Just show up when it feels right.
+
+Glad you're in the Circle.
+
+Warmly,
+Pete`
   })
 };
