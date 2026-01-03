@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { BaselineMethodForm } from '@/components/baseline-method-form';
 
 export const metadata: Metadata = {
   title: 'The Baseline Method | Wine With Pete',
@@ -71,19 +72,7 @@ export default function BaselineMethodPage() {
           </div>
 
           <div className="space-y-4">
-            <a
-              href="https://8413493499309.gumroad.com/l/baseline-method"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-gumroad-single-product="true"
-              className="inline-block bg-dr-terracotta hover:bg-dr-terracotta/90 text-white text-lg px-10 py-6 rounded-lg font-medium transition-all hover:scale-105 shadow-lg hover:shadow-xl min-h-[56px]"
-              aria-label="Get The Baseline Method on Gumroad"
-            >
-              Get the Baseline Method
-            </a>
-            <p className="text-sm text-dr-charcoal/60">
-              Free / Pay-What-You-Want
-            </p>
+            <BaselineMethodForm />
           </div>
         </div>
       </section>
@@ -315,19 +304,7 @@ export default function BaselineMethodPage() {
           </div>
 
           <div className="flex flex-col items-center gap-4 max-w-2xl mx-auto">
-            <a
-              href="https://8413493499309.gumroad.com/l/baseline-method"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-gumroad-single-product="true"
-              className="cta-button w-full sm:w-auto bg-dr-terracotta hover:bg-dr-terracotta/90 text-white text-lg px-10 py-6 rounded-lg font-medium transition-all hover:scale-105 shadow-lg hover:shadow-xl min-h-[56px] inline-flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-dr-terracotta focus:ring-offset-2"
-              aria-label="Get The Baseline Method on Gumroad"
-            >
-              Get the Baseline Method
-            </a>
-            <p className="text-sm text-dr-charcoal/60">
-              Free / Pay-What-You-Want
-            </p>
+            <BaselineMethodForm />
           </div>
 
           <p className="mt-12 text-lg text-dr-charcoal/70 italic">

@@ -152,5 +152,35 @@ Glad you're in the Circle.
 
 Warmly,
 Pete`
+  }),
+
+  baselineMethodWelcome: (name: string, gumroadUrl: string) => ({
+    subject: 'Your Baseline Method guide',
+    html: `
+      <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px; line-height: 1.6; color: #333;">
+        <p>Hey ${name},</p>
+        <p>Thanks for your interest in The Baseline Method.</p>
+        <p>This is an evergreen guide to rebuild your physical and mental baseline through small, repeatable daily anchors. It's not a challenge. It's not a detox. It's something you can start any day of the year, especially during moments of drift.</p>
+        <p>You can get the guide here:</p>
+        <p><a href="${gumroadUrl}" style="color: #5b2320; text-decoration: underline;">Get The Baseline Method</a></p>
+        <p>It's free / pay-what-you-want. No pressure.</p>
+        <p>The baseline always welcomes you back.</p>
+        <p>Warmly,<br>Pete</p>
+      </div>
+    `,
+    text: `Hey ${name},
+
+Thanks for your interest in The Baseline Method.
+
+This is an evergreen guide to rebuild your physical and mental baseline through small, repeatable daily anchors. It's not a challenge. It's not a detox. It's something you can start any day of the year, especially during moments of drift.
+
+You can get the guide here: ${gumroadUrl}
+
+It's free / pay-what-you-want. No pressure.
+
+The baseline always welcomes you back.
+
+Warmly,
+Pete`
   })
 };
