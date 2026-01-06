@@ -31,6 +31,7 @@ export default function AdminPage() {
   // Printful state
   const [printfulProducts, setPrintfulProducts] = useState<any[]>([]);
   const [printfulLoading, setPrintfulLoading] = useState(false);
+  const [printfulError, setPrintfulError] = useState<{error: string; details?: string; suggestion?: string} | null>(null);
   const [selectedPrintfulProducts, setSelectedPrintfulProducts] = useState<Set<string>>(new Set());
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<{success: boolean; message: string; synced?: number; errors?: any[]} | null>(null);
@@ -573,17 +574,28 @@ export default function AdminPage() {
                 setPrintfulLoading(true);
                 setPrintfulProducts([]);
                 setSyncResult(null);
+                setPrintfulError(null);
                 try {
                   const response = await fetch('/api/printful/catalog');
                   const data = await response.json();
                   if (data.success) {
                     setPrintfulProducts(data.data || []);
+                    setPrintfulError(null);
                   } else {
-                    alert(data.error || 'Failed to fetch Printful products');
+                    // Store error for display
+                    setPrintfulError({
+                      error: data.error || 'Failed to fetch Printful products',
+                      details: data.details,
+                      suggestion: data.suggestion
+                    });
+                    console.error('Printful catalog error:', data);
                   }
                 } catch (error) {
-                  alert('Failed to fetch Printful products');
-                  console.error(error);
+                  setPrintfulError({
+                    error: 'Failed to fetch Printful products',
+                    details: error instanceof Error ? error.message : String(error)
+                  });
+                  console.error('Printful fetch error:', error);
                 } finally {
                   setPrintfulLoading(false);
                 }
@@ -593,6 +605,33 @@ export default function AdminPage() {
               {printfulLoading ? 'Loading...' : 'Fetch Printful Catalog'}
             </Button>
           </div>
+
+          {/* Error Display for Catalog Fetch */}
+          {printfulError && (
+            <Card className="p-4 bg-red-50 border-red-200">
+              <p className="font-medium text-red-800 mb-2">
+                {printfulError.error}
+              </p>
+              {printfulError.details && (
+                <p className="text-sm text-red-700 mb-2">
+                  <strong>Details:</strong> {printfulError.details}
+                </p>
+              )}
+              {printfulError.suggestion && (
+                <p className="text-sm text-red-600 mt-2 italic">
+                  💡 {printfulError.suggestion}
+                </p>
+              )}
+            </Card>
+          )}
+
+          {!printfulError && printfulProducts.length === 0 && !printfulLoading && (
+            <Card className="p-4 bg-yellow-50 border-yellow-200">
+              <p className="text-sm text-yellow-800">
+                No products loaded. Click "Fetch Printful Catalog" to load products.
+              </p>
+            </Card>
+          )}
 
           {syncResult && (
             <Card className={`p-4 ${syncResult.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
