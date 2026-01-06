@@ -21,15 +21,38 @@ export async function POST(request: NextRequest) {
       try {
         // Extract sync_product data (Printful structure)
         const syncProduct = product.sync_product || product;
-        const syncVariants = product.sync_variants || product.variants || [];
         
-        if (syncVariants.length === 0) {
-          errors.push({ product: syncProduct.name || product.id, error: 'No variants found' });
+        // Ensure syncVariants is always an array
+        let syncVariants = [];
+        if (Array.isArray(product.sync_variants)) {
+          syncVariants = product.sync_variants;
+        } else if (Array.isArray(product.variants)) {
+          syncVariants = product.variants;
+        } else if (product.sync_variants && typeof product.sync_variants === 'object') {
+          // If it's an object, try to extract array from it
+          syncVariants = Object.values(product.sync_variants).filter(Array.isArray)[0] || [];
+        }
+        
+        if (!Array.isArray(syncVariants) || syncVariants.length === 0) {
+          errors.push({ 
+            product: syncProduct.name || product.id || 'Unknown', 
+            error: 'No variants found or variants not in expected format' 
+          });
           continue;
         }
 
         // Use first variant for base price (or find variant with retail_price)
-        const mainVariant = syncVariants.find((v: any) => v.retail_price) || syncVariants[0];
+        const mainVariant = Array.isArray(syncVariants) 
+          ? (syncVariants.find((v: any) => v && (v.retail_price || v.price)) || syncVariants[0])
+          : null;
+        
+        if (!mainVariant) {
+          errors.push({ 
+            product: syncProduct.name || product.id || 'Unknown', 
+            error: 'Could not extract variant data' 
+          });
+          continue;
+        }
         
         // Get product image (from sync_product or variants)
         const productImage = syncProduct.thumbnail_url || 
