@@ -196,7 +196,7 @@ body{
 }
 .card-enhanced:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(91, 35, 32, 0.15);
 }
 
 /* Focus states for accessibility */

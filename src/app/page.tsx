@@ -54,23 +54,32 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative h-screen flex items-center justify-center overflow-hidden">
+      <div className="relative h-[75vh] min-h-[600px] flex items-center justify-center overflow-hidden">
         {/* Campfire Background */}
         <div className="absolute inset-0">
           <Image
             src="/images/hero/hero-campfire.png.png"
             alt="Community gathering around campfire"
             fill
-            className="object-cover"
+            className="object-cover scale-105"
+            style={{ opacity: 0.6 }}
             priority
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+          {/* Subtle texture overlay */}
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.01) 2px, rgba(0,0,0,0.01) 4px)`,
+              mixBlendMode: 'overlay',
+            }}
+          ></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent"></div>
         </div>
         
         {/* Hero Content */}
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto animate-fade-in">
-          <h1 className="text-hero text-white leading-relaxed mb-6">
+          <h1 className="text-hero text-white leading-relaxed mb-6 tracking-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
             In a world that moves too fast, we create space for something different.
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-4 leading-relaxed">
@@ -99,9 +108,21 @@ export default function Home() {
       </div>
 
       {/* Mission Statement Section */}
-      <div className="bg-white py-16 -mt-16 relative z-20">
-        <div className="mx-auto max-w-3xl px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-serif font-medium mb-6 text-charcoal animate-fade-in">
+      <div 
+        className="bg-white py-20 -mt-20 relative z-20 rounded-t-3xl"
+        style={{
+          boxShadow: '0 -10px 40px rgba(0,0,0,0.1), 0 10px 40px rgba(91,35,32,0.05)'
+        }}
+      >
+        {/* Subtle texture overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.02] pointer-events-none rounded-t-3xl"
+          style={{
+            backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(91,35,32,0.03) 10px, rgba(91,35,32,0.03) 11px)`
+          }}
+        ></div>
+        <div className="mx-auto max-w-3xl px-4 text-center relative z-10">
+          <h2 className="text-3xl md:text-4xl font-serif font-medium mb-6 text-charcoal animate-fade-in tracking-tight">
             A movement toward slower, more meaningful connections
           </h2>
           <p className="text-xl text-black/70 leading-relaxed max-w-2xl mx-auto animate-fade-in">
@@ -145,55 +166,100 @@ export default function Home() {
       {/* Featured Pathways (3 Cards) */}
       <div className="bg-white space-content">
         <div className="mx-auto max-w-6xl px-4">
-          <h2 className="text-section text-center mb-16 text-charcoal animate-fade-in">
+          <h2 className="text-section text-center mb-16 text-charcoal animate-fade-in tracking-tight">
             Choose Your Path
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8">
             {/* Read - Essays */}
             <Link href="/essays" className="group animate-scale-in">
-              <div className="card-enhanced bg-white rounded-2xl p-8 shadow-sm border text-center h-full">
-                <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                  <Image src="/images/icons/icon-writing.png" alt="Writing" width={48} height={48} />
-                </div>
-                <h3 className="text-xl font-medium mb-4 text-charcoal">Read</h3>
-                <p className="text-black/70 leading-relaxed mb-4">
-                  Weekly essays exploring philosophy, connection, and the stories we tell.
-                </p>
-                <div className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors duration-300">
-                  Read Essays →
+              <div 
+                className="card-enhanced bg-white rounded-2xl p-8 text-center h-full relative overflow-hidden"
+                style={{
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
+                  background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
+                }}
+              >
+                {/* Texture overlay */}
+                <div 
+                  className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
+                  style={{
+                    backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`
+                  }}
+                ></div>
+                <div className="relative z-10">
+                  <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                    <Image src="/images/icons/icon-writing.png" alt="Writing" width={48} height={48} />
+                  </div>
+                  <h3 className="text-xl font-medium mb-4 text-charcoal tracking-tight">Read</h3>
+                  <p className="text-black/70 leading-relaxed mb-4">
+                    Weekly essays exploring philosophy, connection, and the stories we tell.
+                  </p>
+                  <div className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors duration-300">
+                    Read Essays →
+                  </div>
                 </div>
               </div>
             </Link>
 
             {/* Gather - Events */}
             <Link href="/gatherings" className="group animate-scale-in">
-              <div className="card-enhanced bg-white rounded-2xl p-8 shadow-sm border text-center h-full">
-                <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                  <Image src="/images/icons/icon-fire.png" alt="Fire" width={48} height={48} />
-                </div>
-                <h3 className="text-xl font-medium mb-4 text-charcoal">Gather</h3>
-                <p className="text-black/70 leading-relaxed mb-4">
-                  Open Fire Sundays and curated salon events. Bring food, share stories, slow down.
-                </p>
-                <div className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors duration-300">
-                  See Gatherings →
+              <div 
+                className="card-enhanced bg-white rounded-2xl p-8 text-center h-full relative overflow-hidden"
+                style={{
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
+                  background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
+                }}
+              >
+                {/* Texture overlay */}
+                <div 
+                  className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
+                  style={{
+                    backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`
+                  }}
+                ></div>
+                <div className="relative z-10">
+                  <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                    <Image src="/images/icons/icon-fire.png" alt="Fire" width={48} height={48} />
+                  </div>
+                  <h3 className="text-xl font-medium mb-4 text-charcoal tracking-tight">Gather</h3>
+                  <p className="text-black/70 leading-relaxed mb-4">
+                    Open Fire Sundays and curated salon events. Bring food, share stories, slow down.
+                  </p>
+                  <div className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors duration-300">
+                    See Gatherings →
+                  </div>
                 </div>
               </div>
             </Link>
 
             {/* Cook - Recipes */}
             <Link href="/recipes" className="group animate-scale-in">
-              <div className="card-enhanced bg-white rounded-2xl p-8 shadow-sm border text-center h-full">
-                <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                  <Image src="/images/icons/icon-wine.png" alt="Wine" width={48} height={48} />
-                </div>
-                <h3 className="text-xl font-medium mb-4 text-charcoal">Cook</h3>
-                <p className="text-black/70 leading-relaxed mb-4">
-                  Fire-friendly recipes and guides for building community around honest conversation.
-                </p>
-                <div className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors duration-300">
-                  Explore Recipes →
+              <div 
+                className="card-enhanced bg-white rounded-2xl p-8 text-center h-full relative overflow-hidden"
+                style={{
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
+                  background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
+                }}
+              >
+                {/* Texture overlay */}
+                <div 
+                  className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
+                  style={{
+                    backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`
+                  }}
+                ></div>
+                <div className="relative z-10">
+                  <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                    <Image src="/images/icons/icon-wine.png" alt="Wine" width={48} height={48} />
+                  </div>
+                  <h3 className="text-xl font-medium mb-4 text-charcoal tracking-tight">Cook</h3>
+                  <p className="text-black/70 leading-relaxed mb-4">
+                    Fire-friendly recipes and guides for building community around honest conversation.
+                  </p>
+                  <div className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors duration-300">
+                    Explore Recipes →
+                  </div>
                 </div>
               </div>
             </Link>
@@ -204,53 +270,84 @@ export default function Home() {
       {/* Featured Essay Section */}
       <div className="bg-[var(--wwp-cream)] space-content">
         <div className="mx-auto max-w-4xl px-4">
-          <h2 className="text-section text-center mb-12 text-charcoal animate-fade-in">
+          <h2 className="text-section text-center mb-12 text-charcoal animate-fade-in tracking-tight">
             Start with one essay
           </h2>
           
           {hasFeaturedEssays ? (
             <div className="space-y-6 mb-8">
               {featuredEssays.slice(0, 3).map((essay, index) => (
-                <div key={index} className="bg-white rounded-2xl p-6 shadow-sm border hover:shadow-md transition-shadow">
-                  <h3 className="text-xl font-serif font-medium mb-2 text-charcoal">
-                    {essay.title}
-                  </h3>
-                  {essay.excerpt && (
-                    <p className="text-black/70 leading-relaxed mb-4">
-                      {essay.excerpt}
-                    </p>
-                  )}
-                  <a 
-                    href={essay.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-ember font-medium hover:text-ember-light transition-colors"
-                  >
-                    Read essay →
-                  </a>
+                <div 
+                  key={index} 
+                  className="bg-white rounded-2xl p-6 relative overflow-hidden hover:shadow-xl transition-all duration-300"
+                  style={{
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
+                    background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
+                  }}
+                >
+                  {/* Texture overlay */}
+                  <div 
+                    className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
+                    style={{
+                      backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`
+                    }}
+                  ></div>
+                  <div className="relative z-10">
+                    <h3 className="text-xl font-serif font-medium mb-2 text-charcoal tracking-tight">
+                      {essay.title}
+                    </h3>
+                    {essay.excerpt && (
+                      <p className="text-black/70 leading-relaxed mb-4">
+                        {essay.excerpt}
+                      </p>
+                    )}
+                    <a 
+                      href={essay.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-ember font-medium hover:text-ember-light transition-colors"
+                    >
+                      Read essay →
+                    </a>
+                  </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-2xl p-8 shadow-sm border mb-8">
-              <p className="text-black/70 leading-relaxed mb-6">
-                We&apos;re curating a selection of flagship essays to help you get started. 
-                In the meantime, explore our full archive on Substack.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <a 
-                  href="https://winewithpete.substack.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="btn-ember px-6 py-3 rounded-full text-center"
-                >
-                  Read on Substack
-                </a>
-                <Link href="/essays">
-                  <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
-                    Browse All Essays
-                  </Button>
-                </Link>
+            <div 
+              className="bg-white rounded-2xl p-8 mb-8 relative overflow-hidden"
+              style={{
+                boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
+                background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
+              }}
+            >
+              {/* Texture overlay */}
+              <div 
+                className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
+                style={{
+                  backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`
+                }}
+              ></div>
+              <div className="relative z-10">
+                <p className="text-black/70 leading-relaxed mb-6">
+                  We&apos;re curating a selection of flagship essays to help you get started. 
+                  In the meantime, explore our full archive on Substack.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <a 
+                    href="https://winewithpete.substack.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="btn-ember px-6 py-3 rounded-full text-center"
+                  >
+                    Read on Substack
+                  </a>
+                  <Link href="/essays">
+                    <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
+                      Browse All Essays
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
           )}
@@ -266,48 +363,75 @@ export default function Home() {
       </div>
 
       {/* Email Capture Section with Lead Magnet */}
-      <div className="bg-white space-section">
-        <div className="mx-auto max-w-2xl px-4">
-          <div className="bg-cream rounded-2xl p-12 shadow-sm border text-center">
-            <h2 className="text-3xl font-serif font-medium mb-4 text-charcoal">
-              Get a free Fire Ritual recipe card
-            </h2>
-            <p className="text-lg text-black/70 mb-8 leading-relaxed">
-              Join 200+ people exploring slow living, one fire at a time. 
-              Weekly insights, recipe cards, and invitations to gather.
-            </p>
-            
-            {!isSubmitted ? (
-              <form onSubmit={handleNewsletterSubmit} className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Input
-                    type="email"
-                    placeholder="your@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="flex-1 focus-ring"
-                  />
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting || !email}
-                    className="btn-ember px-8 py-4 rounded-full text-lg font-medium"
-                  >
-                    {isSubmitting ? 'Joining...' : 'Join Circle'}
-                  </Button>
+      <div className="bg-white space-section relative">
+        {/* Subtle background texture */}
+        <div 
+          className="absolute inset-0 opacity-[0.015] pointer-events-none"
+          style={{
+            backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(91,35,32,0.02) 20px, rgba(91,35,32,0.02) 21px)`
+          }}
+        ></div>
+        <div className="mx-auto max-w-2xl px-4 relative z-10">
+          <div 
+            className="bg-cream rounded-2xl p-12 text-center relative overflow-hidden"
+            style={{
+              boxShadow: '0 8px 30px rgba(0,0,0,0.1), 0 2px 8px rgba(91,35,32,0.08), 0 0 0 1px rgba(91,35,32,0.05)',
+              background: 'linear-gradient(to bottom, #f6f3ef, #f0ebe5)'
+            }}
+          >
+            {/* Texture overlay */}
+            <div 
+              className="absolute inset-0 rounded-2xl opacity-[0.02] pointer-events-none"
+              style={{
+                backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(91,35,32,0.03) 2px, rgba(91,35,32,0.03) 4px)`
+              }}
+            ></div>
+            <div className="relative z-10">
+              <h2 className="text-3xl font-serif font-medium mb-4 text-charcoal tracking-tight">
+                Get a free Fire Ritual recipe card
+              </h2>
+              <p className="text-lg text-black/70 mb-8 leading-relaxed">
+                Join 200+ people exploring slow living, one fire at a time. 
+                Weekly insights, recipe cards, and invitations to gather.
+              </p>
+              
+              {!isSubmitted ? (
+                <form onSubmit={handleNewsletterSubmit} className="space-y-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Input
+                      type="email"
+                      placeholder="your@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="flex-1 focus-ring"
+                    />
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting || !email}
+                      className="btn-ember px-8 py-4 rounded-full text-lg font-medium"
+                    >
+                      {isSubmitting ? 'Joining...' : 'Join Circle'}
+                    </Button>
+                  </div>
+                  <p className="text-sm text-black/60">
+                    We respect your privacy. Unsubscribe anytime. No spam, just thoughtful content.
+                  </p>
+                </form>
+              ) : (
+                <div 
+                  className="bg-white rounded-lg p-6"
+                  style={{
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
+                  }}
+                >
+                  <p className="text-ember font-medium mb-2 text-lg">✓ Welcome to the Circle!</p>
+                  <p className="text-black/70">
+                    Check your email for your welcome message and free recipe card.
+                  </p>
                 </div>
-                <p className="text-sm text-black/60">
-                  We respect your privacy. Unsubscribe anytime. No spam, just thoughtful content.
-                </p>
-              </form>
-            ) : (
-              <div className="bg-white rounded-lg p-6">
-                <p className="text-ember font-medium mb-2 text-lg">✓ Welcome to the Circle!</p>
-                <p className="text-black/70">
-                  Check your email for your welcome message and free recipe card.
-                </p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
