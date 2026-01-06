@@ -81,28 +81,81 @@ export function ButtonLink({ href, children, variant = 'primary', className = ''
         e.currentTarget.style.boxShadow = hoverShadow;
       }}
     >
-      {/* Parchment texture overlay */}
+      {/* Aged paper base color variation */}
       <div 
-        className="absolute inset-0 rounded-full pointer-events-none opacity-[0.12]"
+        className="absolute inset-0 rounded-full pointer-events-none opacity-[0.25]"
+        style={{
+          background: `
+            radial-gradient(ellipse at 20% 30%, rgba(218, 190, 155, 0.3) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 70%, rgba(200, 170, 130, 0.25) 0%, transparent 50%),
+            radial-gradient(ellipse at 50% 50%, rgba(185, 155, 115, 0.2) 0%, transparent 60%)
+          `,
+          mixBlendMode: 'multiply',
+        }}
+      ></div>
+
+      {/* Deep parchment weave texture */}
+      <div 
+        className="absolute inset-0 rounded-full pointer-events-none opacity-[0.35]"
         style={{
           backgroundImage: `
-            repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 69, 19, 0.08) 2px, rgba(139, 69, 19, 0.08) 3px),
-            repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(160, 82, 45, 0.06) 2px, rgba(160, 82, 45, 0.06) 3px),
-            repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(101, 50, 30, 0.04) 3px, rgba(101, 50, 30, 0.04) 4px),
-            repeating-linear-gradient(135deg, transparent, transparent 4px, rgba(120, 60, 35, 0.03) 4px, rgba(120, 60, 35, 0.03) 5px)
+            repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(139, 69, 19, 0.15) 1px, rgba(139, 69, 19, 0.15) 2px),
+            repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(160, 82, 45, 0.12) 1px, rgba(160, 82, 45, 0.12) 2px),
+            repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(101, 50, 30, 0.1) 2px, rgba(101, 50, 30, 0.1) 3px),
+            repeating-linear-gradient(135deg, transparent, transparent 2px, rgba(120, 60, 35, 0.08) 2px, rgba(120, 60, 35, 0.08) 3px),
+            repeating-linear-gradient(22.5deg, transparent, transparent 3px, rgba(150, 100, 60, 0.06) 3px, rgba(150, 100, 60, 0.06) 4px)
           `,
-          backgroundSize: '100% 100%, 80% 80%, 120% 120%, 90% 90%',
+          backgroundSize: '150% 150%, 120% 120%, 180% 180%, 140% 140%, 200% 200%',
+          mixBlendMode: 'multiply',
+        }}
+      ></div>
+
+      {/* Irregular wrinkles and creases */}
+      <div 
+        className="absolute inset-0 rounded-full pointer-events-none opacity-[0.2]"
+        style={{
+          backgroundImage: `
+            repeating-linear-gradient(15deg, transparent, transparent 8px, rgba(139, 100, 60, 0.1) 8px, rgba(139, 100, 60, 0.1) 9px),
+            repeating-linear-gradient(75deg, transparent, transparent 12px, rgba(120, 85, 50, 0.08) 12px, rgba(120, 85, 50, 0.08) 13px),
+            repeating-linear-gradient(105deg, transparent, transparent 10px, rgba(150, 110, 70, 0.09) 10px, rgba(150, 110, 70, 0.09) 11px)
+          `,
+          backgroundSize: '300% 300%, 250% 250%, 280% 280%',
           mixBlendMode: 'multiply',
         }}
       ></div>
       
-      {/* Subtle paper grain noise */}
+      {/* Deep paper grain noise */}
       <div 
-        className="absolute inset-0 rounded-full pointer-events-none opacity-[0.08]"
+        className="absolute inset-0 rounded-full pointer-events-none opacity-[0.25]"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-          backgroundSize: '200% 200%',
-          mixBlendMode: 'overlay',
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E")`,
+          backgroundSize: '150% 150%',
+          mixBlendMode: 'multiply',
+        }}
+      ></div>
+
+      {/* Subtle age spots and imperfections */}
+      <div 
+        className="absolute inset-0 rounded-full pointer-events-none opacity-[0.15]"
+        style={{
+          background: `
+            radial-gradient(circle at 15% 25%, rgba(160, 120, 80, 0.2) 0%, transparent 3%),
+            radial-gradient(circle at 85% 60%, rgba(140, 100, 65, 0.18) 0%, transparent 2.5%),
+            radial-gradient(circle at 45% 80%, rgba(150, 110, 75, 0.15) 0%, transparent 2%),
+            radial-gradient(circle at 70% 20%, rgba(145, 105, 70, 0.12) 0%, transparent 1.5%)
+          `,
+          mixBlendMode: 'multiply',
+        }}
+      ></div>
+
+      {/* Edge aging effect */}
+      <div 
+        className="absolute inset-0 rounded-full pointer-events-none opacity-[0.2]"
+        style={{
+          background: `
+            radial-gradient(ellipse at center, transparent 60%, rgba(139, 100, 65, 0.3) 100%)
+          `,
+          mixBlendMode: 'multiply',
         }}
       ></div>
       
