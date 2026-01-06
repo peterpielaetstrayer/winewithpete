@@ -126,58 +126,69 @@ export async function POST(request: NextRequest) {
         // Try multiple price sources (Printful uses different fields)
         // Printful API typically returns prices in cents, but we need to check the actual format
         let price = 0;
-        const rawRetailPrice = mainVariant.retail_price;
-        const rawPrice = mainVariant.price;
-        const rawCost = mainVariant.cost;
         
-        if (rawRetailPrice !== undefined && rawRetailPrice !== null) {
+        // Helper function to safely convert price to number
+        const toNumber = (value: any): number | null => {
+          if (value === null || value === undefined) return null;
+          const num = typeof value === 'string' ? parseFloat(value) : Number(value);
+          return isNaN(num) ? null : num;
+        };
+        
+        const rawRetailPrice = toNumber(mainVariant.retail_price);
+        const rawPrice = toNumber(mainVariant.price);
+        const rawCost = toNumber(mainVariant.cost);
+        
+        if (rawRetailPrice !== null && rawRetailPrice !== undefined) {
           // retail_price: Printful usually returns in cents
           // If value is >= 100, it's likely in cents; if < 100, might be dollars
           // But also check: if it's between 1-100, it could be dollars (like 39.99 or 51)
           if (rawRetailPrice >= 100) {
             // Large number, definitely cents
-            price = parseFloat((rawRetailPrice / 100).toFixed(2));
+            price = Math.round((rawRetailPrice / 100) * 100) / 100;
           } else if (rawRetailPrice >= 1 && rawRetailPrice < 100) {
             // Medium number (1-100), could be dollars (like 39.99, 51) or cents (like 40, 51)
             // If it's a whole number between 10-100, it's likely dollars; otherwise check decimals
             if (rawRetailPrice % 1 === 0 && rawRetailPrice >= 10) {
               // Whole number >= 10, likely dollars (like 40, 51)
-              price = parseFloat(rawRetailPrice.toFixed(2));
+              price = rawRetailPrice;
             } else {
               // Has decimals or < 10, could be either - try as dollars first
-              price = parseFloat(rawRetailPrice.toFixed(2));
+              price = rawRetailPrice;
             }
           } else {
             // Very small number (< 1), likely already in dollars as decimal
-            price = parseFloat(rawRetailPrice.toFixed(2));
+            price = rawRetailPrice;
           }
-        } else if (rawPrice !== undefined && rawPrice !== null) {
+        } else if (rawPrice !== null && rawPrice !== undefined) {
           // Same logic for price field
           if (rawPrice >= 100) {
-            price = parseFloat((rawPrice / 100).toFixed(2));
+            price = Math.round((rawPrice / 100) * 100) / 100;
           } else {
-            price = parseFloat(rawPrice.toFixed(2));
+            price = rawPrice;
           }
-        } else if (rawCost !== undefined && rawCost !== null) {
+        } else if (rawCost !== null && rawCost !== undefined) {
           // Same logic for cost field
           if (rawCost >= 100) {
-            price = parseFloat((rawCost / 100).toFixed(2));
+            price = Math.round((rawCost / 100) * 100) / 100;
           } else {
-            price = parseFloat(rawCost.toFixed(2));
+            price = rawCost;
           }
         }
         
         // Final check: if price is suspiciously low (< 1) but raw value is reasonable (10-1000), 
         // it means we incorrectly divided. Use raw value as dollars.
         if (price > 0 && price < 1) {
-          const rawValue = rawRetailPrice || rawPrice || rawCost;
-          if (rawValue && rawValue >= 10 && rawValue < 1000) {
-            price = parseFloat(rawValue.toFixed(2));
+          const rawValue = rawRetailPrice ?? rawPrice ?? rawCost;
+          if (rawValue !== null && rawValue >= 10 && rawValue < 1000) {
+            price = rawValue;
             console.log(`Price was too low (${price}), using raw value as dollars: $${price}`);
           }
         }
         
-        console.log(`Extracted price for ${syncProduct.name}: $${price} (raw retail_price: ${rawRetailPrice}, raw price: ${rawPrice})`);
+        // Ensure price is a valid number with 2 decimal places
+        price = Math.round(price * 100) / 100;
+        
+        console.log(`Extracted price for ${syncProduct.name}: $${price} (raw retail_price: ${mainVariant.retail_price}, raw price: ${mainVariant.price})`);
 
         // Determine category (check if wine bear in name/description)
         const nameLower = (syncProduct.name || '').toLowerCase();
