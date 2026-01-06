@@ -142,16 +142,24 @@ export async function POST(request: NextRequest) {
                   // Don't throw - we'll log but continue
                 } else {
                   const printfulData = await printfulResponse.json();
-                  console.log('Printful order created successfully:', printfulData.result?.id);
+                  const printfulOrderId = printfulData.result?.id;
+                  console.log('Printful order created successfully:', printfulOrderId);
                   
-                  // Optionally store Printful order ID in our order record
-                  await supabase
-                    .from('orders')
-                    .update({ 
-                      // You might want to add a printful_order_id column to store this
-                      // For now, we'll just log it
-                    })
-                    .eq('id', order.id);
+                  // Store Printful order ID in our order record
+                  if (printfulOrderId) {
+                    const { error: updateError } = await supabase
+                      .from('orders')
+                      .update({ 
+                        printful_order_id: printfulOrderId.toString(),
+                      })
+                      .eq('id', order.id);
+                    
+                    if (updateError) {
+                      console.error('Failed to update order with Printful order ID:', updateError);
+                    } else {
+                      console.log('Order updated with Printful order ID:', printfulOrderId);
+                    }
+                  }
                 }
               }
             }

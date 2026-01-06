@@ -51,6 +51,7 @@ export interface Order {
   name: string;
   total_amount: number;
   stripe_payment_intent_id: string | null;
+  printful_order_id?: string | null;
   status: 'pending' | 'completed' | 'failed' | 'refunded';
   created_at: string;
   updated_at: string;
