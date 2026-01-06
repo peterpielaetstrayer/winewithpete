@@ -41,6 +41,7 @@ export default function AdminPage() {
   const [newEssayUrl, setNewEssayUrl] = useState('');
   const [fetchingMetadata, setFetchingMetadata] = useState(false);
   const [draggedEssayId, setDraggedEssayId] = useState<string | null>(null);
+  const [essaysError, setEssaysError] = useState<string | null>(null);
 
   useEffect(() => {
     checkUser();
@@ -140,13 +141,26 @@ export default function AdminPage() {
       setOrders(ordersData.data || []);
 
       // Fetch featured essays with session
-      const essaysRes = await fetch('/api/admin/essays', {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-      });
-      const essaysData = await essaysRes.json();
-      setEssays(essaysData.data || []);
+      try {
+        const essaysRes = await fetch('/api/admin/essays', {
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+        });
+        const essaysData = await essaysRes.json();
+        if (essaysData.error) {
+          console.error('Essays fetch error:', essaysData.error, essaysData.details);
+          setEssaysError(essaysData.details || essaysData.error);
+          setEssays([]);
+        } else {
+          setEssaysError(null);
+          setEssays(essaysData.data || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch essays:', error);
+        setEssaysError('Failed to connect to server');
+        setEssays([]);
+      }
     } catch (error) {
       console.error('Failed to fetch admin data:', error);
     } finally {
@@ -892,6 +906,16 @@ export default function AdminPage() {
             </div>
           </div>
 
+          {essaysError && (
+            <Card className="p-4 bg-yellow-50 border-yellow-200">
+              <p className="font-medium text-yellow-800 mb-2">⚠️ Setup Required</p>
+              <p className="text-sm text-yellow-700 mb-2">{essaysError}</p>
+              <p className="text-xs text-yellow-600">
+                Run the SQL migration in Supabase: <code className="bg-yellow-100 px-1 rounded">create-featured-essays-table.sql</code>
+              </p>
+            </Card>
+          )}
+
           {/* Add New Essay Form */}
           <Card className="p-6">
             <h3 className="font-medium mb-4">Add New Essay</h3>
@@ -921,7 +945,25 @@ export default function AdminPage() {
                         
                         if (!metadataData.success) {
                           alert('Failed to fetch metadata: ' + (metadataData.error || 'Unknown error'));
+                          setFetchingMetadata(false);
                           return;
+                        }
+
+                        // Log what we got for debugging
+                        console.log('Fetched metadata:', metadataData.metadata);
+                        
+                        // Show preview of what will be saved
+                        if (!metadataData.metadata.description && !metadataData.metadata.image) {
+                          const confirm = window.confirm(
+                            `Title: ${metadataData.metadata.title || 'Not found'}\n\n` +
+                            `Description: ${metadataData.metadata.description || 'Not found'}\n\n` +
+                            `Image: ${metadataData.metadata.image || 'Not found'}\n\n` +
+                            `Continue anyway?`
+                          );
+                          if (!confirm) {
+                            setFetchingMetadata(false);
+                            return;
+                          }
                         }
 
                         const { supabase } = await import('@/lib/supabase/client');

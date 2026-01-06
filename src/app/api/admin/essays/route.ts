@@ -39,13 +39,27 @@ export async function GET(request: NextRequest) {
       .order('display_order', { ascending: true });
 
     if (error) {
+      console.error('Supabase error:', error);
+      // Check if table doesn't exist
+      if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
+        return NextResponse.json(
+          { 
+            error: 'Database table not found',
+            details: 'Please run the SQL migration to create the featured_essays table. See create-featured-essays-table.sql'
+          },
+          { status: 500 }
+        );
+      }
       return NextResponse.json(
-        { error: 'Failed to fetch essays' },
+        { 
+          error: 'Failed to fetch essays',
+          details: error.message 
+        },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ data: essays });
+    return NextResponse.json({ data: essays || [] });
 
   } catch (error) {
     console.error('Admin essays error:', error);

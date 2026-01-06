@@ -48,40 +48,128 @@ export async function POST(request: NextRequest) {
     // Parse Open Graph metadata
     const metadata: OGMetadata = {};
 
-    // Extract og:title
-    const ogTitleMatch = html.match(/<meta\s+property=["']og:title["']\s+content=["']([^"']+)["']/i) ||
-                         html.match(/<meta\s+content=["']([^"']+)["']\s+property=["']og:title["']/i);
-    if (ogTitleMatch) {
-      metadata.title = ogTitleMatch[1];
-    } else {
-      // Fallback to <title> tag
-      const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-      if (titleMatch) {
-        metadata.title = titleMatch[1].trim();
+    // Try to extract from JSON-LD structured data (Substack uses this)
+    const jsonLdMatches = html.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi);
+    if (jsonLdMatches) {
+      for (const match of jsonLdMatches) {
+        try {
+          const jsonContent = match.replace(/<script[^>]*>/i, '').replace(/<\/script>/i, '').trim();
+          const data = JSON.parse(jsonContent);
+          
+          // Handle array or object
+          const items = Array.isArray(data) ? data : [data];
+          
+          for (const item of items) {
+            if (item['@type'] === 'Article' || item['@type'] === 'BlogPosting' || item['@type'] === 'NewsArticle') {
+              if (item.headline && !metadata.title) {
+                metadata.title = item.headline;
+              }
+              if (item.description && !metadata.description) {
+                metadata.description = item.description;
+              }
+              if (item.image && !metadata.image) {
+                // Handle image as string, object, or array
+                if (typeof item.image === 'string') {
+                  metadata.image = item.image;
+                } else if (item.image.url) {
+                  metadata.image = item.image.url;
+                } else if (Array.isArray(item.image) && item.image[0]) {
+                  metadata.image = typeof item.image[0] === 'string' ? item.image[0] : item.image[0].url;
+                }
+              }
+            }
+          }
+        } catch (e) {
+          // Skip invalid JSON
+          continue;
+        }
       }
     }
+
+    // Helper function to decode HTML entities
+    const decodeHtml = (str: string): string => {
+      return str
+        .replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&#x27;/g, "'")
+        .replace(/&#x2F;/g, '/');
+    };
+
+    // Helper function to extract meta tag content (handles various formats)
+    const extractMeta = (property: string, name?: string): string | null => {
+      // More flexible regex that handles spaces, newlines, and various quote styles
+      const patterns = [
+        // property="og:xxx" content="..."
+        new RegExp(`<meta[^>]*property=["']${property.replace(/:/g, '\\:')}["'][^>]*content=["']([^"']+)["']`, 'i'),
+        // content="..." property="og:xxx"
+        new RegExp(`<meta[^>]*content=["']([^"']+)["'][^>]*property=["']${property.replace(/:/g, '\\:')}["']`, 'i'),
+        // property='og:xxx' content='...'
+        new RegExp(`<meta[^>]*property=['"]${property.replace(/:/g, '\\:')}['"][^>]*content=['"]([^'"]+)['"]`, 'i'),
+        // content='...' property='og:xxx'
+        new RegExp(`<meta[^>]*content=['"]([^'"]+)['"][^>]*property=['"]${property.replace(/:/g, '\\:')}['"]`, 'i'),
+      ];
+      
+      for (const pattern of patterns) {
+        const match = html.match(pattern);
+        if (match && match[1]) {
+          return decodeHtml(match[1]);
+        }
+      }
+      
+      // If name fallback provided, try name attribute
+      if (name) {
+        const namePatterns = [
+          new RegExp(`<meta[^>]*name=["']${name}["'][^>]*content=["']([^"']+)["']`, 'i'),
+          new RegExp(`<meta[^>]*content=["']([^"']+)["'][^>]*name=["']${name}["']`, 'i'),
+          new RegExp(`<meta[^>]*name=['"]${name}['"][^>]*content=['"]([^'"]+)['"]`, 'i'),
+          new RegExp(`<meta[^>]*content=['"]([^'"]+)['"][^>]*name=['"]${name}['"]`, 'i'),
+        ];
+        
+        for (const pattern of namePatterns) {
+          const match = html.match(pattern);
+          if (match && match[1]) {
+            return decodeHtml(match[1]);
+          }
+        }
+      }
+      
+      return null;
+    };
+
+    // Extract og:title
+    metadata.title = extractMeta('og:title') || 
+                     html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim() || 
+                     null;
 
     // Extract og:description
-    const ogDescMatch = html.match(/<meta\s+property=["']og:description["']\s+content=["']([^"']+)["']/i) ||
-                          html.match(/<meta\s+content=["']([^"']+)["']\s+property=["']og:description["']/i);
-    if (ogDescMatch) {
-      metadata.description = ogDescMatch[1];
-    } else {
-      // Fallback to meta description
-      const metaDescMatch = html.match(/<meta\s+name=["']description["']\s+content=["']([^"']+)["']/i) ||
-                             html.match(/<meta\s+content=["']([^"']+)["']\s+name=["']description["']/i);
-      if (metaDescMatch) {
-        metadata.description = metaDescMatch[1];
-      }
-    }
+    metadata.description = extractMeta('og:description') || 
+                           extractMeta('', 'description') ||
+                           null;
 
-    // Extract og:image
-    const ogImageMatch = html.match(/<meta\s+property=["']og:image["']\s+content=["']([^"']+)["']/i) ||
-                           html.match(/<meta\s+content=["']([^"']+)["']\s+property=["']og:image["']/i);
-    if (ogImageMatch) {
-      let imageUrl = ogImageMatch[1];
+    // Extract og:image (try multiple sources)
+    let imageUrl = extractMeta('og:image');
+    
+    // Fallback to Twitter card image
+    if (!imageUrl) {
+      imageUrl = extractMeta('twitter:image');
+    }
+    
+    // Fallback to og:image:secure_url
+    if (!imageUrl) {
+      imageUrl = extractMeta('og:image:secure_url');
+    }
+    
+    if (imageUrl) {
+      // Decode HTML entities
+      imageUrl = imageUrl.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+      
       // Convert relative URLs to absolute
-      if (imageUrl.startsWith('/')) {
+      if (imageUrl.startsWith('//')) {
+        imageUrl = `${targetUrl.protocol}${imageUrl}`;
+      } else if (imageUrl.startsWith('/')) {
         imageUrl = `${targetUrl.origin}${imageUrl}`;
       } else if (!imageUrl.startsWith('http')) {
         imageUrl = `${targetUrl.origin}/${imageUrl}`;
@@ -97,6 +185,14 @@ export async function POST(request: NextRequest) {
     } else {
       metadata.url = targetUrl.toString();
     }
+
+    // Log what we found for debugging
+    console.log('OG Metadata extracted:', {
+      title: metadata.title ? '✓' : '✗',
+      description: metadata.description ? '✓' : '✗',
+      image: metadata.image ? '✓' : '✗',
+      url: metadata.url || targetUrl.toString(),
+    });
 
     return NextResponse.json({
       success: true,
