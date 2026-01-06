@@ -35,9 +35,8 @@ export const metadata: Metadata = {
 export default function StartPage() {
   return (
     <StartPageClient>
-      <div className="fixed inset-0 overflow-y-auto">
       {/* Background with fire-lit gradient and texture */}
-      <div className="fixed inset-0 bg-gradient-to-b from-[#2a1a18] via-[#3d2522] to-[#1f1412] z-0 relative">
+      <div className="fixed inset-0 bg-gradient-to-b from-[#2a1a18] via-[#3d2522] to-[#1f1412] z-0">
         {/* Enhanced vignette effect */}
         <div 
           className="absolute inset-0 pointer-events-none"
@@ -66,7 +65,8 @@ export default function StartPage() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center py-12 px-4">
+      <div className="fixed inset-0 overflow-y-auto z-10">
+        <div className="min-h-screen flex flex-col items-center justify-center py-12 px-4">
         <div className="w-full max-w-[520px] mx-auto">
           {/* Title */}
           <h1 className="text-5xl md:text-6xl font-serif font-semibold text-center mb-6 text-[#f6f3ef] leading-tight">
@@ -181,7 +181,7 @@ export default function StartPage() {
             </Link>
           </div>
         </div>
-      </div>
+        </div>
       </div>
     </StartPageClient>
   );
