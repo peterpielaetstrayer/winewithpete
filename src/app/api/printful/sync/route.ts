@@ -22,21 +22,71 @@ export async function POST(request: NextRequest) {
         // Extract sync_product data (Printful structure)
         const syncProduct = product.sync_product || product;
         
+        // Log the product structure for debugging
+        console.log('Product structure:', {
+          hasSyncProduct: !!product.sync_product,
+          hasSyncVariants: !!product.sync_variants,
+          hasVariants: !!product.variants,
+          syncVariantsType: typeof product.sync_variants,
+          productKeys: Object.keys(product)
+        });
+        
         // Ensure syncVariants is always an array
         let syncVariants = [];
+        
+        // Try multiple ways to get variants
         if (Array.isArray(product.sync_variants)) {
           syncVariants = product.sync_variants;
         } else if (Array.isArray(product.variants)) {
           syncVariants = product.variants;
         } else if (product.sync_variants && typeof product.sync_variants === 'object') {
           // If it's an object, try to extract array from it
-          syncVariants = Object.values(product.sync_variants).filter(Array.isArray)[0] || [];
+          if (Array.isArray(Object.values(product.sync_variants)[0])) {
+            syncVariants = Object.values(product.sync_variants)[0] as any[];
+          } else {
+            // Might be an object with variant IDs as keys
+            syncVariants = Object.values(product.sync_variants);
+          }
+        }
+        
+        // If still no variants, the product might need to be fetched with full details
+        // Try fetching the full product details from Printful
+        if (syncVariants.length === 0 && syncProduct.id) {
+          try {
+            const apiKey = process.env.PRINTFUL_API_KEY;
+            const productDetailResponse = await fetch(
+              `https://api.printful.com/sync/products/${syncProduct.id}`,
+              {
+                method: 'GET',
+                headers: {
+                  'Authorization': `Bearer ${apiKey}`,
+                },
+              }
+            );
+            
+            if (productDetailResponse.ok) {
+              const productDetail = await productDetailResponse.json();
+              const fullProduct = productDetail.result;
+              
+              // Try to get variants from the full product
+              if (Array.isArray(fullProduct.sync_variants)) {
+                syncVariants = fullProduct.sync_variants;
+              } else if (Array.isArray(fullProduct.variants)) {
+                syncVariants = fullProduct.variants;
+              }
+              
+              console.log(`Fetched product details for ${syncProduct.id}, found ${syncVariants.length} variants`);
+            }
+          } catch (e) {
+            console.error(`Error fetching product details for ${syncProduct.id}:`, e);
+          }
         }
         
         if (!Array.isArray(syncVariants) || syncVariants.length === 0) {
           errors.push({ 
             product: syncProduct.name || product.id || 'Unknown', 
-            error: 'No variants found or variants not in expected format' 
+            error: 'No variants found or variants not in expected format',
+            debug: `Product keys: ${Object.keys(product).join(', ')}`
           });
           continue;
         }
