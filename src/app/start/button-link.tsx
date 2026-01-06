@@ -62,7 +62,7 @@ export function ButtonLink({ href, children, variant = 'primary', className = ''
   return (
     <Link
       href={href}
-      className={`group relative block w-full py-4 px-6 rounded-full text-[#1f1f1f] font-medium text-center border border-[#1f1f1f]/15 transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18] ${className}`}
+      className={`group relative block w-full py-4 px-6 rounded-full text-[#1f1f1f] font-medium text-center border border-[#1f1f1f]/15 transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18] overflow-hidden ${className}`}
       style={baseStyles}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = hoverShadow;
@@ -81,7 +81,33 @@ export function ButtonLink({ href, children, variant = 'primary', className = ''
         e.currentTarget.style.boxShadow = hoverShadow;
       }}
     >
-      {children}
+      {/* Parchment texture overlay */}
+      <div 
+        className="absolute inset-0 rounded-full pointer-events-none opacity-[0.12]"
+        style={{
+          backgroundImage: `
+            repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 69, 19, 0.08) 2px, rgba(139, 69, 19, 0.08) 3px),
+            repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(160, 82, 45, 0.06) 2px, rgba(160, 82, 45, 0.06) 3px),
+            repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(101, 50, 30, 0.04) 3px, rgba(101, 50, 30, 0.04) 4px),
+            repeating-linear-gradient(135deg, transparent, transparent 4px, rgba(120, 60, 35, 0.03) 4px, rgba(120, 60, 35, 0.03) 5px)
+          `,
+          backgroundSize: '100% 100%, 80% 80%, 120% 120%, 90% 90%',
+          mixBlendMode: 'multiply',
+        }}
+      ></div>
+      
+      {/* Subtle paper grain noise */}
+      <div 
+        className="absolute inset-0 rounded-full pointer-events-none opacity-[0.08]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          backgroundSize: '200% 200%',
+          mixBlendMode: 'overlay',
+        }}
+      ></div>
+      
+      {/* Text content - relative z-index to appear above texture */}
+      <span className="relative z-10">{children}</span>
     </Link>
   );
 }
