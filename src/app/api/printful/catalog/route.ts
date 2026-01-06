@@ -12,8 +12,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch store products from Printful
-    // Printful API endpoint: GET /store/products
-    const response = await fetch('https://api.printful.com/store/products', {
+    // Try sync/products endpoint first (this is the correct endpoint for store products)
+    const response = await fetch('https://api.printful.com/sync/products', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
