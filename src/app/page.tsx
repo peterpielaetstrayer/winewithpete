@@ -71,9 +71,12 @@ export default function Home() {
         {/* Hero Content */}
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto animate-fade-in">
           <h1 className="text-hero text-white leading-relaxed mb-6">
-            Fire, food, and the slow unfolding of conversation.
+            In a world that moves too fast, we create space for something different.
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 mb-12 leading-relaxed">
+          <p className="text-xl md:text-2xl text-white/90 mb-4 leading-relaxed">
+            Fire, food, and conversations that stay with you long after the embers die.
+          </p>
+          <p className="text-lg text-white/80 mb-12 leading-relaxed max-w-2xl mx-auto">
             We gather around open flames to pause, listen, and turn toward what matters.
           </p>
           
@@ -84,7 +87,7 @@ export default function Home() {
               </Button>
             </Link>
             <Link href="/start-here">
-              <Button variant="outline" className="bg-ember/20 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-8 py-4 text-lg font-medium focus-ring">
+              <Button variant="outline" className="bg-white/95 border-2 border-white text-charcoal hover:bg-white hover:text-ember rounded-full px-8 py-4 text-lg font-medium focus-ring shadow-lg">
                 Start Here
               </Button>
             </Link>
@@ -93,6 +96,19 @@ export default function Home() {
         
         {/* Curved bottom edge */}
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[var(--wwp-cream)] to-transparent"></div>
+      </div>
+
+      {/* Mission Statement Section */}
+      <div className="bg-white py-16 -mt-16 relative z-20">
+        <div className="mx-auto max-w-3xl px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-serif font-medium mb-6 text-charcoal animate-fade-in">
+            A movement toward slower, more meaningful connections
+          </h2>
+          <p className="text-xl text-black/70 leading-relaxed max-w-2xl mx-auto animate-fade-in">
+            In a world that moves too fast, we create spaces where people can slow down, 
+            share stories, and build genuine connections around fire, food, and honest conversation.
+          </p>
+        </div>
       </div>
 
       {/* What This Is / Who It's For / How It Works */}
