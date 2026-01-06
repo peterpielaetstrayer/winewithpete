@@ -101,6 +101,48 @@ export default function JoinPage(){
         </div>
       </div>
 
+      {/* Newsletter Signup - MOVED HERE (right after hero) */}
+      <div className="bg-white py-16">
+        <div className="mx-auto max-w-2xl px-4">
+          <div className="bg-cream rounded-2xl p-8 shadow-sm border">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-serif font-medium mb-4 text-charcoal">
+                Join Our Newsletter
+              </h2>
+              <p className="text-black/70 mb-2">
+                Get your free Fire Ritual recipe card when you join.
+              </p>
+              <p className="text-sm text-black/60">
+                Different from my Substack essays, this is my personal newsletter for the community.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Input 
+                  type="email"
+                  placeholder="your@email.com" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)}
+                  className="flex-1"
+                  required
+                />
+                <Button 
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="btn-ember px-8 py-4 rounded-full text-lg font-medium"
+                >
+                  {isSubmitting ? 'Joining...' : 'Join Circle'}
+                </Button>
+              </div>
+              <p className="text-sm text-black/60 text-center">
+                We respect your privacy. Unsubscribe anytime. No spam, just thoughtful content.
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+
       {/* What You'll Get */}
       <div className="py-16">
         <div className="mx-auto max-w-6xl px-4">
@@ -148,60 +190,6 @@ export default function JoinPage(){
                 Reflections on gatherings, conversations, and the moments of connection that matter.
               </p>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Lead Magnet Section */}
-      <div className="bg-white py-16">
-        <div className="mx-auto max-w-2xl px-4">
-          <div className="bg-cream rounded-2xl p-12 shadow-sm border text-center mb-8">
-            <h2 className="text-3xl font-serif font-medium mb-4 text-charcoal">
-              Get a free Fire Ritual recipe card
-            </h2>
-            <p className="text-lg text-black/70 mb-6 leading-relaxed">
-              When you join the Circle, you&apos;ll receive a free Fire Ritual recipe card, 
-              plus weekly insights, recipe cards, and invitations to gather.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Newsletter Signup */}
-      <div className="bg-white py-16">
-        <div className="mx-auto max-w-2xl px-4">
-          <div className="bg-cream rounded-2xl p-8 shadow-sm border">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-serif font-medium mb-4 text-charcoal">
-                Join Our Newsletter
-              </h2>
-              <p className="text-black/70">
-                Different from my Substack essays, this is my personal newsletter for the community.
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Input 
-                  type="email"
-                  placeholder="your@email.com" 
-                  value={email} 
-                  onChange={e => setEmail(e.target.value)}
-                  className="flex-1"
-                  required
-                />
-                <Button 
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="btn-ember px-8 py-4 rounded-full text-lg font-medium"
-                >
-                  {isSubmitting ? 'Joining...' : 'Join Circle'}
-                </Button>
-              </div>
-              <p className="text-sm text-black/60 text-center">
-                We respect your privacy. Unsubscribe anytime. No spam, just thoughtful content.
-              </p>
-            </form>
           </div>
         </div>
       </div>

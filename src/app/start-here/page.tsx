@@ -78,44 +78,11 @@ export default function StartHerePage() {
       {/* Steps */}
       <div className="py-16">
         <div className="mx-auto max-w-4xl px-4 space-y-16">
-          {/* Step 1: Read One Essay */}
+          {/* Step 1: Join the Circle */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border">
             <div className="flex items-start gap-6">
               <div className="flex-shrink-0 w-12 h-12 bg-ember/10 rounded-full flex items-center justify-center">
                 <span className="text-2xl font-serif font-semibold text-ember">1</span>
-              </div>
-              <div className="flex-1">
-                <h2 className="text-2xl font-serif font-medium mb-3 text-charcoal">
-                  Read one essay
-                </h2>
-                <p className="text-black/70 leading-relaxed mb-6">
-                  Start with our latest writing to understand what we&apos;re about. 
-                  Our essays explore disconnection, truth, and the search for something real.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <a 
-                    href="https://winewithpete.substack.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="btn-ember px-6 py-3 rounded-full text-center"
-                  >
-                    Read on Substack
-                  </a>
-                  <Link href="/essays">
-                    <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
-                      Browse Essays
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Step 2: Join the Circle */}
-          <div className="bg-white rounded-2xl p-8 shadow-sm border">
-            <div className="flex items-start gap-6">
-              <div className="flex-shrink-0 w-12 h-12 bg-ember/10 rounded-full flex items-center justify-center">
-                <span className="text-2xl font-serif font-semibold text-ember">2</span>
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-serif font-medium mb-3 text-charcoal">
@@ -168,11 +135,11 @@ export default function StartHerePage() {
             </div>
           </div>
 
-          {/* Step 3: Try One Recipe */}
+          {/* Step 2: Try One Recipe */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border">
             <div className="flex items-start gap-6">
               <div className="flex-shrink-0 w-12 h-12 bg-ember/10 rounded-full flex items-center justify-center">
-                <span className="text-2xl font-serif font-semibold text-ember">3</span>
+                <span className="text-2xl font-serif font-semibold text-ember">2</span>
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-serif font-medium mb-3 text-charcoal">
@@ -191,11 +158,11 @@ export default function StartHerePage() {
             </div>
           </div>
 
-          {/* Step 4: Express Interest in Gathering */}
+          {/* Step 3: Express Interest in Gathering */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border">
             <div className="flex items-start gap-6">
               <div className="flex-shrink-0 w-12 h-12 bg-ember/10 rounded-full flex items-center justify-center">
-                <span className="text-2xl font-serif font-semibold text-ember">4</span>
+                <span className="text-2xl font-serif font-semibold text-ember">3</span>
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-serif font-medium mb-3 text-charcoal">
@@ -210,6 +177,39 @@ export default function StartHerePage() {
                     See Gatherings
                   </Button>
                 </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Step 4: Read One Essay */}
+          <div className="bg-white rounded-2xl p-8 shadow-sm border">
+            <div className="flex items-start gap-6">
+              <div className="flex-shrink-0 w-12 h-12 bg-ember/10 rounded-full flex items-center justify-center">
+                <span className="text-2xl font-serif font-semibold text-ember">4</span>
+              </div>
+              <div className="flex-1">
+                <h2 className="text-2xl font-serif font-medium mb-3 text-charcoal">
+                  Read one essay
+                </h2>
+                <p className="text-black/70 leading-relaxed mb-6">
+                  Start with our latest writing to understand what we&apos;re about. 
+                  Our essays explore disconnection, truth, and the search for something real.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <a 
+                    href="https://winewithpete.substack.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="btn-ember px-6 py-3 rounded-full text-center"
+                  >
+                    Read on Substack
+                  </a>
+                  <Link href="/essays">
+                    <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
+                      Browse Essays
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
