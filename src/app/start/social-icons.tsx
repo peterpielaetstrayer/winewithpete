@@ -9,12 +9,17 @@ interface SocialIconsProps {
   email?: string;
 }
 
-export function SocialIcons({ instagramUrl, twitterUrl, email }: SocialIconsProps) {
+export function SocialIcons({ instagramUrl, twitterUrl, email }: SocialIconsProps = {}) {
+  // Use props if provided, otherwise fall back to environment variables
+  const instagram = instagramUrl || process.env.NEXT_PUBLIC_INSTAGRAM_URL;
+  const twitter = twitterUrl || process.env.NEXT_PUBLIC_TWITTER_URL;
+  const contactEmail = email || process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'pete@winewithpete.me';
+
   return (
     <div className="flex items-center justify-center gap-6 mt-8">
-      {instagramUrl && (
+      {instagram && (
         <Link
-          href={instagramUrl}
+          href={instagram}
           target="_blank"
           rel="noopener noreferrer"
           className="text-[#f6f3ef]/70 hover:text-[#f6f3ef] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18] rounded-full p-2"
@@ -23,9 +28,9 @@ export function SocialIcons({ instagramUrl, twitterUrl, email }: SocialIconsProp
           <Instagram className="w-5 h-5" />
         </Link>
       )}
-      {twitterUrl && (
+      {twitter && (
         <Link
-          href={twitterUrl}
+          href={twitter}
           target="_blank"
           rel="noopener noreferrer"
           className="text-[#f6f3ef]/70 hover:text-[#f6f3ef] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18] rounded-full p-2"
@@ -34,15 +39,13 @@ export function SocialIcons({ instagramUrl, twitterUrl, email }: SocialIconsProp
           <Twitter className="w-5 h-5" />
         </Link>
       )}
-      {email && (
-        <Link
-          href={`mailto:${email}`}
-          className="text-[#f6f3ef]/70 hover:text-[#f6f3ef] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18] rounded-full p-2"
-          aria-label="Email"
-        >
-          <Mail className="w-5 h-5" />
-        </Link>
-      )}
+      <Link
+        href={`mailto:${contactEmail}`}
+        className="text-[#f6f3ef]/70 hover:text-[#f6f3ef] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18] rounded-full p-2"
+        aria-label="Email"
+      >
+        <Mail className="w-5 h-5" />
+      </Link>
     </div>
   );
 }
