@@ -6,6 +6,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@/components/google-analytics';
+import { SiteStructuredData } from '@/components/structured-data';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -81,6 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${inter.variable} ${playfair.variable} ${crimsonText.variable} min-h-screen flex flex-col font-sans`}>
+        <SiteStructuredData />
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />

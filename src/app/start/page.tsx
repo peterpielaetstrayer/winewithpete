@@ -3,6 +3,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { StartPageClient } from './start-page-client';
 import { ButtonLink } from './button-link';
+import { SocialIcons } from './social-icons';
+import { StructuredData } from './structured-data';
 
 export const metadata: Metadata = {
   title: 'Wine With Pete',
@@ -36,7 +38,9 @@ export const metadata: Metadata = {
 
 export default function StartPage() {
   return (
-    <StartPageClient>
+    <>
+      <StructuredData />
+      <StartPageClient>
       {/* Background with fire-lit gradient and texture */}
       <div className="fixed inset-0 bg-gradient-to-b from-[#2a1a18] via-[#3d2522] to-[#1f1412] z-0">
         {/* Hero image overlay - wine glasses with fire glow */}
@@ -171,11 +175,19 @@ export default function StartPage() {
             >
               About Wine With Pete
             </Link>
+            
+            {/* Social Icons */}
+            <SocialIcons 
+              instagramUrl={process.env.NEXT_PUBLIC_INSTAGRAM_URL}
+              twitterUrl={process.env.NEXT_PUBLIC_TWITTER_URL}
+              email={process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'pete@winewithpete.me'}
+            />
           </div>
         </div>
         </div>
       </div>
     </StartPageClient>
+    </>
   );
 }
 
