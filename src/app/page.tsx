@@ -4,13 +4,27 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { featuredEssays, hasFeaturedEssays } from '@/data/featured-essays';
-import { useState } from 'react';
+import { FeaturedEssay } from '@/lib/types';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [featuredEssays, setFeaturedEssays] = useState<FeaturedEssay[]>([]);
+  const [essaysLoading, setEssaysLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/essays')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setFeaturedEssays(data.data || []);
+        }
+      })
+      .catch(err => console.error('Failed to fetch essays:', err))
+      .finally(() => setEssaysLoading(false));
+  }, []);
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -274,41 +288,62 @@ export default function Home() {
             Start with one essay
           </h2>
           
-          {hasFeaturedEssays ? (
-            <div className="space-y-6 mb-8">
+          {essaysLoading ? (
+            <div className="text-center py-8 text-black/60">Loading essays...</div>
+          ) : featuredEssays.length > 0 ? (
+            <div className="space-y-8 mb-8">
               {featuredEssays.slice(0, 3).map((essay, index) => (
-                <div 
-                  key={index} 
-                  className="bg-white rounded-2xl p-6 relative overflow-hidden hover:shadow-xl transition-all duration-300"
-                  style={{
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
-                    background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
-                  }}
-                >
-                  {/* Texture overlay */}
-                  <div 
-                    className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
-                    style={{
-                      backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`
-                    }}
-                  ></div>
-                  <div className="relative z-10">
-                    <h3 className="text-xl font-serif font-medium mb-2 text-charcoal tracking-tight">
-                      {essay.title}
-                    </h3>
-                    {essay.excerpt && (
-                      <p className="text-black/70 leading-relaxed mb-4">
-                        {essay.excerpt}
+                <div key={essay.id}>
+                  {/* Narrative flow text between essays */}
+                  {index > 0 && (
+                    <div className="text-center mb-6">
+                      <p className="text-black/50 italic text-sm font-serif">
+                        Then explore this...
                       </p>
-                    )}
-                    <a 
-                      href={essay.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-ember font-medium hover:text-ember-light transition-colors"
-                    >
-                      Read essay →
-                    </a>
+                    </div>
+                  )}
+                  
+                  <div 
+                    className="bg-white rounded-2xl p-6 relative overflow-hidden hover:shadow-xl transition-all duration-300"
+                    style={{
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
+                      background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
+                    }}
+                  >
+                    {/* Texture overlay */}
+                    <div 
+                      className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
+                      style={{
+                        backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`
+                      }}
+                    ></div>
+                    <div className="relative z-10">
+                      {essay.image_url && (
+                        <div className="mb-4 -mx-6 -mt-6">
+                          <img 
+                            src={essay.image_url} 
+                            alt={essay.title || ''} 
+                            className="w-full h-48 object-cover"
+                          />
+                        </div>
+                      )}
+                      <h3 className="text-xl font-serif font-medium mb-2 text-charcoal tracking-tight">
+                        {essay.title || 'Untitled Essay'}
+                      </h3>
+                      {essay.excerpt && (
+                        <p className="text-black/70 leading-relaxed mb-4">
+                          {essay.excerpt}
+                        </p>
+                      )}
+                      <a 
+                        href={essay.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-ember font-medium hover:text-ember-light transition-colors"
+                      >
+                        Read essay →
+                      </a>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -355,7 +390,7 @@ export default function Home() {
           <div className="text-center">
             <Link href="/essays">
               <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
-                {hasFeaturedEssays ? 'Browse All Essays' : 'Explore More'}
+                {featuredEssays.length > 0 ? 'Browse All Essays' : 'Explore More'}
               </Button>
             </Link>
           </div>

@@ -76,6 +76,19 @@ export interface NewsletterSubscriber {
   updated_at: string;
 }
 
+export interface FeaturedEssay {
+  id: string;
+  url: string;
+  title: string | null;
+  excerpt: string | null;
+  image_url: string | null;
+  published_date: string | null;
+  display_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 // Form types
 export interface RSVPFormData {
   name: string;

@@ -6,14 +6,15 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Product, Event, Order } from '@/lib/types';
+import { Product, Event, Order, FeaturedEssay } from '@/lib/types';
 
 export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [essays, setEssays] = useState<FeaturedEssay[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'products' | 'events' | 'orders' | 'campaigns' | 'printful'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'events' | 'orders' | 'campaigns' | 'printful' | 'essays'>('products');
   const [user, setUser] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [email, setEmail] = useState('');
@@ -35,6 +36,11 @@ export default function AdminPage() {
   const [selectedPrintfulProducts, setSelectedPrintfulProducts] = useState<Set<string>>(new Set());
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<{success: boolean; message: string; synced?: number; errors?: any[]} | null>(null);
+  
+  // Essays state
+  const [newEssayUrl, setNewEssayUrl] = useState('');
+  const [fetchingMetadata, setFetchingMetadata] = useState(false);
+  const [draggedEssayId, setDraggedEssayId] = useState<string | null>(null);
 
   useEffect(() => {
     checkUser();
@@ -132,6 +138,15 @@ export default function AdminPage() {
       });
       const ordersData = await ordersRes.json();
       setOrders(ordersData.data || []);
+
+      // Fetch featured essays with session
+      const essaysRes = await fetch('/api/admin/essays', {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+      });
+      const essaysData = await essaysRes.json();
+      setEssays(essaysData.data || []);
     } catch (error) {
       console.error('Failed to fetch admin data:', error);
     } finally {
@@ -262,7 +277,7 @@ export default function AdminPage() {
 
       {/* Tabs */}
       <div className="flex gap-4 mb-8 border-b">
-        {(['products', 'events', 'orders', 'campaigns', 'printful'] as const).map((tab) => (
+        {(['products', 'events', 'orders', 'campaigns', 'printful', 'essays'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -272,7 +287,7 @@ export default function AdminPage() {
                 : 'text-black/70 hover:text-charcoal'
             }`}
           >
-            {tab} {tab !== 'campaigns' && tab !== 'printful' && `(${tab === 'products' ? products.length : tab === 'events' ? events.length : orders.length})`}
+            {tab} {tab !== 'campaigns' && tab !== 'printful' && `(${tab === 'products' ? products.length : tab === 'events' ? events.length : tab === 'orders' ? orders.length : essays.length})`}
           </button>
         ))}
       </div>
@@ -863,6 +878,269 @@ export default function AdminPage() {
             <Card className="p-8 text-center">
               <p className="text-black/70 mb-4">Click "Fetch Printful Catalog" to load your products</p>
             </Card>
+          )}
+        </div>
+      )}
+
+      {/* Essays Tab */}
+      {activeTab === 'essays' && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-serif text-charcoal mb-2">Featured Essays</h2>
+              <p className="text-black/70">Manage your curated essay collection for the onboarding journey</p>
+            </div>
+          </div>
+
+          {/* Add New Essay Form */}
+          <Card className="p-6">
+            <h3 className="font-medium mb-4">Add New Essay</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Substack URL</label>
+                <div className="flex gap-2">
+                  <Input
+                    type="url"
+                    value={newEssayUrl}
+                    onChange={(e) => setNewEssayUrl(e.target.value)}
+                    placeholder="https://winewithpete.substack.com/p/essay-slug"
+                    className="flex-1"
+                  />
+                  <Button
+                    onClick={async () => {
+                      if (!newEssayUrl.trim()) return;
+                      setFetchingMetadata(true);
+                      try {
+                        // Fetch OG metadata
+                        const metadataRes = await fetch('/api/og-metadata', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ url: newEssayUrl }),
+                        });
+                        const metadataData = await metadataRes.json();
+                        
+                        if (!metadataData.success) {
+                          alert('Failed to fetch metadata: ' + (metadataData.error || 'Unknown error'));
+                          return;
+                        }
+
+                        const { supabase } = await import('@/lib/supabase/client');
+                        const { data: { session } } = await supabase.auth.getSession();
+                        
+                        if (!session) {
+                          alert('Not authenticated');
+                          return;
+                        }
+
+                        // Get max display_order
+                        const currentEssaysRes = await fetch('/api/admin/essays', {
+                          headers: { 'Authorization': `Bearer ${session.access_token}` },
+                        });
+                        const currentEssaysData = await currentEssaysRes.json();
+                        const maxOrder = currentEssaysData.data?.length > 0
+                          ? Math.max(...currentEssaysData.data.map((e: FeaturedEssay) => e.display_order))
+                          : 0;
+
+                        // Create essay
+                        const createRes = await fetch('/api/admin/essays', {
+                          method: 'POST',
+                          headers: {
+                            'Authorization': `Bearer ${session.access_token}`,
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            url: newEssayUrl,
+                            title: metadataData.metadata.title || null,
+                            excerpt: metadataData.metadata.description || null,
+                            image_url: metadataData.metadata.image || null,
+                            display_order: maxOrder + 1,
+                          }),
+                        });
+
+                        const createData = await createRes.json();
+                        if (createData.error) {
+                          alert('Failed to create essay: ' + createData.error);
+                        } else {
+                          setNewEssayUrl('');
+                          fetchData();
+                        }
+                      } catch (error) {
+                        console.error('Add essay error:', error);
+                        alert('Failed to add essay');
+                      } finally {
+                        setFetchingMetadata(false);
+                      }
+                    }}
+                    disabled={fetchingMetadata || !newEssayUrl.trim()}
+                    className="btn-ember"
+                  >
+                    {fetchingMetadata ? 'Fetching...' : 'Add Essay'}
+                  </Button>
+                </div>
+                <p className="text-xs text-black/60 mt-1">
+                  Enter a Substack URL and we'll automatically fetch the title, description, and image
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Essays List with Drag-and-Drop */}
+          {essays.length === 0 ? (
+            <Card className="p-8 text-center">
+              <p className="text-black/70">No featured essays yet. Add one above to get started.</p>
+            </Card>
+          ) : (
+            <div 
+              className="space-y-4"
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+              }}
+            >
+              <p className="text-sm text-black/60">
+                Drag essays to reorder. The order determines the narrative flow on your pages.
+              </p>
+              {essays.map((essay, index) => (
+                <Card
+                  key={essay.id}
+                  draggable
+                  onDragStart={(e) => {
+                    setDraggedEssayId(essay.id);
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', essay.id);
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    if (draggedEssayId && draggedEssayId !== essay.id) {
+                      e.currentTarget.style.borderTop = '3px solid #c98a2b';
+                    }
+                  }}
+                  onDragLeave={(e) => {
+                    e.currentTarget.style.borderTop = '';
+                  }}
+                  onDrop={async (e) => {
+                    e.preventDefault();
+                    e.currentTarget.style.borderTop = '';
+                    
+                    if (!draggedEssayId || draggedEssayId === essay.id) {
+                      setDraggedEssayId(null);
+                      return;
+                    }
+
+                    const draggedIndex = essays.findIndex(e => e.id === draggedEssayId);
+                    const targetIndex = index;
+                    
+                    if (draggedIndex === -1) {
+                      setDraggedEssayId(null);
+                      return;
+                    }
+
+                    // Reorder array
+                    const newEssays = [...essays];
+                    const [removed] = newEssays.splice(draggedIndex, 1);
+                    newEssays.splice(targetIndex, 0, removed);
+
+                    // Update display_order for all affected essays
+                    const reorderedEssays = newEssays.map((e, i) => ({
+                      id: e.id,
+                      display_order: i + 1,
+                    }));
+
+                    try {
+                      const { supabase } = await import('@/lib/supabase/client');
+                      const { data: { session } } = await supabase.auth.getSession();
+                      
+                      if (!session) {
+                        setDraggedEssayId(null);
+                        return;
+                      }
+
+                      const reorderRes = await fetch('/api/admin/essays/reorder', {
+                        method: 'POST',
+                        headers: {
+                          'Authorization': `Bearer ${session.access_token}`,
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ essays: reorderedEssays }),
+                      });
+
+                      if (reorderRes.ok) {
+                        setEssays(newEssays.map((e, i) => ({ ...e, display_order: i + 1 })));
+                      } else {
+                        // Revert on error
+                        fetchData();
+                      }
+                    } catch (error) {
+                      console.error('Reorder error:', error);
+                      // Revert on error
+                      fetchData();
+                    }
+
+                    setDraggedEssayId(null);
+                  }}
+                  className={`p-4 cursor-move transition-all ${
+                    draggedEssayId === essay.id 
+                      ? 'opacity-50 bg-ember/5' 
+                      : 'hover:shadow-md hover:bg-cream/50'
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 pt-1">
+                      <div className="w-8 h-8 rounded-full bg-ember/10 flex items-center justify-center text-ember font-medium text-sm">
+                        {essay.display_order}
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <h3 className="font-medium text-lg">{essay.title || 'Untitled Essay'}</h3>
+                          {essay.image_url && (
+                            <img 
+                              src={essay.image_url} 
+                              alt={essay.title || ''} 
+                              className="mt-2 w-32 h-20 object-cover rounded"
+                            />
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                              const { supabase } = await import('@/lib/supabase/client');
+                              const { data: { session } } = await supabase.auth.getSession();
+                              
+                              if (!session) return;
+
+                              const res = await fetch(`/api/admin/essays?id=${essay.id}`, {
+                                method: 'DELETE',
+                                headers: { 'Authorization': `Bearer ${session.access_token}` },
+                              });
+
+                              if (res.ok) {
+                                fetchData();
+                              }
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
+                      <p className="text-sm text-black/70 mb-2 line-clamp-2">{essay.excerpt || 'No description'}</p>
+                      <a 
+                        href={essay.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-sm text-ember hover:text-ember-light"
+                      >
+                        {essay.url}
+                      </a>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
           )}
         </div>
       )}

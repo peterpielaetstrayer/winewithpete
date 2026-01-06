@@ -1,8 +1,25 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { featuredEssays, hasFeaturedEssays } from '@/data/featured-essays';
+import { FeaturedEssay } from '@/lib/types';
+import { useState, useEffect } from 'react';
 
 export default function EssaysPage(){
+  const [featuredEssays, setFeaturedEssays] = useState<FeaturedEssay[]>([]);
+  const [essaysLoading, setEssaysLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/essays')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setFeaturedEssays(data.data || []);
+        }
+      })
+      .catch(err => console.error('Failed to fetch essays:', err))
+      .finally(() => setEssaysLoading(false));
+  }, []);
   return (
     <div className="min-h-screen bg-cream">
       {/* Hero Section */}
@@ -41,25 +58,54 @@ export default function EssaysPage(){
           </h2>
           
           <div className="space-y-8 mb-16">
-            {hasFeaturedEssays ? (
+            {essaysLoading ? (
+              <div className="text-center py-8 text-black/60">Loading essays...</div>
+            ) : featuredEssays.length > 0 ? (
               featuredEssays.map((essay, index) => (
-                <div key={index} className="bg-white rounded-2xl p-8 shadow-sm border hover:shadow-md transition-shadow">
-                  <h3 className="text-2xl font-serif font-medium mb-3 text-charcoal">
-                    {essay.title}
-                  </h3>
-                  {essay.excerpt && (
-                    <p className="text-black/70 leading-relaxed mb-4">
-                      {essay.excerpt}
-                    </p>
+                <div key={essay.id}>
+                  {/* Narrative flow text between essays */}
+                  {index === 0 && (
+                    <div className="text-center mb-6">
+                      <p className="text-black/50 italic text-sm font-serif">
+                        Start your journey here...
+                      </p>
+                    </div>
                   )}
-                  <a 
-                    href={essay.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-ember font-medium hover:text-ember-light transition-colors"
-                  >
-                    Read essay →
-                  </a>
+                  {index > 0 && (
+                    <div className="text-center mb-6">
+                      <p className="text-black/50 italic text-sm font-serif">
+                        Then continue with this...
+                      </p>
+                    </div>
+                  )}
+                  
+                  <div className="bg-white rounded-2xl p-8 shadow-sm border hover:shadow-md transition-shadow">
+                    {essay.image_url && (
+                      <div className="mb-6 -mx-8 -mt-8">
+                        <img 
+                          src={essay.image_url} 
+                          alt={essay.title || ''} 
+                          className="w-full h-64 object-cover rounded-t-2xl"
+                        />
+                      </div>
+                    )}
+                    <h3 className="text-2xl font-serif font-medium mb-3 text-charcoal">
+                      {essay.title || 'Untitled Essay'}
+                    </h3>
+                    {essay.excerpt && (
+                      <p className="text-black/70 leading-relaxed mb-4">
+                        {essay.excerpt}
+                      </p>
+                    )}
+                    <a 
+                      href={essay.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-ember font-medium hover:text-ember-light transition-colors"
+                    >
+                      Read essay →
+                    </a>
+                  </div>
                 </div>
               ))
             ) : (
