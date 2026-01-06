@@ -251,24 +251,49 @@ export default function RecipesPage() {
           {/* Checkout Modal */}
           {showCheckoutForm && selectedProduct && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
-              <div className="bg-white rounded-2xl p-8 w-full max-w-md relative animate-scale-in">
+              <div className="bg-white rounded-2xl w-full max-w-lg relative animate-scale-in max-h-[90vh] overflow-y-auto">
                 {/* Close button */}
                 <button
                   onClick={closeCheckoutForm}
-                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10 bg-white rounded-full p-1 shadow-sm"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
 
+                {/* Product Image */}
+                {selectedProduct.image_path && (
+                  <div className="w-full h-48 md:h-64 relative overflow-hidden rounded-t-2xl">
+                    <Image
+                      src={
+                        selectedProduct.image_path.startsWith('http') 
+                          ? selectedProduct.image_path
+                          : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${selectedProduct.image_path}`
+                      }
+                      alt={selectedProduct.name}
+                      fill
+                      className="object-cover"
+                      unoptimized={selectedProduct.image_path.startsWith('http')}
+                    />
+                  </div>
+                )}
+
                 {/* Form */}
-                <form onSubmit={handleCheckoutSubmit} className="space-y-6">
+                <form onSubmit={handleCheckoutSubmit} className="space-y-6 p-8">
                   <div>
-                    <h2 className="text-2xl font-serif font-medium mb-2">Complete Your Purchase</h2>
-                    <p className="text-black/70">{selectedProduct.name}</p>
-                    <p className="text-xl font-semibold mt-2">
-                      {selectedProduct.price === 0 ? 'Free' : `$${selectedProduct.price}`}
+                    <div className="flex items-center justify-between mb-3">
+                      <h2 className="text-2xl font-serif font-medium">Complete Your Purchase</h2>
+                      <Badge variant="outline" className="text-ember border-ember">
+                        {selectedProduct.product_type.replace('_', ' ')}
+                      </Badge>
+                    </div>
+                    <h3 className="text-xl font-medium text-charcoal mb-2">{selectedProduct.name}</h3>
+                    {selectedProduct.description && (
+                      <p className="text-black/70 leading-relaxed mb-4">{selectedProduct.description}</p>
+                    )}
+                    <p className="text-2xl font-semibold text-ember">
+                      {selectedProduct.price === 0 ? 'Free' : `$${selectedProduct.price.toFixed(2)}`}
                     </p>
                   </div>
 
