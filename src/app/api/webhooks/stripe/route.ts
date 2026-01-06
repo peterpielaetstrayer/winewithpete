@@ -48,22 +48,118 @@ export async function POST(request: NextRequest) {
 
         // Create order item
         const productId = session.metadata?.productId;
+        const quantity = parseInt(session.metadata?.quantity || '1', 10);
+        let product = null;
         if (productId) {
           const { error: itemError } = await supabase
             .from('order_items')
             .insert({
               order_id: order.id,
               product_id: productId,
-              quantity: 1,
+              quantity: quantity,
               price: session.amount_total ? session.amount_total / 100 : 0,
             });
 
           if (itemError) {
             console.error('Failed to create order item:', itemError);
           }
+
+          // Fetch product to check if it needs Printful fulfillment
+          const { data: productData } = await supabase
+            .from('products')
+            .select('*')
+            .eq('id', productId)
+            .single();
+          
+          product = productData;
         }
 
         console.log('Order completed:', order.id);
+
+        // Create Printful order if product requires it
+        if (product && product.printful_product_id && product.printful_variant_id) {
+          try {
+            const apiKey = process.env.PRINTFUL_API_KEY;
+            if (!apiKey) {
+              console.warn('PRINTFUL_API_KEY not configured, skipping Printful order creation');
+            } else {
+              // Get shipping address from Stripe session
+              const shippingDetails = session.shipping_details;
+              if (!shippingDetails || !shippingDetails.address) {
+                console.warn('No shipping address in session, cannot create Printful order');
+              } else {
+                // Get store ID first
+                const storesResponse = await fetch('https://api.printful.com/stores', {
+                  headers: { 'Authorization': `Bearer ${apiKey}` },
+                });
+
+                if (!storesResponse.ok) {
+                  throw new Error(`Failed to fetch stores: ${storesResponse.status}`);
+                }
+
+                const storesData = await storesResponse.json();
+                const storeId = storesData.result?.[0]?.id;
+
+                if (!storeId) {
+                  throw new Error('No store found in Printful');
+                }
+
+                // Create Printful order
+                const printfulOrder = {
+                  external_id: order.id, // Link to our order
+                  recipient: {
+                    name: shippingDetails.name || order.name,
+                    address1: shippingDetails.address.line1,
+                    address2: shippingDetails.address.line2 || '',
+                    city: shippingDetails.address.city,
+                    state_code: shippingDetails.address.state,
+                    country_code: shippingDetails.address.country,
+                    zip: shippingDetails.address.postal_code,
+                    phone: shippingDetails.phone || '',
+                    email: order.email,
+                  },
+                  items: [
+                    {
+                      variant_id: parseInt(product.printful_variant_id),
+                      quantity: quantity,
+                    },
+                  ],
+                };
+
+                // Printful orders endpoint requires store_id as query param or in body
+                const printfulResponse = await fetch(`https://api.printful.com/orders?store_id=${storeId}`, {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(printfulOrder),
+                });
+
+                if (!printfulResponse.ok) {
+                  const errorText = await printfulResponse.text();
+                  console.error('Printful order creation failed:', printfulResponse.status, errorText);
+                  // Don't throw - we'll log but continue
+                } else {
+                  const printfulData = await printfulResponse.json();
+                  console.log('Printful order created successfully:', printfulData.result?.id);
+                  
+                  // Optionally store Printful order ID in our order record
+                  await supabase
+                    .from('orders')
+                    .update({ 
+                      // You might want to add a printful_order_id column to store this
+                      // For now, we'll just log it
+                    })
+                    .eq('id', order.id);
+                }
+              }
+            }
+          } catch (printfulError) {
+            console.error('Failed to create Printful order:', printfulError);
+            // Don't fail the webhook - payment succeeded, Printful order can be created manually if needed
+          }
+        }
 
         // Send download links to customer
         try {

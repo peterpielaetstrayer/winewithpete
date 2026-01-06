@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-import { createServerSupabase } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { CreateCheckoutSessionRequest } from '@/lib/types';
 import { checkoutSchema, validateEmail, validateName } from '@/lib/validations';
 import { checkoutRateLimit } from '@/lib/rate-limit';
@@ -101,22 +101,24 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // For now, let's use hardcoded product data to test Stripe
-    // TODO: Fix Supabase RLS policies and restore product lookup
-    const product = {
-      id: productId,
-      name: 'Test Product',
-      description: 'Test product for checkout',
-      price: 0,
-      product_type: 'recipe_card' as const,
-      file_path: null,
-      image_path: null,
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
+    // Fetch product from Supabase
+    const supabase = createClient(); // Uses service role key, bypasses RLS
+    const { data: product, error: productError } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', productId)
+      .eq('is_active', true)
+      .single();
 
-    console.log('Using hardcoded product for testing:', product);
+    if (productError || !product) {
+      console.error('Product lookup error:', productError);
+      return NextResponse.json(
+        { error: 'Product not found or unavailable' },
+        { status: 404 }
+      );
+    }
+
+    console.log('Product found:', { id: product.id, name: product.name, price: product.price });
 
     // Handle free products with optional tips
     if (product.price === 0) {
@@ -186,6 +188,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Regular paid products
+    // Format product image URL for Stripe (needs full URL)
+    const productImages: string[] = [];
+    if (product.image_path) {
+      if (product.image_path.startsWith('http')) {
+        // Direct URL from Printful
+        productImages.push(product.image_path);
+      } else {
+        // Supabase storage path - convert to full URL
+        const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+        if (supabaseUrl) {
+          productImages.push(`${supabaseUrl}/storage/v1/object/public/product-images/${product.image_path}`);
+        }
+      }
+    }
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -195,7 +212,7 @@ export async function POST(request: NextRequest) {
             product_data: {
               name: product.name,
               description: product.description || undefined,
-              images: [], // Add product images if you have them
+              images: productImages.length > 0 ? productImages : undefined,
             },
             unit_amount: Math.round(product.price * 100), // Convert to cents
           },
@@ -210,6 +227,7 @@ export async function POST(request: NextRequest) {
         productId: product.id,
         productName: product.name,
         customerName: customerName || '',
+        quantity: quantity.toString(),
       },
     });
 
