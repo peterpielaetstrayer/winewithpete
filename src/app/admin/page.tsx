@@ -13,7 +13,7 @@ export default function AdminPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'products' | 'events' | 'orders' | 'campaigns'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'events' | 'orders' | 'campaigns' | 'printful'>('products');
   const [user, setUser] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [email, setEmail] = useState('');
@@ -27,6 +27,13 @@ export default function AdminPage() {
   const [campaignLimit, setCampaignLimit] = useState('');
   const [campaignSending, setCampaignSending] = useState(false);
   const [campaignResult, setCampaignResult] = useState<{success: boolean; message: string; sent?: number; failed?: number; total?: number} | null>(null);
+  
+  // Printful state
+  const [printfulProducts, setPrintfulProducts] = useState<any[]>([]);
+  const [printfulLoading, setPrintfulLoading] = useState(false);
+  const [selectedPrintfulProducts, setSelectedPrintfulProducts] = useState<Set<string>>(new Set());
+  const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState<{success: boolean; message: string; synced?: number; errors?: any[]} | null>(null);
 
   useEffect(() => {
     checkUser();
@@ -254,7 +261,7 @@ export default function AdminPage() {
 
       {/* Tabs */}
       <div className="flex gap-4 mb-8 border-b">
-        {(['products', 'events', 'orders', 'campaigns'] as const).map((tab) => (
+        {(['products', 'events', 'orders', 'campaigns', 'printful'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -264,7 +271,7 @@ export default function AdminPage() {
                 : 'text-black/70 hover:text-charcoal'
             }`}
           >
-            {tab} {tab !== 'campaigns' && `(${tab === 'products' ? products.length : tab === 'events' ? events.length : orders.length})`}
+            {tab} {tab !== 'campaigns' && tab !== 'printful' && `(${tab === 'products' ? products.length : tab === 'events' ? events.length : orders.length})`}
           </button>
         ))}
       </div>
@@ -549,6 +556,221 @@ export default function AdminPage() {
               <li>Check Resend dashboard for delivery status and analytics</li>
             </ul>
           </Card>
+        </div>
+      )}
+
+      {/* Printful Tab */}
+      {activeTab === 'printful' && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-serif text-charcoal mb-2">Printful Products</h2>
+              <p className="text-black/70">Browse your Printful catalog and sync products to your store</p>
+            </div>
+            <Button 
+              className="btn-ember"
+              onClick={async () => {
+                setPrintfulLoading(true);
+                setPrintfulProducts([]);
+                setSyncResult(null);
+                try {
+                  const response = await fetch('/api/printful/catalog');
+                  const data = await response.json();
+                  if (data.success) {
+                    setPrintfulProducts(data.data || []);
+                  } else {
+                    alert(data.error || 'Failed to fetch Printful products');
+                  }
+                } catch (error) {
+                  alert('Failed to fetch Printful products');
+                  console.error(error);
+                } finally {
+                  setPrintfulLoading(false);
+                }
+              }}
+              disabled={printfulLoading}
+            >
+              {printfulLoading ? 'Loading...' : 'Fetch Printful Catalog'}
+            </Button>
+          </div>
+
+          {syncResult && (
+            <Card className={`p-4 ${syncResult.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+              <p className={`font-medium ${syncResult.success ? 'text-green-800' : 'text-red-800'}`}>
+                {syncResult.message}
+              </p>
+              {syncResult.success && syncResult.synced !== undefined && (
+                <p className="text-sm mt-1 text-green-700">
+                  Successfully synced {syncResult.synced} product(s)
+                </p>
+              )}
+              {syncResult.errors && syncResult.errors.length > 0 && (
+                <div className="mt-2 text-sm text-red-700">
+                  <p className="font-medium">Errors:</p>
+                  <ul className="list-disc list-inside">
+                    {syncResult.errors.map((err: any, idx: number) => (
+                      <li key={idx}>{err.product}: {err.error}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </Card>
+          )}
+
+          {printfulProducts.length > 0 && (
+            <>
+              <div className="flex justify-between items-center">
+                <p className="text-black/70">
+                  {selectedPrintfulProducts.size} product(s) selected
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedPrintfulProducts(new Set())}
+                  >
+                    Clear Selection
+                  </Button>
+                  <Button
+                    className="btn-ember"
+                    onClick={async () => {
+                      if (selectedPrintfulProducts.size === 0) {
+                        alert('Please select at least one product');
+                        return;
+                      }
+                      
+                      setSyncing(true);
+                      setSyncResult(null);
+                      
+                      const selectedProducts = printfulProducts.filter(p => 
+                        selectedPrintfulProducts.has(p.id?.toString() || p.sync_product?.id?.toString())
+                      );
+                      
+                      try {
+                        const response = await fetch('/api/printful/sync', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ products: selectedProducts }),
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                          setSyncResult({
+                            success: true,
+                            message: `Successfully synced ${data.synced} product(s) to your store`,
+                            synced: data.synced,
+                            errors: data.errors,
+                          });
+                          setSelectedPrintfulProducts(new Set());
+                          // Refresh products list
+                          fetchData();
+                        } else {
+                          setSyncResult({
+                            success: false,
+                            message: data.error || 'Failed to sync products',
+                            errors: data.errors,
+                          });
+                        }
+                      } catch (error) {
+                        setSyncResult({
+                          success: false,
+                          message: 'Failed to sync products',
+                        });
+                      } finally {
+                        setSyncing(false);
+                      }
+                    }}
+                    disabled={syncing || selectedPrintfulProducts.size === 0}
+                  >
+                    {syncing ? 'Syncing...' : `Sync ${selectedPrintfulProducts.size} Selected`}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {printfulProducts.map((product) => {
+                  const productId = product.id?.toString() || product.sync_product?.id?.toString();
+                  const isSelected = selectedPrintfulProducts.has(productId);
+                  const mainVariant = product.variants?.[0] || product.sync_variants?.[0];
+                  const image = product.sync_product?.thumbnail_url || 
+                               product.sync_product?.preview_url ||
+                               mainVariant?.preview_image ||
+                               null;
+                  const price = mainVariant?.retail_price 
+                    ? `$${(mainVariant.retail_price / 100).toFixed(2)}`
+                    : 'Price TBD';
+                  const name = product.sync_product?.name || product.name || 'Unnamed Product';
+                  const isWineBear = name.toLowerCase().includes('wine bear') || 
+                                   name.toLowerCase().includes('winebear');
+
+                  return (
+                    <Card 
+                      key={productId} 
+                      className={`p-4 cursor-pointer transition-all ${
+                        isSelected ? 'ring-2 ring-ember bg-ember/5' : ''
+                      }`}
+                      onClick={() => {
+                        const newSelected = new Set(selectedPrintfulProducts);
+                        if (isSelected) {
+                          newSelected.delete(productId);
+                        } else {
+                          newSelected.add(productId);
+                        }
+                        setSelectedPrintfulProducts(newSelected);
+                      }}
+                    >
+                      {image && (
+                        <div className="aspect-square mb-3 rounded-lg overflow-hidden bg-gray-100">
+                          <img 
+                            src={image} 
+                            alt={name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="font-medium text-sm line-clamp-2 flex-1">{name}</h3>
+                        {isWineBear && (
+                          <Badge variant="outline" className="ml-2 text-xs border-ember text-ember">
+                            Wine Bear
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-ember font-medium text-sm mb-2">{price}</p>
+                      <p className="text-xs text-black/60">
+                        {product.sync_variants?.length || product.variants?.length || 0} variant(s)
+                      </p>
+                      <div className="mt-3 flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => {
+                            const newSelected = new Set(selectedPrintfulProducts);
+                            if (isSelected) {
+                              newSelected.delete(productId);
+                            } else {
+                              newSelected.add(productId);
+                            }
+                            setSelectedPrintfulProducts(newSelected);
+                          }}
+                          className="w-4 h-4 text-ember border-gray-300 rounded focus:ring-ember"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <label className="text-xs text-black/70">Select to sync</label>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {printfulProducts.length === 0 && !printfulLoading && (
+            <Card className="p-8 text-center">
+              <p className="text-black/70 mb-4">Click "Fetch Printful Catalog" to load your products</p>
+            </Card>
+          )}
         </div>
       )}
     </div>

@@ -31,10 +31,16 @@ export interface Product {
   name: string;
   description: string | null;
   price: number;
-  product_type: 'recipe_card' | 'guide' | 'ebook' | 'bundle';
+  product_type: 'recipe_card' | 'guide' | 'ebook' | 'bundle' | 'physical' | 'merch';
+  product_category?: 'digital' | 'merch' | 'wine_bear';
   file_path: string | null;
   image_path: string | null;
+  printful_product_id?: string | null;
+  printful_variant_id?: string | null;
+  printful_sync_data?: any; // Full Printful product data
   is_active: boolean;
+  is_featured?: boolean;
+  display_order?: number;
   created_at: string;
   updated_at: string;
 }
