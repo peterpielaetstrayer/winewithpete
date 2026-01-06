@@ -161,9 +161,13 @@ export default function RecipesPage() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             {displayProducts.map((product) => (
-              <div key={product.id} className="card-enhanced animate-scale-in">
+              <div 
+                key={product.id} 
+                className="card-enhanced animate-scale-in cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => !showPlaceholderMessage && handleCheckoutClick(product)}
+              >
                 {/* Product Image */}
-                <div className="aspect-square relative overflow-hidden">
+                <div className="aspect-square relative overflow-hidden rounded-t-2xl">
                   {product.image_path ? (
                     <Image
                       src={
@@ -175,6 +179,7 @@ export default function RecipesPage() {
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover"
+                      unoptimized={product.image_path.startsWith('http')} // Unoptimized for Printful URLs to avoid domain issues
                       onError={(e) => {
                         console.error('Image failed to load:', product.image_path);
                         e.currentTarget.style.display = 'none';
@@ -220,14 +225,17 @@ export default function RecipesPage() {
                     </div>
                     
                     {showPlaceholderMessage ? (
-                      <Link href="/join">
+                      <Link href="/join" onClick={(e) => e.stopPropagation()}>
                         <Button className="btn-ember focus-ring">
                           Get Notified
                         </Button>
                       </Link>
                     ) : (
                       <Button
-                        onClick={() => handleCheckoutClick(product)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCheckoutClick(product);
+                        }}
                         disabled={loading === product.id}
                         className="btn-ember focus-ring"
                       >
