@@ -37,22 +37,27 @@ export default function StartPage() {
     <StartPageClient>
       <div className="fixed inset-0 overflow-y-auto">
       {/* Background with fire-lit gradient and texture */}
-      <div className="fixed inset-0 bg-gradient-to-b from-[#2a1a18] via-[#3d2522] to-[#1f1412] z-0">
-        {/* Vignette effect */}
-        <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black/40 pointer-events-none" 
-             style={{
-               background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.5) 100%)'
-             }}></div>
-        
-        {/* Texture overlay using CSS noise */}
+      <div className="fixed inset-0 bg-gradient-to-b from-[#2a1a18] via-[#3d2522] to-[#1f1412] z-0 relative">
+        {/* Enhanced vignette effect */}
         <div 
-          className="absolute inset-0 opacity-20 pointer-events-none"
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.6) 100%)'
+          }}
+        ></div>
+        
+        {/* Noise texture overlay via pseudo-element simulation */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
           style={{
             backgroundImage: `
-              repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 69, 19, 0.03) 2px, rgba(139, 69, 19, 0.03) 4px),
-              repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(160, 82, 45, 0.03) 2px, rgba(160, 82, 45, 0.03) 4px)
+              repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(139, 69, 19, 0.015) 1px, rgba(139, 69, 19, 0.015) 2px),
+              repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(160, 82, 45, 0.015) 1px, rgba(160, 82, 45, 0.015) 2px),
+              repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(101, 50, 30, 0.01) 2px, rgba(101, 50, 30, 0.01) 3px)
             `,
-            backgroundSize: '100% 100%',
+            backgroundSize: '200% 200%, 150% 150%, 180% 180%',
+            opacity: 0.25,
+            mixBlendMode: 'overlay',
           }}
         ></div>
         
@@ -69,67 +74,91 @@ export default function StartPage() {
           </h1>
           
           {/* Subline */}
-          <p className="text-lg md:text-xl text-center text-[#f6f3ef]/90 mb-16 leading-relaxed font-light">
+          <p className="text-lg md:text-xl text-center text-[#f6f3ef]/90 mb-12 leading-relaxed font-light">
             Food, fire, and conversations that stay with you long after the embers die.
           </p>
 
           {/* Sections */}
-          <div className="space-y-12">
+          <div className="space-y-10">
             {/* Make Something Delicious */}
-            <section className="space-y-4">
+            <section className="space-y-3">
               <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center">
                 Make Something Delicious
               </h2>
               <Link 
                 href="/recipes"
-                className="block w-full py-4 px-6 rounded-full bg-[#f6f3ef]/95 text-[#1f1f1f] font-medium text-lg shadow-lg hover:bg-[#f6f3ef] hover:shadow-xl active:scale-[0.98] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18] text-center"
+                className="relative block w-full py-4 px-6 rounded-full bg-[#f6f3ef]/95 text-[#1f1f1f] font-medium text-lg text-center border border-[#1f1f1f]/10 shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:bg-[#f6f3ef] hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] active:translate-y-[1px] active:shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18]"
+                style={{
+                  background: 'linear-gradient(to bottom, rgba(246, 243, 239, 0.98) 0%, rgba(246, 243, 239, 0.95) 100%)',
+                }}
               >
                 Explore Fire Recipes
               </Link>
             </section>
 
+            {/* Section separator */}
+            <div className="h-px bg-[#f6f3ef]/10"></div>
+
             {/* Explore Ideas & Stories */}
-            <section className="space-y-4">
+            <section className="space-y-3">
               <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center">
                 Explore Ideas & Stories
               </h2>
               <div className="space-y-3">
                 <Link 
                   href="/essays"
-                  className="block w-full py-4 px-6 rounded-full bg-[#f6f3ef]/95 text-[#1f1f1f] font-medium text-lg shadow-lg hover:bg-[#f6f3ef] hover:shadow-xl active:scale-[0.98] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18] text-center"
+                  className="relative block w-full py-4 px-6 rounded-full bg-[#f6f3ef]/95 text-[#1f1f1f] font-medium text-lg text-center border border-[#1f1f1f]/10 shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:bg-[#f6f3ef] hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] active:translate-y-[1px] active:shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18]"
+                  style={{
+                    background: 'linear-gradient(to bottom, rgba(246, 243, 239, 0.98) 0%, rgba(246, 243, 239, 0.95) 100%)',
+                  }}
                 >
                   Read an Essay
                 </Link>
                 <Link 
                   href="/essays"
-                  className="block w-full py-4 px-6 rounded-full bg-[#f6f3ef]/90 text-[#1f1f1f] font-medium text-base shadow-md hover:bg-[#f6f3ef]/95 hover:shadow-lg active:scale-[0.98] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18] text-center"
+                  className="relative block w-full py-4 px-6 rounded-full bg-[#f6f3ef]/90 text-[#1f1f1f] font-medium text-base text-center border border-[#1f1f1f]/10 shadow-[0_3px_10px_rgba(0,0,0,0.12)] hover:bg-[#f6f3ef]/95 hover:shadow-[0_4px_14px_rgba(0,0,0,0.18)] active:translate-y-[1px] active:shadow-[0_2px_6px_rgba(0,0,0,0.12)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18]"
+                  style={{
+                    background: 'linear-gradient(to bottom, rgba(246, 243, 239, 0.95) 0%, rgba(246, 243, 239, 0.90) 100%)',
+                  }}
                 >
                   Browse All Essays
                 </Link>
               </div>
             </section>
 
+            {/* Section separator */}
+            <div className="h-px bg-[#f6f3ef]/10"></div>
+
             {/* Connect & Belong */}
-            <section className="space-y-4">
+            <section className="space-y-3">
               <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center">
                 Connect & Belong
               </h2>
               <Link 
                 href="/join"
-                className="block w-full py-4 px-6 rounded-full bg-[#f6f3ef]/95 text-[#1f1f1f] font-medium text-lg shadow-lg hover:bg-[#f6f3ef] hover:shadow-xl active:scale-[0.98] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18] text-center"
+                className="relative block w-full py-4 px-6 rounded-full bg-[#f6f3ef]/95 text-[#1f1f1f] font-medium text-lg text-center border border-[#1f1f1f]/10 shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:bg-[#f6f3ef] hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] active:translate-y-[1px] active:shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18]"
+                style={{
+                  background: 'linear-gradient(to bottom, rgba(246, 243, 239, 0.98) 0%, rgba(246, 243, 239, 0.95) 100%)',
+                }}
               >
                 Join the Circle
               </Link>
             </section>
 
+            {/* Section separator */}
+            <div className="h-px bg-[#f6f3ef]/10"></div>
+
             {/* Join In Person */}
-            <section className="space-y-4">
+            <section className="space-y-3">
               <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center">
                 Join In Person
               </h2>
               <Link 
                 href="/gatherings"
-                className="block w-full py-4 px-6 rounded-full bg-[#f6f3ef]/95 text-[#1f1f1f] font-medium text-lg shadow-lg hover:bg-[#f6f3ef] hover:shadow-xl active:scale-[0.98] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18] text-center"
+                className="relative block w-full py-4 px-6 rounded-full bg-[#f6f3ef]/95 text-[#1f1f1f] font-medium text-lg text-center border border-[#1f1f1f]/10 shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:bg-[#f6f3ef] hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] active:translate-y-[1px] active:shadow-[0_2px_8px_rgba(0,0,0,0.15)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18]"
+                style={{
+                  background: 'linear-gradient(to bottom, rgba(246, 243, 239, 0.98) 0%, rgba(246, 243, 239, 0.95) 100%)',
+                }}
               >
                 See Gatherings
               </Link>
