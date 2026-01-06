@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { StartPageClient } from './start-page-client';
+import { ButtonLink } from './button-link';
 
 export const metadata: Metadata = {
   title: 'Wine With Pete',
@@ -106,57 +107,9 @@ export default function StartPage() {
               <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
                 Make Something Delicious
               </h2>
-              <Link 
-                href="/recipes"
-                className="group relative block w-full py-4 px-6 rounded-full text-[#1f1f1f] font-medium text-lg text-center border border-[#1f1f1f]/15 transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18]"
-                style={{
-                  background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.98) 0%, rgba(246, 243, 239, 0.97) 50%, rgba(246, 243, 239, 0.95) 100%)',
-                  boxShadow: `
-                    0 1px 0 rgba(255, 255, 255, 0.6) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                    0 4px 16px rgba(0, 0, 0, 0.2),
-                    0 8px 24px rgba(0, 0, 0, 0.15)
-                  `,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = `
-                    0 1px 0 rgba(255, 255, 255, 0.7) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                    0 6px 20px rgba(0, 0, 0, 0.25),
-                    0 12px 32px rgba(0, 0, 0, 0.2)
-                  `;
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = `
-                    0 1px 0 rgba(255, 255, 255, 0.6) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                    0 4px 16px rgba(0, 0, 0, 0.2),
-                    0 8px 24px rgba(0, 0, 0, 0.15)
-                  `;
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.transform = 'translateY(1px)';
-                  e.currentTarget.style.boxShadow = `
-                    0 1px 0 rgba(255, 255, 255, 0.5) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.1) inset,
-                    0 2px 8px rgba(0, 0, 0, 0.2),
-                    0 4px 12px rgba(0, 0, 0, 0.15)
-                  `;
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = `
-                    0 1px 0 rgba(255, 255, 255, 0.7) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                    0 6px 20px rgba(0, 0, 0, 0.25),
-                    0 12px 32px rgba(0, 0, 0, 0.2)
-                  `;
-                }}
-              >
+              <ButtonLink href="/recipes" variant="primary" className="text-lg">
                 Explore Fire Recipes
-              </Link>
+              </ButtonLink>
             </section>
 
             {/* Section separator */}
@@ -168,108 +121,12 @@ export default function StartPage() {
                 Explore Ideas & Stories
               </h2>
               <div className="space-y-3">
-                <Link 
-                  href="/essays"
-                  className="group relative block w-full py-4 px-6 rounded-full text-[#1f1f1f] font-medium text-lg text-center border border-[#1f1f1f]/15 transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18]"
-                  style={{
-                    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.98) 0%, rgba(246, 243, 239, 0.97) 50%, rgba(246, 243, 239, 0.95) 100%)',
-                    boxShadow: `
-                      0 1px 0 rgba(255, 255, 255, 0.6) inset,
-                      0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                      0 4px 16px rgba(0, 0, 0, 0.2),
-                      0 8px 24px rgba(0, 0, 0, 0.15)
-                    `,
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = `
-                      0 1px 0 rgba(255, 255, 255, 0.7) inset,
-                      0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                      0 6px 20px rgba(0, 0, 0, 0.25),
-                      0 12px 32px rgba(0, 0, 0, 0.2)
-                    `;
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = `
-                      0 1px 0 rgba(255, 255, 255, 0.6) inset,
-                      0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                      0 4px 16px rgba(0, 0, 0, 0.2),
-                      0 8px 24px rgba(0, 0, 0, 0.15)
-                    `;
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }}
-                  onMouseDown={(e) => {
-                    e.currentTarget.style.transform = 'translateY(1px)';
-                    e.currentTarget.style.boxShadow = `
-                      0 1px 0 rgba(255, 255, 255, 0.5) inset,
-                      0 -1px 0 rgba(0, 0, 0, 0.1) inset,
-                      0 2px 8px rgba(0, 0, 0, 0.2),
-                      0 4px 12px rgba(0, 0, 0, 0.15)
-                    `;
-                  }}
-                  onMouseUp={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = `
-                      0 1px 0 rgba(255, 255, 255, 0.7) inset,
-                      0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                      0 6px 20px rgba(0, 0, 0, 0.25),
-                      0 12px 32px rgba(0, 0, 0, 0.2)
-                    `;
-                  }}
-                >
+                <ButtonLink href="/essays" variant="primary" className="text-lg">
                   Read an Essay
-                </Link>
-                <Link 
-                  href="/essays"
-                  className="group relative block w-full py-4 px-6 rounded-full text-[#1f1f1f] font-medium text-base text-center border border-[#1f1f1f]/15 transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18]"
-                  style={{
-                    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.95) 0%, rgba(246, 243, 239, 0.94) 50%, rgba(246, 243, 239, 0.90) 100%)',
-                    boxShadow: `
-                      0 1px 0 rgba(255, 255, 255, 0.5) inset,
-                      0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                      0 3px 12px rgba(0, 0, 0, 0.18),
-                      0 6px 18px rgba(0, 0, 0, 0.12)
-                    `,
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = `
-                      0 1px 0 rgba(255, 255, 255, 0.6) inset,
-                      0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                      0 4px 16px rgba(0, 0, 0, 0.22),
-                      0 8px 24px rgba(0, 0, 0, 0.18)
-                    `;
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = `
-                      0 1px 0 rgba(255, 255, 255, 0.5) inset,
-                      0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                      0 3px 12px rgba(0, 0, 0, 0.18),
-                      0 6px 18px rgba(0, 0, 0, 0.12)
-                    `;
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }}
-                  onMouseDown={(e) => {
-                    e.currentTarget.style.transform = 'translateY(1px)';
-                    e.currentTarget.style.boxShadow = `
-                      0 1px 0 rgba(255, 255, 255, 0.4) inset,
-                      0 -1px 0 rgba(0, 0, 0, 0.1) inset,
-                      0 2px 6px rgba(0, 0, 0, 0.18),
-                      0 3px 10px rgba(0, 0, 0, 0.12)
-                    `;
-                  }}
-                  onMouseUp={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = `
-                      0 1px 0 rgba(255, 255, 255, 0.6) inset,
-                      0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                      0 4px 16px rgba(0, 0, 0, 0.22),
-                      0 8px 24px rgba(0, 0, 0, 0.18)
-                    `;
-                  }}
-                >
+                </ButtonLink>
+                <ButtonLink href="/essays" variant="secondary" className="text-base">
                   Browse All Essays
-                </Link>
+                </ButtonLink>
               </div>
             </section>
 
@@ -281,57 +138,9 @@ export default function StartPage() {
               <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
                 Connect & Belong
               </h2>
-              <Link 
-                href="/join"
-                className="group relative block w-full py-4 px-6 rounded-full text-[#1f1f1f] font-medium text-lg text-center border border-[#1f1f1f]/15 transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18]"
-                style={{
-                  background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.98) 0%, rgba(246, 243, 239, 0.97) 50%, rgba(246, 243, 239, 0.95) 100%)',
-                  boxShadow: `
-                    0 1px 0 rgba(255, 255, 255, 0.6) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                    0 4px 16px rgba(0, 0, 0, 0.2),
-                    0 8px 24px rgba(0, 0, 0, 0.15)
-                  `,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = `
-                    0 1px 0 rgba(255, 255, 255, 0.7) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                    0 6px 20px rgba(0, 0, 0, 0.25),
-                    0 12px 32px rgba(0, 0, 0, 0.2)
-                  `;
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = `
-                    0 1px 0 rgba(255, 255, 255, 0.6) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                    0 4px 16px rgba(0, 0, 0, 0.2),
-                    0 8px 24px rgba(0, 0, 0, 0.15)
-                  `;
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.transform = 'translateY(1px)';
-                  e.currentTarget.style.boxShadow = `
-                    0 1px 0 rgba(255, 255, 255, 0.5) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.1) inset,
-                    0 2px 8px rgba(0, 0, 0, 0.2),
-                    0 4px 12px rgba(0, 0, 0, 0.15)
-                  `;
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = `
-                    0 1px 0 rgba(255, 255, 255, 0.7) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                    0 6px 20px rgba(0, 0, 0, 0.25),
-                    0 12px 32px rgba(0, 0, 0, 0.2)
-                  `;
-                }}
-              >
+              <ButtonLink href="/join" variant="primary" className="text-lg">
                 Join the Circle
-              </Link>
+              </ButtonLink>
             </section>
 
             {/* Section separator */}
@@ -342,57 +151,9 @@ export default function StartPage() {
               <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
                 Join In Person
               </h2>
-              <Link 
-                href="/gatherings"
-                className="group relative block w-full py-4 px-6 rounded-full text-[#1f1f1f] font-medium text-lg text-center border border-[#1f1f1f]/15 transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18]"
-                style={{
-                  background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.98) 0%, rgba(246, 243, 239, 0.97) 50%, rgba(246, 243, 239, 0.95) 100%)',
-                  boxShadow: `
-                    0 1px 0 rgba(255, 255, 255, 0.6) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                    0 4px 16px rgba(0, 0, 0, 0.2),
-                    0 8px 24px rgba(0, 0, 0, 0.15)
-                  `,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = `
-                    0 1px 0 rgba(255, 255, 255, 0.7) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                    0 6px 20px rgba(0, 0, 0, 0.25),
-                    0 12px 32px rgba(0, 0, 0, 0.2)
-                  `;
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = `
-                    0 1px 0 rgba(255, 255, 255, 0.6) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                    0 4px 16px rgba(0, 0, 0, 0.2),
-                    0 8px 24px rgba(0, 0, 0, 0.15)
-                  `;
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.transform = 'translateY(1px)';
-                  e.currentTarget.style.boxShadow = `
-                    0 1px 0 rgba(255, 255, 255, 0.5) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.1) inset,
-                    0 2px 8px rgba(0, 0, 0, 0.2),
-                    0 4px 12px rgba(0, 0, 0, 0.15)
-                  `;
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = `
-                    0 1px 0 rgba(255, 255, 255, 0.7) inset,
-                    0 -1px 0 rgba(0, 0, 0, 0.05) inset,
-                    0 6px 20px rgba(0, 0, 0, 0.25),
-                    0 12px 32px rgba(0, 0, 0, 0.2)
-                  `;
-                }}
-              >
+              <ButtonLink href="/gatherings" variant="primary" className="text-lg">
                 See Gatherings
-              </Link>
+              </ButtonLink>
             </section>
           </div>
 
