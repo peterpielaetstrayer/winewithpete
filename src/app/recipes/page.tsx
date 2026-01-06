@@ -23,7 +23,7 @@ export default function RecipesPage() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products');
+      const response = await fetch('/api/products?category=digital');
       const data = await response.json();
       setProducts(data.data || []);
     } catch (error) {
@@ -126,6 +126,16 @@ export default function RecipesPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
+      {/* Cross-link to Store */}
+      <div className="text-center mb-6">
+        <Link 
+          href="/store" 
+          className="inline-flex items-center gap-2 text-ember hover:text-ember-light transition-colors text-sm font-medium"
+        >
+          Looking for physical merch? <span className="underline">Shop Store</span> →
+        </Link>
+      </div>
+
       {/* Hero Section */}
       <div className="text-center mb-16">
         <h1 className="text-display animate-fade-in">Recipes & Guides</h1>
