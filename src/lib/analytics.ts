@@ -1,5 +1,5 @@
-// Basic analytics tracking for Wine With Pete
-// You can integrate with Google Analytics, Mixpanel, or any analytics service
+// Analytics tracking for Wine With Pete
+// Supports Google Analytics 4 and Vercel Analytics
 
 interface AnalyticsEvent {
   action: string;
@@ -8,19 +8,30 @@ interface AnalyticsEvent {
   value?: number;
 }
 
+declare global {
+  interface Window {
+    gtag?: (
+      command: 'config' | 'event' | 'js' | 'set',
+      targetId: string | Date,
+      config?: Record<string, any>
+    ) => void;
+  }
+}
+
 export const trackEvent = (event: AnalyticsEvent) => {
-  // For now, just log to console
-  // In production, replace with your analytics service
-  console.log('Analytics Event:', event);
+  // Log to console in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Analytics Event:', event);
+  }
   
-  // Example Google Analytics 4 integration:
-  // if (typeof window !== 'undefined' && window.gtag) {
-  //   window.gtag('event', event.action, {
-  //     event_category: event.category,
-  //     event_label: event.label,
-  //     value: event.value,
-  //   });
-  // }
+  // Send to Google Analytics 4
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', event.action, {
+      event_category: event.category,
+      event_label: event.label,
+      value: event.value,
+    });
+  }
 };
 
 // Common events for Wine With Pete
