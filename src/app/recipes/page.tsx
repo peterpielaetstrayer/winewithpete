@@ -225,7 +225,7 @@ export default function RecipesPage() {
                     )}
                   </div>
                   
-                  {product.description && (
+                  {product.description && product.description !== product.name && (
                     <p className="text-black/70 mb-4 line-clamp-3">{product.description}</p>
                   )}
 
