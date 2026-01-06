@@ -12,58 +12,61 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch store products from Printful
+    // Printful API endpoint: GET /store/products
     const response = await fetch('https://api.printful.com/store/products', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
       },
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Printful API error:', response.status, errorText);
-      return NextResponse.json(
-        { error: `Printful API error: ${response.status}`, details: errorText },
-        { status: response.status }
-      );
+      let errorText = '';
+      try {
+        errorText = await response.text();
+        // Try to parse as JSON for better error message
+        try {
+          const errorJson = JSON.parse(errorText);
+          console.error('Printful API error:', response.status, JSON.stringify(errorJson, null, 2));
+          return NextResponse.json(
+            { 
+              error: `Printful API error: ${response.status}`,
+              details: errorJson.error?.message || errorJson.error || errorText,
+              fullError: errorJson
+            },
+            { status: response.status }
+          );
+        } catch {
+          // Not JSON, return as text
+          console.error('Printful API error (text):', response.status, errorText);
+          return NextResponse.json(
+            { 
+              error: `Printful API error: ${response.status}`,
+              details: errorText
+            },
+            { status: response.status }
+          );
+        }
+      } catch (e) {
+        console.error('Error reading Printful response:', e);
+        return NextResponse.json(
+          { error: `Printful API error: ${response.status}` },
+          { status: response.status }
+        );
+      }
     }
 
     const data = await response.json();
-    const products = data.result || [];
     
-    // Fetch full details for each product (including variants)
-    const productsWithDetails = await Promise.all(
-      products.map(async (product: any) => {
-        try {
-          const productId = product.id || product.sync_product?.id;
-          if (!productId) return product;
-          
-          const detailResponse = await fetch(`https://api.printful.com/store/products/${productId}`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${apiKey}`,
-              'Content-Type': 'application/json',
-            },
-          });
-          
-          if (detailResponse.ok) {
-            const detailData = await detailResponse.json();
-            return detailData.result || product;
-          }
-          return product;
-        } catch (error) {
-          console.error(`Error fetching details for product ${product.id}:`, error);
-          return product;
-        }
-      })
-    );
+    // Printful returns { result: { items: [...], paging: {...} } } or { result: [...] }
+    const products = data.result?.items || data.result || [];
     
-    // Return products with their variants
+    // Return products with their variants (Printful already includes variant data)
     return NextResponse.json({
       success: true,
-      data: productsWithDetails,
-      total: productsWithDetails.length,
+      data: products,
+      total: products.length,
+      paging: data.result?.paging,
     });
 
   } catch (error) {
