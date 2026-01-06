@@ -166,7 +166,11 @@ export default function RecipesPage() {
                 <div className="aspect-square relative overflow-hidden">
                   {product.image_path ? (
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${product.image_path}`}
+                      src={
+                        product.image_path.startsWith('http') 
+                          ? product.image_path // Direct URL from Printful
+                          : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${product.image_path}` // Supabase storage
+                      }
                       alt={product.name}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

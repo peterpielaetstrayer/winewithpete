@@ -107,17 +107,40 @@ export async function POST(request: NextRequest) {
         // Get product image (from sync_product or variants)
         const productImage = syncProduct.thumbnail_url || 
                             syncProduct.preview_url ||
+                            syncProduct.image ||
                             mainVariant?.preview_image ||
                             mainVariant?.files?.[0]?.preview_url ||
+                            mainVariant?.files?.[0]?.url ||
                             null;
 
-        // Calculate price from variant (Printful prices are in cents)
-        // Use retail_price if set, otherwise use price
-        const price = mainVariant?.retail_price 
-          ? parseFloat((mainVariant.retail_price / 100).toFixed(2))
-          : mainVariant?.price
-          ? parseFloat((mainVariant.price / 100).toFixed(2))
-          : 0;
+        // Better price extraction - Printful prices can be in different fields
+        // Log variant structure for debugging
+        console.log('Variant price fields:', {
+          variantId: mainVariant.id,
+          retail_price: mainVariant.retail_price,
+          price: mainVariant.price,
+          cost: mainVariant.cost,
+          allKeys: Object.keys(mainVariant)
+        });
+        
+        // Try multiple price sources (Printful uses different fields)
+        let price = 0;
+        if (mainVariant.retail_price !== undefined && mainVariant.retail_price !== null) {
+          // retail_price is in cents
+          price = parseFloat((mainVariant.retail_price / 100).toFixed(2));
+        } else if (mainVariant.price !== undefined && mainVariant.price !== null) {
+          // price might be in cents or dollars
+          price = mainVariant.price > 1000 
+            ? parseFloat((mainVariant.price / 100).toFixed(2)) // Assume cents if > 1000
+            : parseFloat(mainVariant.price.toFixed(2)); // Otherwise dollars
+        } else if (mainVariant.cost !== undefined && mainVariant.cost !== null) {
+          // Fallback to cost if available
+          price = mainVariant.cost > 1000
+            ? parseFloat((mainVariant.cost / 100).toFixed(2))
+            : parseFloat(mainVariant.cost.toFixed(2));
+        }
+        
+        console.log(`Extracted price for ${syncProduct.name}: $${price}`);
 
         // Determine category (check if wine bear in name/description)
         const nameLower = (syncProduct.name || '').toLowerCase();
@@ -133,10 +156,16 @@ export async function POST(request: NextRequest) {
         // Get Printful product ID
         const printfulProductId = syncProduct.id?.toString() || product.id?.toString();
 
+        // Get better description - try multiple sources
+        const description = syncProduct.description || 
+                          product.description || 
+                          syncProduct.name || 
+                          null;
+
         // Create or update product in Supabase
         const productData = {
           name: syncProduct.name || 'Unnamed Product',
-          description: syncProduct.description || null,
+          description: description,
           price: price,
           product_type: productType,
           product_category: productCategory,
