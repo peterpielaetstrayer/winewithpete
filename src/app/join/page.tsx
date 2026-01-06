@@ -65,7 +65,7 @@ export default function JoinPage(){
             </div>
             <h1 className="text-3xl font-serif font-medium mb-4 text-charcoal">Welcome to the Circle</h1>
             <p className="text-lg text-black/70 mb-6">
-              You&apos;re now part of our community. Check your email for a welcome message and your first newsletter.
+              You&apos;re now part of our community. Check your email for a welcome message and your first update.
             </p>
             <div className="space-y-4">
               <a 
@@ -101,19 +101,19 @@ export default function JoinPage(){
         </div>
       </div>
 
-      {/* Newsletter Signup - MOVED HERE (right after hero) */}
+      {/* Email Capture - MOVED HERE (right after hero) */}
       <div className="bg-white py-16">
         <div className="mx-auto max-w-2xl px-4">
           <div className="bg-cream rounded-2xl p-8 shadow-sm border">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-serif font-medium mb-4 text-charcoal">
-                Join Our Newsletter
+                Stay Connected
               </h2>
               <p className="text-black/70 mb-2">
                 Get your free Fire Ritual recipe card when you join.
               </p>
               <p className="text-sm text-black/60">
-                Different from my Substack essays, this is my personal newsletter for the community.
+                Different from my Substack essays, this is my personal space for the community.
               </p>
             </div>
 
@@ -198,12 +198,12 @@ export default function JoinPage(){
       <div className="py-16">
         <div className="mx-auto max-w-4xl px-4">
           <h2 className="text-3xl font-serif font-medium text-center mb-12 text-charcoal">
-            Newsletter vs. Substack Essays
+            The Circle vs. Substack Essays
           </h2>
           
           <div className="grid md:grid-cols-2 gap-12">
             <div className="bg-white rounded-2xl p-8 shadow-sm border">
-              <h3 className="text-xl font-medium mb-4 text-ember">Newsletter</h3>
+              <h3 className="text-xl font-medium mb-4 text-ember">The Circle</h3>
               <ul className="space-y-3 text-black/70">
                 <li>• Weekly philosophical insights and musings</li>
                 <li>• Recipe cards and cooking tips</li>

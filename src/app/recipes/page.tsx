@@ -142,11 +142,11 @@ export default function RecipesPage() {
           </h2>
           <p className="text-black/70 leading-relaxed mb-6 max-w-2xl mx-auto">
             We&apos;re curating our first collection of fire-friendly recipes and guides. 
-            Join the newsletter to be notified when they&apos;re available.
+            Stay connected to be notified when they&apos;re available.
           </p>
           <Link href="/join">
             <Button className="btn-ember px-8 py-4 rounded-full text-lg font-medium">
-              Join Newsletter for Updates
+              Stay Connected for Updates
             </Button>
           </Link>
         </div>

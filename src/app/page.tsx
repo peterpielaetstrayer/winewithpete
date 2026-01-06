@@ -118,7 +118,7 @@ export default function Home() {
             <div className="text-center animate-fade-in">
               <h2 className="text-xl font-serif font-medium mb-4 text-charcoal">How It Works</h2>
               <p className="text-black/70 leading-relaxed">
-                Read our weekly essays. Join our newsletter for recipes and insights. 
+                Read our weekly essays. Stay connected for recipes and insights. 
                 Attend gatherings in your area. Cook together. Talk honestly. Build something real.
               </p>
             </div>

@@ -26,7 +26,7 @@ export default function EssaysPage(){
             </a>
             <Link href="/join">
               <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-8 py-4 text-lg font-medium">
-                Join Newsletter
+                Stay Connected
               </Button>
             </Link>
           </div>
@@ -145,7 +145,7 @@ export default function EssaysPage(){
               Get Weekly Essays Delivered
             </h2>
             <p className="text-black/70 mb-6">
-              Join our newsletter for weekly insights, recipe cards, and event updates.
+              Stay connected for weekly insights, recipe cards, and event updates.
             </p>
             <Link href="/join">
               <Button className="btn-ember px-8 py-4 rounded-full text-lg font-medium">

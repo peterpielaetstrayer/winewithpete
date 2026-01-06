@@ -176,7 +176,7 @@ export default function SupportPage(){
         <div className="space-y-3 text-black/70">
           <p>
             <Link href="/join" className="text-ember hover:text-ember-light underline">
-              Subscribe to our newsletter
+              Stay connected
             </Link>
             {' '}and share it with others who might find value in it.
           </p>
