@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { Instagram, Twitter, Mail } from 'lucide-react';
 
 export function SiteFooter(){
   return (
@@ -38,8 +41,43 @@ export function SiteFooter(){
           </div>
         </div>
         
-        <div className="border-t border-black/5 mt-8 pt-8 text-center text-sm text-black/60">
-          <p>Fire • Food • Slow conversation</p>
+        <div className="border-t border-black/5 mt-8 pt-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-black/60 text-center md:text-left">
+              Fire • Food • Slow conversation
+            </p>
+            <div className="flex items-center gap-4">
+              {process.env.NEXT_PUBLIC_INSTAGRAM_URL && (
+                <a
+                  href={process.env.NEXT_PUBLIC_INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-black/60 hover:text-ember transition-colors"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="w-5 h-5" />
+                </a>
+              )}
+              {process.env.NEXT_PUBLIC_TWITTER_URL && (
+                <a
+                  href={process.env.NEXT_PUBLIC_TWITTER_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-black/60 hover:text-ember transition-colors"
+                  aria-label="Twitter / X"
+                >
+                  <Twitter className="w-5 h-5" />
+                </a>
+              )}
+              <a
+                href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'pete@winewithpete.me'}`}
+                className="text-black/60 hover:text-ember transition-colors"
+                aria-label="Email"
+              >
+                <Mail className="w-5 h-5" />
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

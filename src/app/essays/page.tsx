@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { featuredEssays, hasFeaturedEssays } from '@/data/featured-essays';
 
 export default function EssaysPage(){
   return (
@@ -40,25 +41,46 @@ export default function EssaysPage(){
           </h2>
           
           <div className="space-y-8 mb-16">
-            {/* TODO: Add Substack RSS integration or manual curation */}
-            {/* Placeholder featured essays - replace with real data */}
-            <div className="bg-white rounded-2xl p-8 shadow-sm border">
-              <h3 className="text-2xl font-serif font-medium mb-3 text-charcoal">
-                Featured Essays Coming Soon
-              </h3>
-              <p className="text-black/70 leading-relaxed mb-4">
-                We're curating a selection of flagship essays to help you get started. 
-                In the meantime, explore our full archive on Substack.
-              </p>
-              <a 
-                href="https://winewithpete.substack.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-ember font-medium hover:text-ember-light transition-colors"
-              >
-                Browse All Essays →
-              </a>
-            </div>
+            {hasFeaturedEssays ? (
+              featuredEssays.map((essay, index) => (
+                <div key={index} className="bg-white rounded-2xl p-8 shadow-sm border hover:shadow-md transition-shadow">
+                  <h3 className="text-2xl font-serif font-medium mb-3 text-charcoal">
+                    {essay.title}
+                  </h3>
+                  {essay.excerpt && (
+                    <p className="text-black/70 leading-relaxed mb-4">
+                      {essay.excerpt}
+                    </p>
+                  )}
+                  <a 
+                    href={essay.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-ember font-medium hover:text-ember-light transition-colors"
+                  >
+                    Read essay →
+                  </a>
+                </div>
+              ))
+            ) : (
+              <div className="bg-white rounded-2xl p-8 shadow-sm border">
+                <h3 className="text-2xl font-serif font-medium mb-3 text-charcoal">
+                  Featured Essays Coming Soon
+                </h3>
+                <p className="text-black/70 leading-relaxed mb-4">
+                  We're curating a selection of flagship essays to help you get started. 
+                  In the meantime, explore our full archive on Substack.
+                </p>
+                <a 
+                  href="https://winewithpete.substack.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-ember font-medium hover:text-ember-light transition-colors"
+                >
+                  Browse All Essays →
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>

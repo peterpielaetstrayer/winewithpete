@@ -98,12 +98,21 @@ export const emailTemplates = {
     text: `Your recipe cards are ready! Download links: ${downloadLinks.map(l => l.downloadUrl).join(', ')}`
   }),
 
-  newsletterWelcome: (name: string) => ({
+  newsletterWelcome: (name: string, recipeCardUrl?: string) => ({
     subject: 'Glad you\'re here',
     html: `
       <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px; line-height: 1.6; color: #333;">
         <p>Hey there,</p>
         <p>I'm really glad you found your way here.</p>
+        ${recipeCardUrl ? `
+        <div style="background-color: #f6f3ef; border-left: 4px solid #5b2320; padding: 16px; margin: 20px 0; border-radius: 4px;">
+          <p style="margin: 0 0 12px 0; font-weight: 600;">Your Fire Ritual Recipe Card</p>
+          <p style="margin: 0 0 12px 0;">As promised, here's your free Fire Ritual recipe card:</p>
+          <p style="margin: 0;">
+            <a href="${recipeCardUrl}" style="display: inline-block; background-color: #5b2320; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">Download Recipe Card</a>
+          </p>
+        </div>
+        ` : ''}
         <p>The Circle is a small, intentional space. It's where I share things that don't always fit neatly on social media or in longer essays. Thoughts in progress. Recipes meant to be cooked over fire or slow heat. Invitations to gather, reflect, and pay attention.</p>
         <p>Here's what you can expect, at a human pace:</p>
         <ul style="list-style: none; padding-left: 0;">
@@ -128,7 +137,7 @@ export const emailTemplates = {
 
 I'm really glad you found your way here.
 
-The Circle is a small, intentional space. It's where I share things that don't always fit neatly on social media or in longer essays. Thoughts in progress. Recipes meant to be cooked over fire or slow heat. Invitations to gather, reflect, and pay attention.
+${recipeCardUrl ? `Your Fire Ritual Recipe Card: ${recipeCardUrl}\n\n` : ''}The Circle is a small, intentional space. It's where I share things that don't always fit neatly on social media or in longer essays. Thoughts in progress. Recipes meant to be cooked over fire or slow heat. Invitations to gather, reflect, and pay attention.
 
 Here's what you can expect, at a human pace:
 

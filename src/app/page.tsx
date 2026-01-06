@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { featuredEssays, hasFeaturedEssays } from '@/data/featured-essays';
 import { useState } from 'react';
 
 export default function Home() {
@@ -191,27 +192,59 @@ export default function Home() {
             Start with one essay
           </h2>
           
-          <div className="bg-white rounded-2xl p-8 shadow-sm border mb-8">
-            {/* TODO: Add Substack RSS integration or manual curation */}
-            <p className="text-black/70 leading-relaxed mb-6">
-              We&apos;re curating a selection of flagship essays to help you get started. 
-              In the meantime, explore our full archive on Substack.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a 
-                href="https://winewithpete.substack.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="btn-ember px-6 py-3 rounded-full text-center"
-              >
-                Read on Substack
-              </a>
-              <Link href="/essays">
-                <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
-                  Browse All Essays
-                </Button>
-              </Link>
+          {hasFeaturedEssays ? (
+            <div className="space-y-6 mb-8">
+              {featuredEssays.slice(0, 3).map((essay, index) => (
+                <div key={index} className="bg-white rounded-2xl p-6 shadow-sm border hover:shadow-md transition-shadow">
+                  <h3 className="text-xl font-serif font-medium mb-2 text-charcoal">
+                    {essay.title}
+                  </h3>
+                  {essay.excerpt && (
+                    <p className="text-black/70 leading-relaxed mb-4">
+                      {essay.excerpt}
+                    </p>
+                  )}
+                  <a 
+                    href={essay.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-ember font-medium hover:text-ember-light transition-colors"
+                  >
+                    Read essay →
+                  </a>
+                </div>
+              ))}
             </div>
+          ) : (
+            <div className="bg-white rounded-2xl p-8 shadow-sm border mb-8">
+              <p className="text-black/70 leading-relaxed mb-6">
+                We&apos;re curating a selection of flagship essays to help you get started. 
+                In the meantime, explore our full archive on Substack.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <a 
+                  href="https://winewithpete.substack.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="btn-ember px-6 py-3 rounded-full text-center"
+                >
+                  Read on Substack
+                </a>
+                <Link href="/essays">
+                  <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
+                    Browse All Essays
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
+          
+          <div className="text-center">
+            <Link href="/essays">
+              <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
+                {hasFeaturedEssays ? 'Browse All Essays' : 'Explore More'}
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

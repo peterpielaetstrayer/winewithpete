@@ -201,7 +201,9 @@ export async function POST(request: NextRequest) {
         emailError = 'RESEND_API_KEY not configured';
         console.warn('Cannot send welcome email: RESEND_API_KEY not set');
       } else {
-        const welcomeEmail = emailTemplates.newsletterWelcome(sanitizedData.name || 'Friend');
+        // Get recipe card URL from environment variable (if set)
+        const recipeCardUrl = process.env.NEXT_PUBLIC_RECIPE_CARD_URL;
+        const welcomeEmail = emailTemplates.newsletterWelcome(sanitizedData.name || 'Friend', recipeCardUrl);
         const emailResult = await sendEmail({
           to: sanitizedData.email,
           subject: welcomeEmail.subject,
