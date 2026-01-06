@@ -153,6 +153,7 @@ export default function StartPage() {
           </div>
         </div>
       </div>
+      </div>
     </StartPageClient>
   );
 }
