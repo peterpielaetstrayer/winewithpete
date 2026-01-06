@@ -692,17 +692,40 @@ export default function AdminPage() {
                 {printfulProducts.map((product) => {
                   const productId = product.id?.toString() || product.sync_product?.id?.toString();
                   const isSelected = selectedPrintfulProducts.has(productId);
-                  const mainVariant = product.variants?.[0] || product.sync_variants?.[0];
-                  const image = product.sync_product?.thumbnail_url || 
-                               product.sync_product?.preview_url ||
+                  
+                  // Better data extraction
+                  const syncProduct = product.sync_product || product;
+                  const syncVariants = product.sync_variants || product.variants || [];
+                  const mainVariant = syncVariants[0];
+                  
+                  // Get image from multiple possible locations
+                  const image = syncProduct.thumbnail_url || 
+                               syncProduct.preview_url ||
+                               syncProduct.image ||
                                mainVariant?.preview_image ||
+                               mainVariant?.files?.[0]?.preview_url ||
+                               mainVariant?.files?.[0]?.url ||
                                null;
-                  const price = mainVariant?.retail_price 
-                    ? `$${(mainVariant.retail_price / 100).toFixed(2)}`
+                  
+                  // Better price extraction
+                  const retailPrice = mainVariant?.retail_price || mainVariant?.price;
+                  const price = retailPrice 
+                    ? `$${(retailPrice / 100).toFixed(2)}`
+                    : mainVariant?.retail_price === 0 
+                    ? 'Free'
                     : 'Price TBD';
-                  const name = product.sync_product?.name || product.name || 'Unnamed Product';
+                  
+                  const name = syncProduct.name || product.name || 'Unnamed Product';
+                  const description = syncProduct.description || product.description || '';
                   const isWineBear = name.toLowerCase().includes('wine bear') || 
-                                   name.toLowerCase().includes('winebear');
+                                   name.toLowerCase().includes('winebear') ||
+                                   description.toLowerCase().includes('wine bear');
+                  
+                  // Get variant details
+                  const variantCount = syncVariants.length;
+                  const variantInfo = variantCount > 0 
+                    ? `${variantCount} variant(s)${mainVariant?.name ? ` - ${mainVariant.name}` : ''}`
+                    : 'No variants';
 
                   return (
                     <Card 
@@ -720,28 +743,59 @@ export default function AdminPage() {
                         setSelectedPrintfulProducts(newSelected);
                       }}
                     >
-                      {image && (
+                      {/* Product Image */}
+                      {image ? (
                         <div className="aspect-square mb-3 rounded-lg overflow-hidden bg-gray-100">
                           <img 
                             src={image} 
                             alt={name}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
                           />
                         </div>
+                      ) : (
+                        <div className="aspect-square mb-3 rounded-lg bg-gray-100 flex items-center justify-center">
+                          <div className="text-center text-gray-400">
+                            <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p className="text-xs">No Image</p>
+                          </div>
+                        </div>
                       )}
+                      
+                      {/* Product Info */}
                       <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-medium text-sm line-clamp-2 flex-1">{name}</h3>
+                        <h3 className="font-medium text-base line-clamp-2 flex-1 pr-2">{name}</h3>
                         {isWineBear && (
-                          <Badge variant="outline" className="ml-2 text-xs border-ember text-ember">
+                          <Badge variant="outline" className="ml-2 text-xs border-ember text-ember shrink-0">
                             Wine Bear
                           </Badge>
                         )}
                       </div>
-                      <p className="text-ember font-medium text-sm mb-2">{price}</p>
-                      <p className="text-xs text-black/60">
-                        {product.sync_variants?.length || product.variants?.length || 0} variant(s)
+                      
+                      {/* Description if available */}
+                      {description && (
+                        <p className="text-xs text-black/60 mb-2 line-clamp-2">{description}</p>
+                      )}
+                      
+                      {/* Price and Variant Info */}
+                      <div className="mb-2">
+                        <p className="text-ember font-medium text-sm">{price}</p>
+                        <p className="text-xs text-black/60 mt-1">
+                          {variantInfo}
+                        </p>
+                      </div>
+                      
+                      {/* Printful ID for reference */}
+                      <p className="text-xs text-black/40 mb-3 font-mono">
+                        ID: {productId}
                       </p>
-                      <div className="mt-3 flex items-center gap-2">
+                      
+                      {/* Selection Checkbox */}
+                      <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
                         <input
                           type="checkbox"
                           checked={isSelected}
