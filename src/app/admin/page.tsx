@@ -878,8 +878,23 @@ export default function AdminPage() {
                   
                   // Better data extraction
                   const syncProduct = product.sync_product || product;
-                  const syncVariants = product.sync_variants || product.variants || [];
-                  const mainVariant = syncVariants[0];
+                  
+                  // Ensure syncVariants is an array
+                  let syncVariants: any[] = [];
+                  if (Array.isArray(product.sync_variants)) {
+                    syncVariants = product.sync_variants;
+                  } else if (Array.isArray(product.variants)) {
+                    syncVariants = product.variants;
+                  } else if (product.sync_variants && typeof product.sync_variants === 'object') {
+                    // Handle object case
+                    if (Array.isArray(Object.values(product.sync_variants)[0])) {
+                      syncVariants = Object.values(product.sync_variants)[0] as any[];
+                    } else {
+                      syncVariants = Object.values(product.sync_variants);
+                    }
+                  }
+                  
+                  const mainVariant = syncVariants.length > 0 ? syncVariants[0] : null;
                   
                   // Get image from multiple possible locations
                   const image = syncProduct.thumbnail_url || 
@@ -897,8 +912,8 @@ export default function AdminPage() {
                     return isNaN(num) ? null : num;
                   };
                   
-                  const rawRetailPrice = toNumber(mainVariant?.retail_price);
-                  const rawPrice = toNumber(mainVariant?.price);
+                  const rawRetailPrice = mainVariant ? toNumber(mainVariant.retail_price) : null;
+                  const rawPrice = mainVariant ? toNumber(mainVariant.price) : null;
                   
                   let priceValue = 0;
                   if (rawRetailPrice !== null && rawRetailPrice !== undefined) {
@@ -943,9 +958,8 @@ export default function AdminPage() {
                                    name.toLowerCase().includes('winebear') ||
                                    description.toLowerCase().includes('wine bear');
                   
-                  // Get variant details - ensure syncVariants is an array
-                  const variantArray = Array.isArray(syncVariants) ? syncVariants : [];
-                  const variantCount = variantArray.length;
+                  // Get variant details
+                  const variantCount = syncVariants.length;
                   const variantInfo = variantCount > 0 
                     ? `${variantCount} variant${variantCount > 1 ? 's' : ''}${mainVariant?.name ? ` - ${mainVariant.name}` : ''}`
                     : 'No variants';

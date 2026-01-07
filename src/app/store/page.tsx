@@ -38,6 +38,16 @@ export default function StorePage() {
 
   const handleCheckoutClick = (product: Product) => {
     setSelectedProduct(product);
+    setSelectedImageIndex(0);
+    
+    // Initialize variant selection - use first variant if available
+    const syncData = product.printful_sync_data;
+    if (syncData?.variants && syncData.variants.length > 0) {
+      setSelectedVariant(syncData.variants[0]);
+    } else {
+      setSelectedVariant(null);
+    }
+    
     setShowCheckoutForm(true);
   };
 
@@ -288,12 +298,12 @@ export default function StorePage() {
                     return (
                       <div className="w-full">
                         {/* Main Image */}
-                        <div className="h-48 md:h-64 relative overflow-hidden rounded-t-2xl">
+                        <div className="h-48 md:h-64 relative overflow-hidden rounded-t-2xl bg-gray-50">
                           <Image
                             src={currentImage.startsWith('http') ? currentImage : currentImage}
                             alt={selectedProduct.name}
                             fill
-                            className="object-cover"
+                            className="object-contain"
                             unoptimized={currentImage.startsWith('http')}
                           />
                         </div>
@@ -328,7 +338,7 @@ export default function StorePage() {
                     );
                   } else if (selectedProduct.image_path) {
                     return (
-                      <div className="w-full h-48 md:h-64 relative overflow-hidden rounded-t-2xl">
+                      <div className="w-full h-48 md:h-64 relative overflow-hidden rounded-t-2xl bg-gray-50">
                         <Image
                           src={
                             selectedProduct.image_path.startsWith('http') 
@@ -337,7 +347,7 @@ export default function StorePage() {
                           }
                           alt={selectedProduct.name}
                           fill
-                          className="object-cover"
+                          className="object-contain"
                           unoptimized={selectedProduct.image_path.startsWith('http')}
                         />
                       </div>
@@ -359,31 +369,99 @@ export default function StorePage() {
                     {selectedProduct.description && (
                       <p className="text-black/70 leading-relaxed mb-4">{selectedProduct.description}</p>
                     )}
-                    {/* Show variant info if available */}
-                    {selectedProduct.printful_sync_data?.variants && selectedProduct.printful_sync_data.variants.length > 1 && (
-                      <div className="mb-4 p-3 bg-cream/50 rounded-lg">
-                        <p className="text-sm font-medium text-black/80 mb-2">
-                          Available in {selectedProduct.printful_sync_data.variants.length} variant{selectedProduct.printful_sync_data.variants.length > 1 ? 's' : ''}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {selectedProduct.printful_sync_data.variants.slice(0, 6).map((variant: any, idx: number) => (
-                            <span
-                              key={variant.id || idx}
-                              className="text-xs px-2 py-1 bg-white rounded border border-black/10"
-                            >
-                              {variant.size || variant.color || variant.name || `Variant ${idx + 1}`}
-                            </span>
-                          ))}
-                          {selectedProduct.printful_sync_data.variants.length > 6 && (
-                            <span className="text-xs px-2 py-1 bg-white rounded border border-black/10">
-                              +{selectedProduct.printful_sync_data.variants.length - 6} more
-                            </span>
-                          )}
+                    
+                    {/* Variant Selection */}
+                    {selectedProduct.printful_sync_data?.variants && selectedProduct.printful_sync_data.variants.length > 0 && (
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-black/80 mb-2">
+                          Select {selectedProduct.printful_sync_data.variants.some((v: any) => v.size) ? 'Size' : 'Variant'} *
+                        </label>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                          {selectedProduct.printful_sync_data.variants.map((variant: any, idx: number) => {
+                            const isSelected = selectedVariant?.id === variant.id;
+                            const variantName = variant.size || variant.color || variant.name || `Option ${idx + 1}`;
+                            
+                            // Calculate variant price
+                            const toNumber = (value: any): number | null => {
+                              if (value === null || value === undefined) return null;
+                              const num = typeof value === 'string' ? parseFloat(value) : Number(value);
+                              return isNaN(num) ? null : num;
+                            };
+                            
+                            const rawRetailPrice = toNumber(variant.retail_price);
+                            const rawPrice = toNumber(variant.price);
+                            let variantPrice = 0;
+                            
+                            if (rawRetailPrice !== null && rawRetailPrice !== undefined) {
+                              if (rawRetailPrice >= 100) {
+                                variantPrice = Math.round((rawRetailPrice / 100) * 100) / 100;
+                              } else if (rawRetailPrice >= 1 && rawRetailPrice < 100) {
+                                variantPrice = rawRetailPrice;
+                              } else {
+                                variantPrice = rawRetailPrice;
+                              }
+                            } else if (rawPrice !== null && rawPrice !== undefined) {
+                              if (rawPrice >= 100) {
+                                variantPrice = Math.round((rawPrice / 100) * 100) / 100;
+                              } else {
+                                variantPrice = rawPrice;
+                              }
+                            }
+                            
+                            if (variantPrice > 0 && variantPrice < 1) {
+                              const rawValue = rawRetailPrice ?? rawPrice;
+                              if (rawValue !== null && rawValue >= 10 && rawValue < 1000) {
+                                variantPrice = rawValue;
+                              }
+                            }
+                            
+                            variantPrice = Math.round(variantPrice * 100) / 100;
+                            
+                            return (
+                              <button
+                                key={variant.id || idx}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedVariant(variant);
+                                  // Switch to variant's first image if available
+                                  const variantImgs = selectedProduct.printful_sync_data?.variant_images?.find(
+                                    (vi: any) => vi.variant_id === variant.id
+                                  )?.images || [];
+                                  if (variantImgs.length > 0) {
+                                    const allImages = selectedProduct.printful_sync_data?.all_images || [];
+                                    const imgIndex = allImages.findIndex((img: string) => variantImgs.includes(img));
+                                    if (imgIndex >= 0) {
+                                      setSelectedImageIndex(imgIndex);
+                                    }
+                                  }
+                                }}
+                                className={`p-3 rounded-lg border-2 transition-all text-left ${
+                                  isSelected
+                                    ? 'border-ember bg-ember/10 ring-2 ring-ember/20'
+                                    : 'border-black/10 hover:border-ember/50 bg-white'
+                                }`}
+                              >
+                                <div className="font-medium text-sm">{variantName}</div>
+                                {variantPrice > 0 && (
+                                  <div className="text-xs text-black/60 mt-1">
+                                    ${variantPrice.toFixed(2)}
+                                  </div>
+                                )}
+                              </button>
+                            );
+                          })}
                         </div>
+                        {!selectedVariant && (
+                          <p className="text-xs text-red-600 mt-1">Please select a variant</p>
+                        )}
                       </div>
                     )}
+                    
                     <p className="text-2xl font-semibold text-ember">
-                      {selectedProduct.price === 0 ? 'TBD' : `$${selectedProduct.price.toFixed(2)}`}
+                      {(() => {
+                        const currentPrice = getCurrentPrice();
+                        return currentPrice === 0 ? 'TBD' : `$${currentPrice.toFixed(2)}`;
+                      })()}
                     </p>
                   </div>
 
