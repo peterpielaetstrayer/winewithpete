@@ -159,31 +159,70 @@ export async function POST(request: NextRequest) {
         ) || allImages[0] || null;
         
         // Store all images for gallery display
-        // ONLY use mockup files (file.type === 'mockup') - exclude print files
+        // Collect mockup files and variant-specific images
         const variantImages = syncVariants.map((variant: PrintfulVariant) => {
           const variantImgs: string[] = [];
           
+          // Debug: Log variant structure
+          console.log(`Variant ${variant.id} (${variant.size}/${variant.color}):`, {
+            hasPreviewImage: !!variant.preview_image,
+            hasMockupUrl: !!variant.mockup_url,
+            hasFiles: Array.isArray(variant.files),
+            filesCount: Array.isArray(variant.files) ? variant.files.length : 0,
+            filesTypes: Array.isArray(variant.files) ? variant.files.map((f: any) => f.type) : []
+          });
+          
+          // First, try to get variant-level images (these are usually the best)
+          if (variant.preview_image && !variantImgs.includes(variant.preview_image)) {
+            variantImgs.push(variant.preview_image);
+          }
+          if (variant.mockup_url && !variantImgs.includes(variant.mockup_url)) {
+            variantImgs.push(variant.mockup_url);
+          }
+          
+          // Then, collect from files array - prioritize mockup files
           if (Array.isArray(variant.files)) {
-            // ONLY collect mockup files (these are variant-specific visual representations)
             variant.files.forEach((file) => {
+              // Prefer mockup files
               if (file.type === 'mockup') {
-                // Mockup files are the best - they're variant-specific visual representations
                 if (file.preview_url && !variantImgs.includes(file.preview_url)) {
                   variantImgs.push(file.preview_url);
                 }
                 if (file.url && !variantImgs.includes(file.url)) {
                   variantImgs.push(file.url);
                 }
+              } else if (!file.type || file.type === 'preview') {
+                // If no type specified or type is 'preview', it's likely a mockup/preview image
+                // Only add preview_url (not url) to avoid print files
+                if (file.preview_url && !variantImgs.includes(file.preview_url)) {
+                  variantImgs.push(file.preview_url);
+                }
               }
-              // Removed fallback - we don't want print files
             });
           }
           
-          // Fallback to variant-level images if no mockup files found
-          if (variantImgs.length === 0) {
-            if (variant.preview_image) variantImgs.push(variant.preview_image);
-            if (variant.mockup_url) variantImgs.push(variant.mockup_url);
+          // If still no images, try to find variant-specific images from allImages
+          // by matching variant properties (size/color) to image URLs
+          if (variantImgs.length === 0 && allImages.length > 0) {
+            // Try to find images that might be variant-specific
+            // This is a fallback - ideally we'd have variant-specific images from Printful
+            const variantIdentifier = `${variant.size || ''}_${variant.color || ''}`.toLowerCase();
+            const matchingImages = allImages.filter((img: string) => {
+              const imgLower = img.toLowerCase();
+              return imgLower.includes(variantIdentifier) || 
+                     (variant.size && imgLower.includes(variant.size.toLowerCase())) ||
+                     (variant.color && imgLower.includes(variant.color.toLowerCase()));
+            });
+            
+            if (matchingImages.length > 0) {
+              variantImgs.push(...matchingImages);
+            } else {
+              // Last resort: use first image from allImages (not ideal but better than empty)
+              variantImgs.push(allImages[0]);
+            }
           }
+          
+          console.log(`Variant ${variant.id} collected ${variantImgs.length} images`);
           
           return {
             variant_id: variant.id,
