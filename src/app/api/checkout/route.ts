@@ -124,6 +124,23 @@ export async function POST(request: NextRequest) {
 
     logger.debug('Product found:', { id: product.id, name: product.name, price: product.price });
 
+    // Validate variant if provided
+    if (printfulVariantId) {
+      const syncData = product.printful_sync_data;
+      if (syncData?.variants) {
+        const variantExists = syncData.variants.some(
+          (v: any) => String(v.id) === String(printfulVariantId)
+        );
+        if (!variantExists) {
+          logger.error('Invalid variant selected:', { productId, printfulVariantId, availableVariants: syncData.variants.map((v: any) => v.id) });
+          return NextResponse.json(
+            { error: 'Invalid variant selected for this product' },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     // Use variant price if provided and different from product price
     let finalPrice = product.price;
     if (printfulVariantId && customAmount && customAmount > 0) {

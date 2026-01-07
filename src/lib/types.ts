@@ -62,9 +62,21 @@ export interface PrintfulSyncProduct {
   [key: string]: unknown; // Allow additional properties from Printful API
 }
 
+export interface PrintfulVariantImageData {
+  variant_id: number;
+  variant_name?: string;
+  images: string[];
+  price?: number | string;
+  size?: string;
+  color?: string;
+}
+
 export interface PrintfulSyncData {
   sync_product?: PrintfulSyncProduct;
   variants: PrintfulVariant[];
+  all_images?: string[];
+  variant_images?: PrintfulVariantImageData[];
+  variant_count?: number;
   [key: string]: unknown; // Allow additional properties from Printful API
 }
 

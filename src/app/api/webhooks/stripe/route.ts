@@ -77,7 +77,9 @@ export async function POST(request: NextRequest) {
         console.log('Order completed:', order.id);
 
         // Create Printful order if product requires it
-        if (product && product.printful_product_id && product.printful_variant_id) {
+        // Use selected variant from metadata, fallback to product's default variant
+        const selectedVariantId = session.metadata?.printfulVariantId || product.printful_variant_id;
+        if (product && product.printful_product_id && selectedVariantId) {
           try {
             const apiKey = process.env.PRINTFUL_API_KEY;
             if (!apiKey) {
@@ -120,7 +122,7 @@ export async function POST(request: NextRequest) {
                   },
                   items: [
                     {
-                      variant_id: parseInt(product.printful_variant_id),
+                      variant_id: parseInt(selectedVariantId),
                       quantity: quantity,
                     },
                   ],
