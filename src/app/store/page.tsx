@@ -18,6 +18,7 @@ export default function StorePage() {
   const [selectedVariant, setSelectedVariant] = useState<PrintfulVariant | null>(null);
   const [selectedVariantType, setSelectedVariantType] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [displayImageIndex, setDisplayImageIndex] = useState(0);
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerName, setCustomerName] = useState('');
 
@@ -60,6 +61,7 @@ export default function StorePage() {
   const handleCheckoutClick = (product: Product) => {
     setSelectedProduct(product);
     setSelectedImageIndex(0);
+    setDisplayImageIndex(0);
     setSelectedVariantType(null); // Reset variant type selection
     setSelectedVariant(null); // Reset variant selection
     
@@ -328,14 +330,13 @@ export default function StorePage() {
                   </svg>
                 </button>
 
-                {/* Product Images - Show all variant mockups if available */}
+                {/* Product Images - Show ONLY the selected variant's mockup images */}
                 {(() => {
                   const syncData = selectedProduct.printful_sync_data;
                   const allImages: string[] = Array.isArray(syncData?.all_images) ? syncData.all_images : [];
                   
-                  // If a variant is selected, prioritize its images
-                  let imagesToShow: string[] = allImages;
-                  let displayImageIndex = selectedImageIndex;
+                  // If a variant is selected, show ONLY its mockup images
+                  let imagesToShow: string[] = [];
                   
                   if (selectedVariant && Array.isArray(syncData?.variant_images)) {
                     const variantImageData = syncData.variant_images.find(
@@ -343,41 +344,27 @@ export default function StorePage() {
                     );
                     
                     if (variantImageData?.images && variantImageData.images.length > 0) {
-                      // Filter to show variant images first, then others
-                      const variantImgs = variantImageData.images;
-                      imagesToShow = [
-                        ...variantImgs.filter((img: string) => allImages.includes(img)),
-                        ...allImages.filter((img: string) => !variantImgs.includes(img))
-                      ];
+                      // Show ONLY the selected variant's images
+                      imagesToShow = variantImageData.images.filter((img: string) => allImages.includes(img));
                       
-                      // Find the current selected image in the reordered array
-                      const currentSelectedImage = allImages[selectedImageIndex];
-                      const newIndex = imagesToShow.findIndex((img: string) => img === currentSelectedImage);
-                      
-                      // If current image is a variant image, use its position in reordered array
-                      // Otherwise, switch to first variant image
-                      if (newIndex >= 0) {
-                        displayImageIndex = newIndex;
-                      } else {
-                        // Current image is not a variant image, switch to first variant image
-                        const firstVariantImgIndex = imagesToShow.findIndex((img: string) => variantImgs.includes(img));
-                        if (firstVariantImgIndex >= 0) {
-                          displayImageIndex = firstVariantImgIndex;
-                          // Update selectedImageIndex to match the original allImages array
-                          const firstVariantImg = imagesToShow[firstVariantImgIndex];
-                          const originalIndex = allImages.findIndex((img: string) => img === firstVariantImg);
-                          if (originalIndex >= 0) {
-                            setSelectedImageIndex(originalIndex);
-                          }
-                        }
+                      // Reset display index when variant changes
+                      if (imagesToShow.length > 0 && displayImageIndex >= imagesToShow.length) {
+                        setDisplayImageIndex(0);
                       }
+                    } else {
+                      // Fallback: if no variant images found, use all images
+                      imagesToShow = allImages;
                     }
+                  } else {
+                    // No variant selected, show all images
+                    imagesToShow = allImages;
                   }
                   
                   // Get current image to display
                   let currentImage: string | null = selectedProduct.image_path;
                   if (imagesToShow.length > 0) {
-                    const imageAtIndex = imagesToShow[displayImageIndex] || imagesToShow[0];
+                    const currentDisplayIndex = displayImageIndex < imagesToShow.length ? displayImageIndex : 0;
+                    const imageAtIndex = imagesToShow[currentDisplayIndex] || imagesToShow[0];
                     if (imageAtIndex) {
                       currentImage = imageAtIndex;
                     }
@@ -405,15 +392,12 @@ export default function StorePage() {
                             {imagesToShow.length} mockup{imagesToShow.length > 1 ? 's' : ''} available - Click to view
                             {selectedVariant && (
                               <span className="block text-ember mt-1">
-                                Showing images for: {selectedVariant.size || selectedVariant.color || 'selected variant'}
+                                Showing mockups for: {selectedVariant.size || selectedVariant.color || 'selected variant'}
                               </span>
                             )}
                           </p>
                           <div className="flex gap-2 overflow-x-auto">
-                            {imagesToShow.slice(0, 8).map((img: string, idx: number) => {
-                              const isVariantImage = selectedVariant && Array.isArray(syncData?.variant_images) && syncData.variant_images.some(
-                                (vi) => vi.variant_id === selectedVariant.id && vi.images.includes(img)
-                              );
+                            {imagesToShow.map((img: string, idx: number) => {
                               return (
                                 <button
                                   key={idx}
@@ -423,15 +407,15 @@ export default function StorePage() {
                                     if (originalIndex >= 0) {
                                       setSelectedImageIndex(originalIndex);
                                     }
+                                    // Update display index to match clicked thumbnail
+                                    setDisplayImageIndex(idx);
                                   }}
                                   className={`flex-shrink-0 w-16 h-16 rounded overflow-hidden border-2 transition-colors ${
                                     displayImageIndex === idx
                                       ? 'border-ember ring-2 ring-ember/30'
-                                      : isVariantImage
-                                      ? 'border-ember/30 hover:border-ember/50'
-                                      : 'border-transparent hover:border-ember/50'
+                                      : 'border-ember/30 hover:border-ember/50'
                                   }`}
-                                  title={isVariantImage ? 'Variant image' : 'Other image'}
+                                  title={`Mockup ${idx + 1}`}
                                 >
                                   <img
                                     src={img.startsWith('http') ? img : img}
@@ -446,21 +430,38 @@ export default function StorePage() {
                         </div>
                       </div>
                     );
-                  } else if (currentImage) {
+                  } else if (imagesToShow.length === 1) {
+                    // Single image
+                    return (
+                      <div className="w-full h-48 md:h-64 relative overflow-hidden rounded-t-2xl bg-gray-50">
+                        <Image
+                          src={imagesToShow[0].startsWith('http') ? imagesToShow[0] : imagesToShow[0]}
+                          alt={selectedProduct.name}
+                          fill
+                          className="object-contain"
+                          unoptimized={imagesToShow[0].startsWith('http')}
+                        />
+                        {selectedVariant && (
+                          <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                            {selectedVariant.size || selectedVariant.color || 'Selected variant'}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  } else if (selectedProduct.image_path) {
+                    // Fallback to product image
                     return (
                       <div className="w-full h-48 md:h-64 relative overflow-hidden rounded-t-2xl bg-gray-50">
                         <Image
                           src={
-                            currentImage.startsWith('http') 
-                              ? currentImage
-                              : currentImage.startsWith('/')
-                              ? currentImage
-                              : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${currentImage}`
+                            selectedProduct.image_path.startsWith('http') 
+                              ? selectedProduct.image_path
+                              : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${selectedProduct.image_path}`
                           }
                           alt={selectedProduct.name}
                           fill
                           className="object-contain"
-                          unoptimized={currentImage.startsWith('http')}
+                          unoptimized={selectedProduct.image_path.startsWith('http')}
                         />
                       </div>
                     );
