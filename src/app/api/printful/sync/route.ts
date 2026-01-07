@@ -104,14 +104,79 @@ export async function POST(request: NextRequest) {
           continue;
         }
         
-        // Get product image (from sync_product or variants)
-        const productImage = syncProduct.thumbnail_url || 
-                            syncProduct.preview_url ||
-                            syncProduct.image ||
-                            mainVariant?.preview_image ||
-                            mainVariant?.files?.[0]?.preview_url ||
-                            mainVariant?.files?.[0]?.url ||
-                            null;
+        // Extract ALL images from product and variants
+        // Printful products can have images at multiple levels:
+        // 1. Product-level: thumbnail_url, preview_url, image
+        // 2. Variant-level: preview_image, files[].preview_url, files[].url
+        // 3. Mockup images: variant mockups (best quality)
+        
+        const allImages: string[] = [];
+        
+        // Product-level images
+        if (syncProduct.thumbnail_url) allImages.push(syncProduct.thumbnail_url);
+        if (syncProduct.preview_url && !allImages.includes(syncProduct.preview_url)) {
+          allImages.push(syncProduct.preview_url);
+        }
+        if (syncProduct.image && !allImages.includes(syncProduct.image)) {
+          allImages.push(syncProduct.image);
+        }
+        
+        // Variant-level images (including mockups)
+        syncVariants.forEach((variant: any) => {
+          // Variant preview image
+          if (variant.preview_image && !allImages.includes(variant.preview_image)) {
+            allImages.push(variant.preview_image);
+          }
+          
+          // Variant files (mockups and product images)
+          if (Array.isArray(variant.files)) {
+            variant.files.forEach((file: any) => {
+              // Mockup images (best quality)
+              if (file.preview_url && !allImages.includes(file.preview_url)) {
+                allImages.push(file.preview_url);
+              }
+              // Product images
+              if (file.url && !allImages.includes(file.url)) {
+                allImages.push(file.url);
+              }
+            });
+          }
+          
+          // Some variants have mockup_url directly
+          if (variant.mockup_url && !allImages.includes(variant.mockup_url)) {
+            allImages.push(variant.mockup_url);
+          }
+        });
+        
+        // Primary image: prefer mockup/preview images over thumbnails
+        // Priority: mockup > preview_image > preview_url > thumbnail_url
+        const productImage = allImages.find(img => 
+          img.includes('mockup') || img.includes('preview')
+        ) || allImages[0] || null;
+        
+        // Store all images for gallery display
+        const variantImages = syncVariants.map((variant: any) => {
+          const variantImgs: string[] = [];
+          
+          if (variant.preview_image) variantImgs.push(variant.preview_image);
+          if (variant.mockup_url) variantImgs.push(variant.mockup_url);
+          
+          if (Array.isArray(variant.files)) {
+            variant.files.forEach((file: any) => {
+              if (file.preview_url) variantImgs.push(file.preview_url);
+              if (file.url && !variantImgs.includes(file.url)) variantImgs.push(file.url);
+            });
+          }
+          
+          return {
+            variant_id: variant.id,
+            variant_name: variant.name || variant.variant || `${variant.size || ''} ${variant.color || ''}`.trim(),
+            images: variantImgs,
+            price: variant.retail_price || variant.price,
+            size: variant.size,
+            color: variant.color,
+          };
+        });
 
         // Better price extraction - Printful prices can be in different fields
         // Log variant structure for debugging
@@ -219,12 +284,27 @@ export async function POST(request: NextRequest) {
           product_category: productCategory,
           printful_product_id: printfulProductId,
           printful_variant_id: mainVariant.id?.toString(),
-          printful_sync_data: product, // Store full Printful data
+          printful_sync_data: {
+            ...product, // Store full Printful data
+            all_images: allImages, // All available images (deduplicated)
+            variant_images: variantImages, // Images organized by variant
+            variant_count: syncVariants.length,
+            variants: syncVariants.map((v: any) => ({
+              id: v.id,
+              name: v.name || v.variant,
+              size: v.size,
+              color: v.color,
+              retail_price: v.retail_price,
+              price: v.price,
+            })),
+          },
           image_path: productImage,
           is_active: true,
           is_featured: isWineBear, // Auto-feature wine bear products
           display_order: 0,
         };
+        
+        console.log(`Syncing ${syncProduct.name}: ${allImages.length} images found, ${syncVariants.length} variants`);
 
         // Check if product already exists
         const { data: existing } = await supabase

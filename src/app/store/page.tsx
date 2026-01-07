@@ -260,22 +260,68 @@ export default function StorePage() {
                   </svg>
                 </button>
 
-                {/* Product Image */}
-                {selectedProduct.image_path && (
-                  <div className="w-full h-48 md:h-64 relative overflow-hidden rounded-t-2xl">
-                    <Image
-                      src={
-                        selectedProduct.image_path.startsWith('http') 
-                          ? selectedProduct.image_path
-                          : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${selectedProduct.image_path}`
-                      }
-                      alt={selectedProduct.name}
-                      fill
-                      className="object-cover"
-                      unoptimized={selectedProduct.image_path.startsWith('http')}
-                    />
-                  </div>
-                )}
+                {/* Product Images - Show all variant mockups if available */}
+                {(() => {
+                  const syncData = selectedProduct.printful_sync_data;
+                  const allImages = syncData?.all_images || [];
+                  const variantImages = syncData?.variant_images || [];
+                  
+                  // If we have multiple images, show a gallery; otherwise show single image
+                  if (allImages.length > 1) {
+                    return (
+                      <div className="w-full">
+                        <div className="h-48 md:h-64 relative overflow-hidden rounded-t-2xl">
+                          <Image
+                            src={allImages[0].startsWith('http') ? allImages[0] : allImages[0]}
+                            alt={selectedProduct.name}
+                            fill
+                            className="object-cover"
+                            unoptimized={allImages[0].startsWith('http')}
+                          />
+                        </div>
+                        {allImages.length > 1 && (
+                          <div className="px-4 pt-2 pb-4">
+                            <p className="text-xs text-black/60 mb-2">
+                              {allImages.length} mockup{allImages.length > 1 ? 's' : ''} available
+                            </p>
+                            <div className="flex gap-2 overflow-x-auto">
+                              {allImages.slice(0, 5).map((img: string, idx: number) => (
+                                <div
+                                  key={idx}
+                                  className="flex-shrink-0 w-16 h-16 rounded overflow-hidden border-2 border-transparent hover:border-ember transition-colors"
+                                >
+                                  <img
+                                    src={img.startsWith('http') ? img : img}
+                                    alt={`${selectedProduct.name} mockup ${idx + 1}`}
+                                    className="w-full h-full object-cover"
+                                    loading="lazy"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  } else if (selectedProduct.image_path) {
+                    return (
+                      <div className="w-full h-48 md:h-64 relative overflow-hidden rounded-t-2xl">
+                        <Image
+                          src={
+                            selectedProduct.image_path.startsWith('http') 
+                              ? selectedProduct.image_path
+                              : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${selectedProduct.image_path}`
+                          }
+                          alt={selectedProduct.name}
+                          fill
+                          className="object-cover"
+                          unoptimized={selectedProduct.image_path.startsWith('http')}
+                        />
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
 
                 {/* Form */}
                 <form onSubmit={handleCheckoutSubmit} className="space-y-6 p-8">
@@ -289,6 +335,29 @@ export default function StorePage() {
                     <h3 className="text-xl font-medium text-charcoal mb-2">{selectedProduct.name}</h3>
                     {selectedProduct.description && (
                       <p className="text-black/70 leading-relaxed mb-4">{selectedProduct.description}</p>
+                    )}
+                    {/* Show variant info if available */}
+                    {selectedProduct.printful_sync_data?.variants && selectedProduct.printful_sync_data.variants.length > 1 && (
+                      <div className="mb-4 p-3 bg-cream/50 rounded-lg">
+                        <p className="text-sm font-medium text-black/80 mb-2">
+                          Available in {selectedProduct.printful_sync_data.variants.length} variant{selectedProduct.printful_sync_data.variants.length > 1 ? 's' : ''}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedProduct.printful_sync_data.variants.slice(0, 6).map((variant: any, idx: number) => (
+                            <span
+                              key={variant.id || idx}
+                              className="text-xs px-2 py-1 bg-white rounded border border-black/10"
+                            >
+                              {variant.size || variant.color || variant.name || `Variant ${idx + 1}`}
+                            </span>
+                          ))}
+                          {selectedProduct.printful_sync_data.variants.length > 6 && (
+                            <span className="text-xs px-2 py-1 bg-white rounded border border-black/10">
+                              +{selectedProduct.printful_sync_data.variants.length - 6} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     )}
                     <p className="text-2xl font-semibold text-ember">
                       {selectedProduct.price === 0 ? 'TBD' : `$${selectedProduct.price.toFixed(2)}`}
