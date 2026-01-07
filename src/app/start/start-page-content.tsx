@@ -61,9 +61,9 @@ function InlineEmailForm({ onSuccess }: { onSuccess: () => void }) {
       <Link 
         href="/join" 
         className="block text-center text-[#f6f3ef]/80 hover:text-[#f6f3ef] text-sm transition-colors"
-        onClick={() => analyticsEvents.startPageButtonClicked('View Full Join Page')}
+        onClick={() => analyticsEvents.startPageButtonClicked('Learn More - Join')}
       >
-        View full page →
+        Learn more →
       </Link>
     </form>
   );
@@ -71,24 +71,12 @@ function InlineEmailForm({ onSuccess }: { onSuccess: () => void }) {
 
 // Product preview component
 function ProductPreview({ product }: { product: Product }) {
-  const handleGetIt = async () => {
-    try {
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId: product.id, quantity: 1 }),
-      });
-
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        showToast('Checkout failed. Please try again.', 'error');
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      showToast('Checkout failed. Please try again.', 'error');
-    }
+  const handleGetIt = () => {
+    // Redirect to the appropriate page where they can complete checkout
+    const isDigital = ['recipe_card', 'guide', 'ebook', 'bundle'].includes(product.product_type) || product.product_category === 'digital';
+    const redirectUrl = isDigital ? `/recipes` : `/store`;
+    // Add product ID as query param so the page can highlight/pre-select it
+    window.location.href = `${redirectUrl}?product=${encodeURIComponent(product.id)}`;
   };
 
   const imageUrl = product.image_path?.startsWith('http') 
@@ -241,9 +229,9 @@ export function StartPageContent() {
               <Link
                 href="/recipes"
                 className="block text-center text-[#f6f3ef]/80 hover:text-[#f6f3ef] text-sm transition-colors"
-                onClick={() => analyticsEvents.startPageButtonClicked('View All Recipes')}
+                onClick={() => analyticsEvents.startPageButtonClicked('Browse All Recipes')}
               >
-                View all recipes & guides →
+                Browse all recipes & guides →
               </Link>
             </div>
           ) : (
@@ -252,8 +240,9 @@ export function StartPageContent() {
               <Link
                 href="/recipes"
                 className="text-[#f6f3ef]/80 hover:text-[#f6f3ef] text-sm transition-colors"
+                onClick={() => analyticsEvents.startPageButtonClicked('Browse All Recipes')}
               >
-                Browse all recipes →
+                Browse all recipes & guides →
               </Link>
             </div>
           )}
@@ -279,9 +268,9 @@ export function StartPageContent() {
               <Link
                 href="/store"
                 className="block text-center text-[#f6f3ef]/80 hover:text-[#f6f3ef] text-sm transition-colors"
-                onClick={() => analyticsEvents.startPageButtonClicked('View All Merch')}
+                onClick={() => analyticsEvents.startPageButtonClicked('Browse All Merch')}
               >
-                Browse full store →
+                Browse all merch →
               </Link>
             </div>
           ) : (
@@ -290,8 +279,9 @@ export function StartPageContent() {
               <Link
                 href="/store"
                 className="text-[#f6f3ef]/80 hover:text-[#f6f3ef] text-sm transition-colors"
+                onClick={() => analyticsEvents.startPageButtonClicked('Browse All Merch')}
               >
-                Browse store →
+                Browse all merch →
               </Link>
             </div>
           )}
@@ -319,6 +309,7 @@ export function StartPageContent() {
               <Link
                 href="/essays"
                 className="text-[#f6f3ef]/80 hover:text-[#f6f3ef] text-sm transition-colors"
+                onClick={() => analyticsEvents.startPageButtonClicked('Browse All Essays')}
               >
                 Browse all essays →
               </Link>
