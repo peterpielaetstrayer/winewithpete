@@ -350,16 +350,24 @@ export default function StorePage() {
                       (vi) => vi.variant_id === selectedVariant.id
                     );
                     
+                    // Debug logging
+                    console.log('Selected Variant:', selectedVariant.id, selectedVariant.size, selectedVariant.color);
+                    console.log('Variant Image Data:', variantImageData);
+                    console.log('All Variant Images:', syncData.variant_images);
+                    
                     if (variantImageData?.images && variantImageData.images.length > 0) {
                       // Show ONLY the selected variant's images
                       imagesToShow = variantImageData.images.filter((img: string) => allImages.includes(img));
+                      console.log('Images to Show for Variant:', imagesToShow);
                     } else {
                       // Fallback: if no variant images found, use all images
                       imagesToShow = allImages;
+                      console.log('No variant images found, using all images');
                     }
                   } else {
                     // No variant selected, show all images
                     imagesToShow = allImages;
+                    console.log('No variant selected, showing all images');
                   }
                   
                   // Get current image to display
@@ -373,6 +381,9 @@ export default function StorePage() {
                     }
                   }
                   
+                  console.log('Current Image to Display:', currentImage);
+                  console.log('Display Image Index:', displayImageIndex);
+                  
                   if (!currentImage) return null;
                   
                   // If we have multiple images, show a gallery; otherwise show single image
@@ -382,6 +393,7 @@ export default function StorePage() {
                         {/* Main Image */}
                         <div className="h-48 md:h-64 relative overflow-hidden rounded-t-2xl bg-gray-50">
                           <Image
+                            key={`variant-${selectedVariant?.id || 'none'}-img-${displayImageIndex}`}
                             src={currentImage.startsWith('http') ? currentImage : currentImage}
                             alt={selectedProduct.name}
                             fill
@@ -438,6 +450,7 @@ export default function StorePage() {
                     return (
                       <div className="w-full h-48 md:h-64 relative overflow-hidden rounded-t-2xl bg-gray-50">
                         <Image
+                          key={`variant-${selectedVariant?.id || 'none'}-single`}
                           src={imagesToShow[0].startsWith('http') ? imagesToShow[0] : imagesToShow[0]}
                           alt={selectedProduct.name}
                           fill
