@@ -163,6 +163,19 @@ export default function StartPage() {
             {/* Section separator */}
             <div className="h-px bg-[#f6f3ef]/10"></div>
 
+            {/* Return to Your Foundation */}
+            <section className="space-y-3">
+              <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
+                Return to Your Foundation
+              </h2>
+              <ButtonLink href="/baseline-method" variant="primary" className="text-lg">
+                The Baseline Method
+              </ButtonLink>
+            </section>
+
+            {/* Section separator */}
+            <div className="h-px bg-[#f6f3ef]/10"></div>
+
             {/* Join In Person */}
             <section className="space-y-3">
               <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.2)]">

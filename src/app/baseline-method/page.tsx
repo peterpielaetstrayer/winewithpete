@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import { BaselineMethodForm } from '@/components/baseline-method-form';
 
 export const metadata: Metadata = {
@@ -73,6 +76,39 @@ export default function BaselineMethodPage() {
 
           <div className="space-y-4">
             <BaselineMethodForm />
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Start Teaser */}
+      <section className="bg-white py-12 md:py-16">
+        <div className="mx-auto max-w-4xl px-4">
+          <div className="bg-dr-cream rounded-2xl p-8 md:p-12 border border-dr-charcoal/10">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-serif font-semibold text-dr-charcoal mb-4">
+                  New to the Baseline Method?
+                </h2>
+                <p className="text-lg text-dr-charcoal/80 mb-6 leading-relaxed">
+                  Start with our <strong>Quick Start Guide</strong>—a condensed version 
+                  you can view right now, no download needed. Perfect for getting oriented 
+                  before diving into the full 4-week structure.
+                </p>
+                <Link href="/baseline-method/quickstart">
+                  <Button className="bg-dr-terracotta hover:bg-dr-terracotta/90 text-white px-6 py-4 text-base font-medium">
+                    View Quick Start Guide →
+                  </Button>
+                </Link>
+              </div>
+              <div className="relative aspect-[8.5/11] rounded-lg overflow-hidden shadow-lg border border-dr-charcoal/10">
+                <Image
+                  src="/images/baseline-method/quickstart/1.png"
+                  alt="Baseline Method Quick Start Preview"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
