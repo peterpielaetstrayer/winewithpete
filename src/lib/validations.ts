@@ -27,6 +27,7 @@ export const checkoutSchema = z.object({
   customerName: nameSchema,
   customAmount: z.number().positive('Amount must be positive').max(10000, 'Amount too high').optional(),
   customDescription: z.string().max(200, 'Description too long').optional(),
+  printfulVariantId: z.string().optional(), // For Printful variant selection
 });
 
 // Admin product update validation

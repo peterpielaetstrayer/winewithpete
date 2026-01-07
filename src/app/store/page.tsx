@@ -14,6 +14,8 @@ export default function StorePage() {
   const [productsLoading, setProductsLoading] = useState(true);
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<any>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerName, setCustomerName] = useState('');
 
@@ -42,6 +44,12 @@ export default function StorePage() {
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProduct) return;
+    
+    // Validate variant selection if variants exist
+    if (selectedProduct.printful_sync_data?.variants && selectedProduct.printful_sync_data.variants.length > 0 && !selectedVariant) {
+      alert('Please select a variant');
+      return;
+    }
 
     setLoading(selectedProduct.id);
     try {
@@ -55,6 +63,8 @@ export default function StorePage() {
           quantity: 1,
           customerEmail: customerEmail,
           customerName: customerName,
+          printfulVariantId: selectedVariant?.id, // Include selected variant ID
+          customAmount: selectedVariant ? getCurrentPrice() : undefined, // Use variant price if different
         }),
       });
 
@@ -77,6 +87,8 @@ export default function StorePage() {
   const closeCheckoutForm = () => {
     setShowCheckoutForm(false);
     setSelectedProduct(null);
+    setSelectedVariant(null);
+    setSelectedImageIndex(0);
     setCustomerEmail('');
     setCustomerName('');
   };
@@ -264,43 +276,54 @@ export default function StorePage() {
                 {(() => {
                   const syncData = selectedProduct.printful_sync_data;
                   const allImages = syncData?.all_images || [];
-                  const variantImages = syncData?.variant_images || [];
+                  
+                  // Get current image to display (based on selectedImageIndex or selected variant)
+                  let currentImage = selectedProduct.image_path;
+                  if (allImages.length > 0) {
+                    currentImage = allImages[selectedImageIndex] || allImages[0];
+                  }
                   
                   // If we have multiple images, show a gallery; otherwise show single image
                   if (allImages.length > 1) {
                     return (
                       <div className="w-full">
+                        {/* Main Image */}
                         <div className="h-48 md:h-64 relative overflow-hidden rounded-t-2xl">
                           <Image
-                            src={allImages[0].startsWith('http') ? allImages[0] : allImages[0]}
+                            src={currentImage.startsWith('http') ? currentImage : currentImage}
                             alt={selectedProduct.name}
                             fill
                             className="object-cover"
-                            unoptimized={allImages[0].startsWith('http')}
+                            unoptimized={currentImage.startsWith('http')}
                           />
                         </div>
-                        {allImages.length > 1 && (
-                          <div className="px-4 pt-2 pb-4">
-                            <p className="text-xs text-black/60 mb-2">
-                              {allImages.length} mockup{allImages.length > 1 ? 's' : ''} available
-                            </p>
-                            <div className="flex gap-2 overflow-x-auto">
-                              {allImages.slice(0, 5).map((img: string, idx: number) => (
-                                <div
-                                  key={idx}
-                                  className="flex-shrink-0 w-16 h-16 rounded overflow-hidden border-2 border-transparent hover:border-ember transition-colors"
-                                >
-                                  <img
-                                    src={img.startsWith('http') ? img : img}
-                                    alt={`${selectedProduct.name} mockup ${idx + 1}`}
-                                    className="w-full h-full object-cover"
-                                    loading="lazy"
-                                  />
-                                </div>
-                              ))}
-                            </div>
+                        {/* Thumbnail Gallery - Clickable */}
+                        <div className="px-4 pt-2 pb-4">
+                          <p className="text-xs text-black/60 mb-2">
+                            {allImages.length} mockup{allImages.length > 1 ? 's' : ''} available - Click to view
+                          </p>
+                          <div className="flex gap-2 overflow-x-auto">
+                            {allImages.slice(0, 8).map((img: string, idx: number) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setSelectedImageIndex(idx)}
+                                className={`flex-shrink-0 w-16 h-16 rounded overflow-hidden border-2 transition-colors ${
+                                  selectedImageIndex === idx
+                                    ? 'border-ember ring-2 ring-ember/30'
+                                    : 'border-transparent hover:border-ember/50'
+                                }`}
+                              >
+                                <img
+                                  src={img.startsWith('http') ? img : img}
+                                  alt={`${selectedProduct.name} mockup ${idx + 1}`}
+                                  className="w-full h-full object-cover"
+                                  loading="lazy"
+                                />
+                              </button>
+                            ))}
                           </div>
-                        )}
+                        </div>
                       </div>
                     );
                   } else if (selectedProduct.image_path) {

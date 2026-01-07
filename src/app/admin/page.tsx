@@ -890,10 +890,49 @@ export default function AdminPage() {
                                mainVariant?.files?.[0]?.url ||
                                null;
                   
-                  // Better price extraction
-                  const retailPrice = mainVariant?.retail_price || mainVariant?.price;
-                  const price = retailPrice 
-                    ? `$${(retailPrice / 100).toFixed(2)}`
+                  // Better price extraction (same logic as sync route)
+                  const toNumber = (value: any): number | null => {
+                    if (value === null || value === undefined) return null;
+                    const num = typeof value === 'string' ? parseFloat(value) : Number(value);
+                    return isNaN(num) ? null : num;
+                  };
+                  
+                  const rawRetailPrice = toNumber(mainVariant?.retail_price);
+                  const rawPrice = toNumber(mainVariant?.price);
+                  
+                  let priceValue = 0;
+                  if (rawRetailPrice !== null && rawRetailPrice !== undefined) {
+                    if (rawRetailPrice >= 100) {
+                      priceValue = Math.round((rawRetailPrice / 100) * 100) / 100;
+                    } else if (rawRetailPrice >= 1 && rawRetailPrice < 100) {
+                      if (rawRetailPrice % 1 === 0 && rawRetailPrice >= 10) {
+                        priceValue = rawRetailPrice;
+                      } else {
+                        priceValue = rawRetailPrice;
+                      }
+                    } else {
+                      priceValue = rawRetailPrice;
+                    }
+                  } else if (rawPrice !== null && rawPrice !== undefined) {
+                    if (rawPrice >= 100) {
+                      priceValue = Math.round((rawPrice / 100) * 100) / 100;
+                    } else {
+                      priceValue = rawPrice;
+                    }
+                  }
+                  
+                  // Final check: if price is suspiciously low
+                  if (priceValue > 0 && priceValue < 1) {
+                    const rawValue = rawRetailPrice ?? rawPrice;
+                    if (rawValue !== null && rawValue >= 10 && rawValue < 1000) {
+                      priceValue = rawValue;
+                    }
+                  }
+                  
+                  priceValue = Math.round(priceValue * 100) / 100;
+                  
+                  const price = priceValue > 0 
+                    ? `$${priceValue.toFixed(2)}`
                     : mainVariant?.retail_price === 0 
                     ? 'Free'
                     : 'Price TBD';
@@ -904,10 +943,11 @@ export default function AdminPage() {
                                    name.toLowerCase().includes('winebear') ||
                                    description.toLowerCase().includes('wine bear');
                   
-                  // Get variant details
-                  const variantCount = syncVariants.length;
+                  // Get variant details - ensure syncVariants is an array
+                  const variantArray = Array.isArray(syncVariants) ? syncVariants : [];
+                  const variantCount = variantArray.length;
                   const variantInfo = variantCount > 0 
-                    ? `${variantCount} variant(s)${mainVariant?.name ? ` - ${mainVariant.name}` : ''}`
+                    ? `${variantCount} variant${variantCount > 1 ? 's' : ''}${mainVariant?.name ? ` - ${mainVariant.name}` : ''}`
                     : 'No variants';
 
                   return (

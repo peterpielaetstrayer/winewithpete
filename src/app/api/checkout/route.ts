@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { productId, quantity, customerEmail, customerName, customAmount, customDescription } = validationResult.data;
+    const { productId, quantity, customerEmail, customerName, customAmount, customDescription, printfulVariantId } = validationResult.data;
 
     // Sanitize inputs
     const sanitizedEmail = validateEmail(customerEmail);
@@ -214,7 +214,7 @@ export async function POST(request: NextRequest) {
               description: product.description || undefined,
               images: productImages.length > 0 ? productImages : undefined,
             },
-            unit_amount: Math.round(product.price * 100), // Convert to cents
+            unit_amount: Math.round(finalPrice * 100), // Convert to cents (uses variant price if selected)
           },
           quantity,
         },
@@ -228,6 +228,8 @@ export async function POST(request: NextRequest) {
         productName: product.name,
         customerName: customerName || '',
         quantity: quantity.toString(),
+        printfulVariantId: printfulVariantId || '',
+        variantPrice: finalPrice.toString(),
       },
     });
 
