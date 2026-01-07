@@ -16,6 +16,7 @@ export default function StorePage() {
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<PrintfulVariant | null>(null);
+  const [selectedVariantType, setSelectedVariantType] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerName, setCustomerName] = useState('');
@@ -37,17 +38,30 @@ export default function StorePage() {
     }
   };
 
+  // Helper function to group variants by color/variant type
+  const getVariantTypes = (variants: PrintfulVariant[]): string[] => {
+    const types = new Set<string>();
+    variants.forEach((v) => {
+      // Group by color if available, otherwise by name
+      const type = v.color || v.name || 'Default';
+      types.add(type);
+    });
+    return Array.from(types);
+  };
+  
+  // Helper function to get sizes for a selected variant type
+  const getSizesForVariantType = (variants: PrintfulVariant[], variantType: string): PrintfulVariant[] => {
+    return variants.filter((v) => {
+      const type = v.color || v.name || 'Default';
+      return type === variantType;
+    });
+  };
+
   const handleCheckoutClick = (product: Product) => {
     setSelectedProduct(product);
     setSelectedImageIndex(0);
-    
-    // Initialize variant selection - use first variant if available
-    const syncData = product.printful_sync_data;
-    if (syncData?.variants && syncData.variants.length > 0) {
-      setSelectedVariant(syncData.variants[0]);
-    } else {
-      setSelectedVariant(null);
-    }
+    setSelectedVariantType(null); // Reset variant type selection
+    setSelectedVariant(null); // Reset variant selection
     
     setShowCheckoutForm(true);
   };
@@ -69,9 +83,16 @@ export default function StorePage() {
     if (!selectedProduct) return;
     
     // Validate variant selection if variants exist
-    if (selectedProduct.printful_sync_data?.variants && selectedProduct.printful_sync_data.variants.length > 0 && !selectedVariant) {
-      alert('Please select a variant');
-      return;
+    if (selectedProduct.printful_sync_data?.variants && selectedProduct.printful_sync_data.variants.length > 0) {
+      const variantTypes = getVariantTypes(selectedProduct.printful_sync_data.variants);
+      if (variantTypes.length > 1 && !selectedVariantType) {
+        alert('Please select a style/color');
+        return;
+      }
+      if (!selectedVariant) {
+        alert('Please select a size');
+        return;
+      }
     }
 
     setLoading(selectedProduct.id);
@@ -461,74 +482,196 @@ export default function StorePage() {
                       <p className="text-black/70 leading-relaxed mb-4">{selectedProduct.description}</p>
                     )}
                     
-                    {/* Variant Selection */}
-                    {selectedProduct.printful_sync_data?.variants && selectedProduct.printful_sync_data.variants.length > 0 && (
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium text-black/80 mb-2">
-                          Select {selectedProduct.printful_sync_data.variants.some((v: any) => v.size) ? 'Size' : 'Variant'} *
-                        </label>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-64 overflow-y-auto">
-                          {selectedProduct.printful_sync_data.variants.map((variant: any, idx: number) => {
-                            const isSelected = selectedVariant?.id === variant.id;
-                            const variantName = variant.size || variant.color || variant.name || `Option ${idx + 1}`;
-                            
-                            // Calculate variant price using shared utility
-                            const variantPrice = extractPriceFromVariant(variant);
-                            
-                            return (
-                              <button
-                                key={variant.id || idx}
-                                type="button"
-                                onClick={() => {
-                                  setSelectedVariant(variant);
+                    {/* Variant Selection - Two Step: Style/Color then Size */}
+                    {selectedProduct.printful_sync_data?.variants && selectedProduct.printful_sync_data.variants.length > 0 && (() => {
+                      const variants = selectedProduct.printful_sync_data.variants;
+                      const variantTypes = getVariantTypes(variants);
+                      
+                      // If we have multiple variant types (colors), show two-step selection
+                      if (variantTypes.length > 1) {
+                        return (
+                          <div className="mb-4 space-y-4">
+                            {/* Step 1: Select Variant Type (Color/Style) */}
+                            <div>
+                              <label className="block text-sm font-medium text-black/80 mb-2">
+                                Select Style/Color *
+                              </label>
+                              <div className="grid grid-cols-2 gap-2">
+                                {variantTypes.map((type) => {
+                                  const isSelected = selectedVariantType === type;
+                                  // Get first variant of this type to show preview
+                                  const firstVariantOfType = variants.find((v: PrintfulVariant) => {
+                                    const vType = v.color || v.name || 'Default';
+                                    return vType === type;
+                                  });
                                   
-                                  // Get variant-specific images
-                                  const variantImageData = selectedProduct.printful_sync_data?.variant_images?.find(
-                                    (vi: any) => vi.variant_id === variant.id
+                                  return (
+                                    <button
+                                      key={type}
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedVariantType(type);
+                                        setSelectedVariant(null); // Reset size selection
+                                        
+                                        // Auto-select first size of this variant type
+                                        const sizesForType = getSizesForVariantType(variants, type);
+                                        if (sizesForType.length > 0) {
+                                          setSelectedVariant(sizesForType[0]);
+                                          
+                                          // Update image to match selected variant
+                                          const variantImageData = selectedProduct.printful_sync_data?.variant_images?.find(
+                                            (vi: any) => vi.variant_id === sizesForType[0].id
+                                          );
+                                          
+                                          if (variantImageData?.images && variantImageData.images.length > 0) {
+                                            const allImages = selectedProduct.printful_sync_data?.all_images || [];
+                                            const firstVariantImage = variantImageData.images[0];
+                                            const imgIndex = allImages.findIndex((img: string) => img === firstVariantImage);
+                                            if (imgIndex >= 0) {
+                                              setSelectedImageIndex(imgIndex);
+                                            }
+                                          }
+                                        }
+                                      }}
+                                      className={`p-4 rounded-lg border-2 transition-all text-left ${
+                                        isSelected
+                                          ? 'border-ember bg-ember/10 ring-2 ring-ember/20'
+                                          : 'border-black/10 hover:border-ember/50 bg-white'
+                                      }`}
+                                    >
+                                      <div className="font-medium text-sm">{type}</div>
+                                      {firstVariantOfType && extractPriceFromVariant(firstVariantOfType) > 0 && (
+                                        <div className="text-xs text-black/60 mt-1">
+                                          From ${extractPriceFromVariant(firstVariantOfType).toFixed(2)}
+                                        </div>
+                                      )}
+                                    </button>
                                   );
-                                  
-                                  if (variantImageData?.images && variantImageData.images.length > 0) {
-                                    // Find the first variant-specific image in all_images
-                                    const allImages = selectedProduct.printful_sync_data?.all_images || [];
-                                    const firstVariantImage = variantImageData.images[0];
-                                    const imgIndex = allImages.findIndex((img: string) => img === firstVariantImage);
-                                    
-                                    if (imgIndex >= 0) {
-                                      setSelectedImageIndex(imgIndex);
-                                    } else {
-                                      // If exact match not found, try to find any image that matches variant images
-                                      const matchingIndex = allImages.findIndex((img: string) => 
-                                        variantImageData.images.some((variantImg: string) => 
-                                          img === variantImg || img.includes(variantImg.split('/').pop() || '')
-                                        )
+                                })}
+                              </div>
+                            </div>
+                            
+                            {/* Step 2: Select Size (only show if variant type is selected) */}
+                            {selectedVariantType && (() => {
+                              const sizesForType = getSizesForVariantType(variants, selectedVariantType);
+                              
+                              return (
+                                <div>
+                                  <label className="block text-sm font-medium text-black/80 mb-2">
+                                    Select Size *
+                                  </label>
+                                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                    {sizesForType.map((variant: PrintfulVariant) => {
+                                      const isSelected = selectedVariant?.id === variant.id;
+                                      const sizeName = variant.size || variant.name || 'Standard';
+                                      const variantPrice = extractPriceFromVariant(variant);
+                                      
+                                      return (
+                                        <button
+                                          key={variant.id}
+                                          type="button"
+                                          onClick={() => {
+                                            setSelectedVariant(variant);
+                                            
+                                            // Update image to match selected variant
+                                            const variantImageData = selectedProduct.printful_sync_data?.variant_images?.find(
+                                              (vi: any) => vi.variant_id === variant.id
+                                            );
+                                            
+                                            if (variantImageData?.images && variantImageData.images.length > 0) {
+                                              const allImages = selectedProduct.printful_sync_data?.all_images || [];
+                                              const firstVariantImage = variantImageData.images[0];
+                                              const imgIndex = allImages.findIndex((img: string) => img === firstVariantImage);
+                                              if (imgIndex >= 0) {
+                                                setSelectedImageIndex(imgIndex);
+                                              }
+                                            }
+                                          }}
+                                          className={`p-3 rounded-lg border-2 transition-all text-center ${
+                                            isSelected
+                                              ? 'border-ember bg-ember/10 ring-2 ring-ember/20'
+                                              : 'border-black/10 hover:border-ember/50 bg-white'
+                                          }`}
+                                        >
+                                          <div className="font-medium text-sm">{sizeName}</div>
+                                          {variantPrice > 0 && (
+                                            <div className="text-xs text-black/60 mt-1">
+                                              ${variantPrice.toFixed(2)}
+                                            </div>
+                                          )}
+                                        </button>
                                       );
-                                      if (matchingIndex >= 0) {
-                                        setSelectedImageIndex(matchingIndex);
+                                    })}
+                                  </div>
+                                  {!selectedVariant && (
+                                    <p className="text-xs text-red-600 mt-1">Please select a size</p>
+                                  )}
+                                </div>
+                              );
+                            })()}
+                            
+                            {!selectedVariantType && (
+                              <p className="text-xs text-red-600 mt-1">Please select a style/color first</p>
+                            )}
+                          </div>
+                        );
+                      }
+                      
+                      // Fallback: If only one variant type, show sizes directly
+                      return (
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-black/80 mb-2">
+                            Select Size *
+                          </label>
+                          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                            {variants.map((variant: PrintfulVariant, idx: number) => {
+                              const isSelected = selectedVariant?.id === variant.id;
+                              const sizeName = variant.size || variant.name || `Option ${idx + 1}`;
+                              const variantPrice = extractPriceFromVariant(variant);
+                              
+                              return (
+                                <button
+                                  key={variant.id || idx}
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedVariant(variant);
+                                    
+                                    // Get variant-specific images
+                                    const variantImageData = selectedProduct.printful_sync_data?.variant_images?.find(
+                                      (vi: any) => vi.variant_id === variant.id
+                                    );
+                                    
+                                    if (variantImageData?.images && variantImageData.images.length > 0) {
+                                      const allImages = selectedProduct.printful_sync_data?.all_images || [];
+                                      const firstVariantImage = variantImageData.images[0];
+                                      const imgIndex = allImages.findIndex((img: string) => img === firstVariantImage);
+                                      if (imgIndex >= 0) {
+                                        setSelectedImageIndex(imgIndex);
                                       }
                                     }
-                                  }
-                                }}
-                                className={`p-3 rounded-lg border-2 transition-all text-left ${
-                                  isSelected
-                                    ? 'border-ember bg-ember/10 ring-2 ring-ember/20'
-                                    : 'border-black/10 hover:border-ember/50 bg-white'
-                                }`}
-                              >
-                                <div className="font-medium text-sm">{variantName}</div>
-                                {variantPrice > 0 && (
-                                  <div className="text-xs text-black/60 mt-1">
-                                    ${variantPrice.toFixed(2)}
-                                  </div>
-                                )}
-                              </button>
-                            );
-                          })}
+                                  }}
+                                  className={`p-3 rounded-lg border-2 transition-all text-center ${
+                                    isSelected
+                                      ? 'border-ember bg-ember/10 ring-2 ring-ember/20'
+                                      : 'border-black/10 hover:border-ember/50 bg-white'
+                                  }`}
+                                >
+                                  <div className="font-medium text-sm">{sizeName}</div>
+                                  {variantPrice > 0 && (
+                                    <div className="text-xs text-black/60 mt-1">
+                                      ${variantPrice.toFixed(2)}
+                                    </div>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                          {!selectedVariant && (
+                            <p className="text-xs text-red-600 mt-1">Please select a size</p>
+                          )}
                         </div>
-                        {!selectedVariant && (
-                          <p className="text-xs text-red-600 mt-1">Please select a variant</p>
-                        )}
-                      </div>
-                    )}
+                      );
+                    })()}
                     
                     <p className="text-2xl font-semibold text-ember">
                       {(() => {
