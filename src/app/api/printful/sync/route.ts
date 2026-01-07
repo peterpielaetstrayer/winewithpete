@@ -123,17 +123,17 @@ export async function POST(request: NextRequest) {
           allImages.push(syncProduct.image);
         }
         
-        // Variant-level images (including mockups)
+        // Variant-level images (ONLY mockups - exclude print files)
         syncVariants.forEach((variant: PrintfulVariant) => {
           // Variant preview image
           if (variant.preview_image && !allImages.includes(variant.preview_image)) {
             allImages.push(variant.preview_image);
           }
           
-          // Variant files - prioritize mockup files
+          // Variant files - ONLY collect mockup files (exclude print files)
           if (Array.isArray(variant.files)) {
             variant.files.forEach((file) => {
-              // Mockup images (best quality, variant-specific)
+              // ONLY mockup images (exclude print files)
               if (file.type === 'mockup') {
                 if (file.preview_url && !allImages.includes(file.preview_url)) {
                   allImages.push(file.preview_url);
@@ -141,15 +141,8 @@ export async function POST(request: NextRequest) {
                 if (file.url && !allImages.includes(file.url)) {
                   allImages.push(file.url);
                 }
-              } else {
-                // Other file types (print files, etc.)
-                if (file.preview_url && !allImages.includes(file.preview_url)) {
-                  allImages.push(file.preview_url);
-                }
-                if (file.url && !allImages.includes(file.url)) {
-                  allImages.push(file.url);
-                }
               }
+              // Removed else block - we don't want print files in allImages
             });
           }
           
@@ -166,16 +159,12 @@ export async function POST(request: NextRequest) {
         ) || allImages[0] || null;
         
         // Store all images for gallery display
-        // Priority order for variant images:
-        // 1. Mockup files (file.type === 'mockup') - these are variant-specific visual representations
-        // 2. Variant preview_image
-        // 3. Variant mockup_url
-        // 4. Other preview URLs
+        // ONLY use mockup files (file.type === 'mockup') - exclude print files
         const variantImages = syncVariants.map((variant: PrintfulVariant) => {
           const variantImgs: string[] = [];
           
           if (Array.isArray(variant.files)) {
-            // First, collect mockup files (these are variant-specific)
+            // ONLY collect mockup files (these are variant-specific visual representations)
             variant.files.forEach((file) => {
               if (file.type === 'mockup') {
                 // Mockup files are the best - they're variant-specific visual representations
@@ -186,22 +175,11 @@ export async function POST(request: NextRequest) {
                   variantImgs.push(file.url);
                 }
               }
+              // Removed fallback - we don't want print files
             });
-            
-            // Then add other preview files if no mockups found
-            if (variantImgs.length === 0) {
-              variant.files.forEach((file) => {
-                if (file.preview_url && !variantImgs.includes(file.preview_url)) {
-                  variantImgs.push(file.preview_url);
-                }
-                if (file.url && !variantImgs.includes(file.url)) {
-                  variantImgs.push(file.url);
-                }
-              });
-            }
           }
           
-          // Fallback to variant-level images if no files
+          // Fallback to variant-level images if no mockup files found
           if (variantImgs.length === 0) {
             if (variant.preview_image) variantImgs.push(variant.preview_image);
             if (variant.mockup_url) variantImgs.push(variant.mockup_url);
