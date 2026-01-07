@@ -112,26 +112,31 @@ export default function StorePage() {
 
     setLoading(selectedProduct.id);
     try {
+      const requestBody = {
+        productId: selectedProduct.id,
+        quantity: 1,
+        customerEmail: customerEmail,
+        customerName: customerName,
+        ...(selectedVariant?.id && { 
+          printfulVariantId: String(selectedVariant.id) // Convert to string if exists
+        }),
+        ...(selectedVariant && getCurrentPrice() !== selectedProduct.price && getCurrentPrice() > 0 && {
+          customAmount: getCurrentPrice() // Only send if variant price differs from product price
+        }),
+      };
+      
+      console.log('Checkout request body:', requestBody);
+      
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          productId: selectedProduct.id,
-          quantity: 1,
-          customerEmail: customerEmail,
-          customerName: customerName,
-          ...(selectedVariant?.id && { 
-            printfulVariantId: String(selectedVariant.id) // Convert to string if exists
-          }),
-          ...(selectedVariant && getCurrentPrice() !== selectedProduct.price && getCurrentPrice() > 0 && {
-            customAmount: getCurrentPrice() // Only send if variant price differs from product price
-          }),
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
+      console.log('Checkout response:', data);
       
       if (data.url) {
         window.location.href = data.url;

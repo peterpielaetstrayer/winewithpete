@@ -47,14 +47,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    console.log('Checkout request body received:', body);
     
     // Validate input with Zod
     const validationResult = checkoutSchema.safeParse(body);
     if (!validationResult.success) {
+      console.error('Validation errors:', validationResult.error.errors);
       return NextResponse.json(
         { 
           error: 'Validation failed', 
-          details: validationResult.error?.errors?.map(e => e.message) || ['Unknown validation error']
+          details: validationResult.error?.errors?.map(e => `${e.path.join('.')}: ${e.message}`) || ['Unknown validation error']
         },
         { status: 400 }
       );
