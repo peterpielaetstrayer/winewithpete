@@ -50,6 +50,55 @@ export default function StorePage() {
     
     setShowCheckoutForm(true);
   };
+  
+  // Calculate current price based on selected variant
+  const getCurrentPrice = () => {
+    if (!selectedProduct) return 0;
+    
+    if (selectedVariant) {
+      // Extract price from variant (same logic as sync route)
+      const toNumber = (value: any): number | null => {
+        if (value === null || value === undefined) return null;
+        const num = typeof value === 'string' ? parseFloat(value) : Number(value);
+        return isNaN(num) ? null : num;
+      };
+      
+      const rawRetailPrice = toNumber(selectedVariant.retail_price);
+      const rawPrice = toNumber(selectedVariant.price);
+      
+      let priceValue = 0;
+      if (rawRetailPrice !== null && rawRetailPrice !== undefined) {
+        if (rawRetailPrice >= 100) {
+          priceValue = Math.round((rawRetailPrice / 100) * 100) / 100;
+        } else if (rawRetailPrice >= 1 && rawRetailPrice < 100) {
+          if (rawRetailPrice % 1 === 0 && rawRetailPrice >= 10) {
+            priceValue = rawRetailPrice;
+          } else {
+            priceValue = rawRetailPrice;
+          }
+        } else {
+          priceValue = rawRetailPrice;
+        }
+      } else if (rawPrice !== null && rawPrice !== undefined) {
+        if (rawPrice >= 100) {
+          priceValue = Math.round((rawPrice / 100) * 100) / 100;
+        } else {
+          priceValue = rawPrice;
+        }
+      }
+      
+      if (priceValue > 0 && priceValue < 1) {
+        const rawValue = rawRetailPrice ?? rawPrice;
+        if (rawValue !== null && rawValue >= 10 && rawValue < 1000) {
+          priceValue = rawValue;
+        }
+      }
+      
+      return Math.round(priceValue * 100) / 100;
+    }
+    
+    return selectedProduct.price;
+  };
 
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
