@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { useState, useEffect } from 'react';
 import { Product, PrintfulVariant } from '@/lib/types';
 import { extractPriceFromVariant } from '@/lib/printful-utils';
+import { SHIPPING_COST } from '@/lib/constants';
 
 export default function StorePage() {
   const [loading, setLoading] = useState<string | null>(null);
@@ -701,12 +702,50 @@ export default function StorePage() {
                       );
                     })()}
                     
-                    <p className="text-2xl font-semibold text-ember">
-                      {(() => {
-                        const currentPrice = getCurrentPrice();
-                        return currentPrice === 0 ? 'TBD' : `$${currentPrice.toFixed(2)}`;
-                      })()}
-                    </p>
+                    {/* Price Breakdown */}
+                    <div className="space-y-2 border-t border-black/10 pt-4 mt-4">
+                      <div className="flex items-center justify-between text-base">
+                        <span className="text-black/70">Product Price:</span>
+                        <span className="font-medium">
+                          {(() => {
+                            const currentPrice = getCurrentPrice();
+                            return currentPrice === 0 ? 'TBD' : `$${currentPrice.toFixed(2)}`;
+                          })()}
+                        </span>
+                      </div>
+                      {selectedProduct.product_type === 'physical' && (
+                        <>
+                          <div className="flex items-center justify-between text-base">
+                            <span className="text-black/70">Shipping:</span>
+                            <span className="font-medium">${SHIPPING_COST.toFixed(2)}</span>
+                          </div>
+                          <div className="flex items-center justify-between text-xl font-semibold text-ember border-t border-black/10 pt-2 mt-2">
+                            <span>Total:</span>
+                            <span>
+                              {(() => {
+                                const currentPrice = getCurrentPrice();
+                                const total = currentPrice + SHIPPING_COST;
+                                return currentPrice === 0 ? 'TBD' : `$${total.toFixed(2)}`;
+                              })()}
+                            </span>
+                          </div>
+                          <p className="text-xs text-black/60 mt-2">
+                            * Shipping calculated at checkout. US only.
+                          </p>
+                        </>
+                      )}
+                      {selectedProduct.product_type !== 'physical' && (
+                        <div className="flex items-center justify-between text-xl font-semibold text-ember border-t border-black/10 pt-2 mt-2">
+                          <span>Total:</span>
+                          <span>
+                            {(() => {
+                              const currentPrice = getCurrentPrice();
+                              return currentPrice === 0 ? 'TBD' : `$${currentPrice.toFixed(2)}`;
+                            })()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="space-y-4">

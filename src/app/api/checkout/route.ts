@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 import { CreateCheckoutSessionRequest } from '@/lib/types';
 import { checkoutSchema, validateEmail, validateName } from '@/lib/validations';
 import { checkoutRateLimit } from '@/lib/rate-limit';
+import { SHIPPING_COST, SHIPPING_COST_CENTS, SHIPPING_ALLOWED_COUNTRIES, SHIPPING_DELIVERY_MIN_DAYS, SHIPPING_DELIVERY_MAX_DAYS } from '@/lib/constants';
 
 export async function POST(request: NextRequest) {
   try {
@@ -189,12 +190,41 @@ export async function POST(request: NextRequest) {
           success_url: `${request.nextUrl.origin}/store/success?session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: `${request.nextUrl.origin}/recipes?cancelled=true`,
           customer_email: sanitizedEmail,
+          // Enable shipping for physical free products
+          ...(product.product_type === 'physical' && {
+            shipping_address_collection: {
+              allowed_countries: SHIPPING_ALLOWED_COUNTRIES,
+            },
+            shipping_options: [
+              {
+                shipping_rate_data: {
+                  type: 'fixed_amount',
+                  fixed_amount: {
+                    amount: SHIPPING_COST_CENTS,
+                    currency: 'usd',
+                  },
+                  display_name: 'Standard Shipping',
+                  delivery_estimate: {
+                    minimum: {
+                      unit: 'business_day',
+                      value: SHIPPING_DELIVERY_MIN_DAYS,
+                    },
+                    maximum: {
+                      unit: 'business_day',
+                      value: SHIPPING_DELIVERY_MAX_DAYS,
+                    },
+                  },
+                },
+              },
+            ],
+          }),
           metadata: {
             productId: product.id,
             productName: product.name,
             customerName: sanitizedName,
             isFreeProduct: 'true',
             tipAmount: tipAmount.toString(),
+            ...(product.product_type === 'physical' && { shippingCost: SHIPPING_COST.toString() }),
           },
         });
         
@@ -268,6 +298,34 @@ export async function POST(request: NextRequest) {
       success_url: `${request.nextUrl.origin}/store/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${request.nextUrl.origin}/recipes?cancelled=true`,
       customer_email: customerEmail,
+      // Enable shipping for physical products
+      ...(product.product_type === 'physical' && {
+        shipping_address_collection: {
+          allowed_countries: SHIPPING_ALLOWED_COUNTRIES,
+        },
+        shipping_options: [
+          {
+            shipping_rate_data: {
+              type: 'fixed_amount',
+              fixed_amount: {
+                amount: SHIPPING_COST_CENTS,
+                currency: 'usd',
+              },
+              display_name: 'Standard Shipping',
+              delivery_estimate: {
+                minimum: {
+                  unit: 'business_day',
+                  value: SHIPPING_DELIVERY_MIN_DAYS,
+                },
+                maximum: {
+                  unit: 'business_day',
+                  value: SHIPPING_DELIVERY_MAX_DAYS,
+                },
+              },
+            },
+          },
+        ],
+      }),
       metadata: {
         productId: product.id,
         productName: product.name,
@@ -275,6 +333,7 @@ export async function POST(request: NextRequest) {
         quantity: quantity.toString(),
         printfulVariantId: printfulVariantId || '',
         variantPrice: finalPrice.toString(),
+        ...(product.product_type === 'physical' && { shippingCost: SHIPPING_COST.toString() }),
       },
     });
 
