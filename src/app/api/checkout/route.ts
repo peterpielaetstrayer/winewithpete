@@ -122,8 +122,16 @@ export async function POST(request: NextRequest) {
 
     console.log('Product found:', { id: product.id, name: product.name, price: product.price });
 
+    // Use variant price if provided and different from product price
+    let finalPrice = product.price;
+    if (printfulVariantId && customAmount && customAmount > 0) {
+      // Variant has different price, use it
+      finalPrice = customAmount;
+      console.log('Using variant price:', { variantId: printfulVariantId, price: finalPrice });
+    }
+
     // Handle free products with optional tips
-    if (product.price === 0) {
+    if (finalPrice === 0) {
       // For free products, allow custom amount (tip)
       const tipAmount = customAmount || 0;
       
