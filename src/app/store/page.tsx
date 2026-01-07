@@ -362,9 +362,10 @@ export default function StorePage() {
                     
                     if (variantImageData?.images && variantImageData.images.length > 0) {
                       // Show ONLY the selected variant's images
-                      imagesToShow = variantImageData.images.filter((img: string) => allImages.includes(img));
+                      // Don't filter against allImages - use variant images directly
+                      imagesToShow = variantImageData.images;
                       console.log('Images to Show for Variant:', imagesToShow);
-                      console.log('Filtered images count:', imagesToShow.length);
+                      console.log('Variant images count:', imagesToShow.length);
                     } else {
                       // Fallback: if no variant images found, use all images
                       imagesToShow = allImages;
