@@ -353,16 +353,23 @@ export default function StorePage() {
                     // Debug logging
                     console.log('Selected Variant:', selectedVariant.id, selectedVariant.size, selectedVariant.color);
                     console.log('Variant Image Data:', variantImageData);
+                    console.log('Variant Image Data Keys:', variantImageData ? Object.keys(variantImageData) : 'null');
+                    console.log('Variant Image Data.images:', variantImageData?.images);
+                    console.log('Variant Image Data.images type:', typeof variantImageData?.images);
+                    console.log('Variant Image Data.images length:', variantImageData?.images?.length);
                     console.log('All Variant Images:', syncData.variant_images);
+                    console.log('All Images Array:', allImages);
                     
                     if (variantImageData?.images && variantImageData.images.length > 0) {
                       // Show ONLY the selected variant's images
                       imagesToShow = variantImageData.images.filter((img: string) => allImages.includes(img));
                       console.log('Images to Show for Variant:', imagesToShow);
+                      console.log('Filtered images count:', imagesToShow.length);
                     } else {
                       // Fallback: if no variant images found, use all images
                       imagesToShow = allImages;
                       console.log('No variant images found, using all images');
+                      console.log('Reason:', !variantImageData ? 'variantImageData is null' : !variantImageData.images ? 'variantImageData.images is missing' : variantImageData.images.length === 0 ? 'variantImageData.images is empty array' : 'unknown');
                     }
                   } else {
                     // No variant selected, show all images
