@@ -60,7 +60,7 @@ function InlineEmailForm({ onSuccess }: { onSuccess: () => void }) {
       </button>
       <Link 
         href="/join" 
-        className="block text-center text-[#f6f3ef]/80 hover:text-[#f6f3ef] text-sm transition-colors"
+        className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-sm font-medium transition-colors mt-3"
         onClick={() => analyticsEvents.startPageButtonClicked('Learn More - Join')}
       >
         Learn more →
@@ -148,7 +148,7 @@ function EssayPreview({ essay }: { essay: FeaturedEssay }) {
       </div>
       <Link
         href="/essays"
-        className="block text-center text-[#f6f3ef]/80 hover:text-[#f6f3ef] text-sm transition-colors"
+        className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-sm font-medium transition-colors mt-3 pt-3 border-t border-[#f6f3ef]/20"
         onClick={() => analyticsEvents.startPageButtonClicked('Browse All Essays')}
       >
         Browse all essays →
@@ -228,7 +228,7 @@ export function StartPageContent() {
               ))}
               <Link
                 href="/recipes"
-                className="block text-center text-[#f6f3ef]/80 hover:text-[#f6f3ef] text-sm transition-colors"
+                className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-sm font-medium transition-colors mt-4 pt-4 border-t border-[#f6f3ef]/20"
                 onClick={() => analyticsEvents.startPageButtonClicked('Browse All Recipes')}
               >
                 Browse all recipes & guides →
@@ -239,7 +239,7 @@ export function StartPageContent() {
               <p className="mb-3">Featured recipes coming soon.</p>
               <Link
                 href="/recipes"
-                className="text-[#f6f3ef]/80 hover:text-[#f6f3ef] text-sm transition-colors"
+                className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-sm font-medium transition-colors"
                 onClick={() => analyticsEvents.startPageButtonClicked('Browse All Recipes')}
               >
                 Browse all recipes & guides →
@@ -267,7 +267,7 @@ export function StartPageContent() {
               <ProductPreview product={featuredMerch} />
               <Link
                 href="/store"
-                className="block text-center text-[#f6f3ef]/80 hover:text-[#f6f3ef] text-sm transition-colors"
+                className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-sm font-medium transition-colors mt-4 pt-4 border-t border-[#f6f3ef]/20"
                 onClick={() => analyticsEvents.startPageButtonClicked('Browse All Merch')}
               >
                 Browse all merch →
@@ -278,7 +278,7 @@ export function StartPageContent() {
               <p className="mb-3">Featured merch coming soon.</p>
               <Link
                 href="/store"
-                className="text-[#f6f3ef]/80 hover:text-[#f6f3ef] text-sm transition-colors"
+                className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-sm font-medium transition-colors"
                 onClick={() => analyticsEvents.startPageButtonClicked('Browse All Merch')}
               >
                 Browse all merch →
@@ -308,7 +308,7 @@ export function StartPageContent() {
               <p className="mb-3">Featured essay coming soon.</p>
               <Link
                 href="/essays"
-                className="text-[#f6f3ef]/80 hover:text-[#f6f3ef] text-sm transition-colors"
+                className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-sm font-medium transition-colors"
                 onClick={() => analyticsEvents.startPageButtonClicked('Browse All Essays')}
               >
                 Browse all essays →
