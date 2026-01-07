@@ -30,9 +30,10 @@ export const checkoutSchema = z.object({
 });
 
 // Admin product update validation
+// Note: Product IDs can be UUIDs or string IDs (like 'art-of-learning-wine')
 export const productUpdateSchema = z.object({
   is_featured: z.boolean().optional(),
-  id: uuidSchema,
+  id: z.union([uuidSchema, z.string().min(1, 'ID is required')]), // Accept both UUIDs and string IDs
   name: nameSchema.optional(),
   description: z.string().max(1000, 'Description too long').optional(),
   price: z.number().positive('Price must be positive').max(10000, 'Price too high').optional(),
