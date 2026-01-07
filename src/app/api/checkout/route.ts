@@ -238,6 +238,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    logger.debug('Creating Stripe checkout session:', {
+      productId: product.id,
+      productName: product.name,
+      printfulVariantId: printfulVariantId,
+      quantity: quantity,
+      finalPrice: finalPrice,
+      hasVariant: !!printfulVariantId,
+      variantValidated: printfulVariantId ? 'yes' : 'no'
+    });
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [

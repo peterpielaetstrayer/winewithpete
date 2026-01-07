@@ -79,6 +79,16 @@ export async function POST(request: NextRequest) {
         // Create Printful order if product requires it
         // Use selected variant from metadata, fallback to product's default variant
         const selectedVariantId = session.metadata?.printfulVariantId || product.printful_variant_id;
+        
+        console.log('Printful order creation - Variant selection:', {
+          variantIdFromMetadata: session.metadata?.printfulVariantId,
+          fallbackVariantId: product.printful_variant_id,
+          selectedVariantId: selectedVariantId,
+          productId: product.id,
+          productName: product.name,
+          printfulProductId: product.printful_product_id
+        });
+        
         if (product && product.printful_product_id && selectedVariantId) {
           try {
             const apiKey = process.env.PRINTFUL_API_KEY;
@@ -106,6 +116,19 @@ export async function POST(request: NextRequest) {
                   throw new Error('No store found in Printful');
                 }
 
+                // Parse variant ID with radix 10 for safety
+                const parsedVariantId = parseInt(String(selectedVariantId), 10);
+                
+                console.log('Creating Printful order with:', {
+                  variant_id: parsedVariantId,
+                  quantity: quantity,
+                  product_id: product.printful_product_id,
+                  variant_id_original: selectedVariantId,
+                  variant_id_type: typeof selectedVariantId,
+                  variant_id_parsed: parsedVariantId,
+                  store_id: storeId
+                });
+
                 // Create Printful order
                 const printfulOrder = {
                   external_id: order.id, // Link to our order
@@ -122,7 +145,7 @@ export async function POST(request: NextRequest) {
                   },
                   items: [
                     {
-                      variant_id: parseInt(selectedVariantId),
+                      variant_id: parsedVariantId,
                       quantity: quantity,
                     },
                   ],
@@ -140,12 +163,25 @@ export async function POST(request: NextRequest) {
 
                 if (!printfulResponse.ok) {
                   const errorText = await printfulResponse.text();
-                  console.error('Printful order creation failed:', printfulResponse.status, errorText);
+                  console.error('Printful order creation failed:', {
+                    status: printfulResponse.status,
+                    statusText: printfulResponse.statusText,
+                    error: errorText,
+                    variantId: parsedVariantId,
+                    quantity: quantity,
+                    orderPayload: JSON.stringify(printfulOrder, null, 2)
+                  });
                   // Don't throw - we'll log but continue
                 } else {
                   const printfulData = await printfulResponse.json();
                   const printfulOrderId = printfulData.result?.id;
-                  console.log('Printful order created successfully:', printfulOrderId);
+                  console.log('Printful order created successfully:', {
+                    printfulOrderId: printfulOrderId,
+                    variantId: parsedVariantId,
+                    quantity: quantity,
+                    productId: product.printful_product_id,
+                    orderId: order.id
+                  });
                   
                   // Store Printful order ID in our order record
                   if (printfulOrderId) {
