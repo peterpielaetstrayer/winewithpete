@@ -28,12 +28,16 @@ export function ExpandableSection({
   const [height, setHeight] = useState(0);
 
   useEffect(() => {
-    if (contentRef.current) {
-      if (isExpanded) {
-        setHeight(contentRef.current.scrollHeight);
-      } else {
-        setHeight(0);
-      }
+    if (isExpanded && contentRef.current) {
+      // Use a small delay to ensure all content is rendered before measuring
+      const timer = setTimeout(() => {
+        if (contentRef.current) {
+          setHeight(contentRef.current.scrollHeight + 10); // Add small buffer
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    } else {
+      setHeight(0);
     }
   }, [isExpanded, children]);
 
@@ -88,10 +92,11 @@ export function ExpandableSection({
       
       {/* Expandable Content */}
       <div
-        className="overflow-hidden transition-all duration-300 ease-in-out"
+        className="transition-all duration-300 ease-in-out"
         style={{
           maxHeight: isExpanded ? `${height}px` : '0px',
           opacity: isExpanded ? 1 : 0,
+          overflow: isExpanded ? 'visible' : 'hidden',
         }}
       >
         <div

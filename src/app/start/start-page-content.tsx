@@ -197,15 +197,19 @@ export function StartPageContent() {
           isExpanded={expandedSection === 'join'}
           onToggle={handleToggle}
         >
-          <InlineEmailForm onSuccess={() => setExpandedSection(null)} />
-          {/* Always show learn more link */}
-          <Link 
-            href="/join" 
-            className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-sm font-medium transition-colors mt-4 pt-4 border-t border-[#f6f3ef]/20"
-            onClick={() => analyticsEvents.startPageButtonClicked('Learn More - Join')}
-          >
-            Learn more →
-          </Link>
+          <div className="space-y-4">
+            <InlineEmailForm onSuccess={() => setExpandedSection(null)} />
+            {/* Always show learn more link */}
+            <div className="mt-6 pt-6 border-t border-[#f6f3ef]/30">
+              <Link 
+                href="/join" 
+                className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-base font-medium transition-colors underline decoration-[#f6f3ef]/40 hover:decoration-[#f6f3ef]"
+                onClick={() => analyticsEvents.startPageButtonClicked('Learn More - Join')}
+              >
+                Learn more →
+              </Link>
+            </div>
+          </div>
         </ExpandableSection>
 
         {/* Section separator */}
@@ -220,36 +224,31 @@ export function StartPageContent() {
           isExpanded={expandedSection === 'recipes'}
           onToggle={handleToggle}
         >
-          {loading ? (
-            <div className="text-center text-[#f6f3ef]/60 py-4">
-              <p className="mb-4">Loading...</p>
+          <div className="space-y-4">
+            {loading ? (
+              <div className="text-center text-[#f6f3ef]/60 py-4">
+                <p className="mb-4">Loading...</p>
+              </div>
+            ) : featuredRecipes.length > 0 ? (
+              featuredRecipes.map((product) => (
+                <ProductPreview key={product.id} product={product} />
+              ))
+            ) : (
+              <div className="text-center text-[#f6f3ef]/60 py-4">
+                <p className="mb-4">Featured recipes coming soon.</p>
+              </div>
+            )}
+            {/* Always show browse link */}
+            <div className="mt-6 pt-6 border-t border-[#f6f3ef]/30">
               <Link
                 href="/recipes"
-                className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-sm font-medium transition-colors"
+                className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-base font-medium transition-colors underline decoration-[#f6f3ef]/40 hover:decoration-[#f6f3ef]"
                 onClick={() => analyticsEvents.startPageButtonClicked('Browse All Recipes')}
               >
                 Browse all recipes & guides →
               </Link>
             </div>
-          ) : featuredRecipes.length > 0 ? (
-            <div className="space-y-4">
-              {featuredRecipes.map((product) => (
-                <ProductPreview key={product.id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center text-[#f6f3ef]/60 py-4">
-              <p className="mb-4">Featured recipes coming soon.</p>
-            </div>
-          )}
-          {/* Always show browse link */}
-          <Link
-            href="/recipes"
-            className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-sm font-medium transition-colors mt-4 pt-4 border-t border-[#f6f3ef]/20"
-            onClick={() => analyticsEvents.startPageButtonClicked('Browse All Recipes')}
-          >
-            Browse all recipes & guides →
-          </Link>
+          </div>
         </ExpandableSection>
 
         {/* Section separator */}
@@ -264,27 +263,29 @@ export function StartPageContent() {
           isExpanded={expandedSection === 'merch'}
           onToggle={handleToggle}
         >
-          {loading ? (
-            <div className="text-center text-[#f6f3ef]/60 py-4">
-              <p className="mb-4">Loading...</p>
-            </div>
-          ) : featuredMerch ? (
-            <div className="space-y-4">
+          <div className="space-y-4">
+            {loading ? (
+              <div className="text-center text-[#f6f3ef]/60 py-4">
+                <p className="mb-4">Loading...</p>
+              </div>
+            ) : featuredMerch ? (
               <ProductPreview product={featuredMerch} />
+            ) : (
+              <div className="text-center text-[#f6f3ef]/60 py-4">
+                <p className="mb-4">Featured merch coming soon.</p>
+              </div>
+            )}
+            {/* Always show browse link */}
+            <div className="mt-6 pt-6 border-t border-[#f6f3ef]/30">
+              <Link
+                href="/store"
+                className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-base font-medium transition-colors underline decoration-[#f6f3ef]/40 hover:decoration-[#f6f3ef]"
+                onClick={() => analyticsEvents.startPageButtonClicked('Browse All Merch')}
+              >
+                Browse all merch →
+              </Link>
             </div>
-          ) : (
-            <div className="text-center text-[#f6f3ef]/60 py-4">
-              <p className="mb-4">Featured merch coming soon.</p>
-            </div>
-          )}
-          {/* Always show browse link */}
-          <Link
-            href="/store"
-            className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-sm font-medium transition-colors mt-4 pt-4 border-t border-[#f6f3ef]/20"
-            onClick={() => analyticsEvents.startPageButtonClicked('Browse All Merch')}
-          >
-            Browse all merch →
-          </Link>
+          </div>
         </ExpandableSection>
 
         {/* Section separator */}
