@@ -104,8 +104,12 @@ export async function PATCH(request: NextRequest) {
       .single();
 
     if (error) {
+      console.error('Supabase update error:', error);
       return NextResponse.json(
-        { error: 'Failed to update product' },
+        { 
+          error: 'Failed to update product',
+          details: error.message || 'Database error'
+        },
         { status: 500 }
       );
     }

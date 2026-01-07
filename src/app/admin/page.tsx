@@ -403,26 +403,39 @@ export default function AdminPage() {
                           variant="outline"
                           size="sm"
                           onClick={async () => {
-                            const { supabase } = await import('@/lib/supabase/client');
-                            const { data: { session } } = await supabase.auth.getSession();
-                            if (!session) return;
-                            
-                            const response = await fetch('/api/admin/products', {
-                              method: 'PATCH',
-                              headers: {
-                                'Authorization': `Bearer ${session.access_token}`,
-                                'Content-Type': 'application/json',
-                              },
+                            try {
+                              const { supabase } = await import('@/lib/supabase/client');
+                              const { data: { session } } = await supabase.auth.getSession();
+                              if (!session) {
+                                alert('Not authenticated. Please log in again.');
+                                return;
+                              }
+                              
+                              const response = await fetch('/api/admin/products', {
+                                method: 'PATCH',
+                                headers: {
+                                  'Authorization': `Bearer ${session.access_token}`,
+                                  'Content-Type': 'application/json',
+                                },
                               body: JSON.stringify({
                                 id: product.id,
-                                is_featured: !product.is_featured,
+                                is_featured: !(product.is_featured ?? false),
                               }),
-                            });
-                            
-                            if (response.ok) {
-                              setProducts(products.map(p => 
-                                p.id === product.id ? { ...p, is_featured: !product.is_featured } : p
-                              ));
+                              });
+                              
+                              const data = await response.json();
+                              
+                              if (response.ok && data.data) {
+                                setProducts(products.map(p => 
+                                  p.id === product.id ? { ...p, is_featured: !product.is_featured } : p
+                                ));
+                              } else {
+                                console.error('Failed to update product:', data);
+                                alert(`Failed to update product: ${data.error || 'Unknown error'}. ${data.details ? `Details: ${Array.isArray(data.details) ? data.details.join(', ') : data.details}` : ''}`);
+                              }
+                            } catch (error) {
+                              console.error('Error updating product:', error);
+                              alert(`Error updating product: ${error instanceof Error ? error.message : 'Unknown error'}`);
                             }
                           }}
                           className={product.is_featured ? 'bg-ember/10 border-ember/30' : ''}
