@@ -122,8 +122,12 @@ export default function StorePage() {
           quantity: 1,
           customerEmail: customerEmail,
           customerName: customerName,
-          printfulVariantId: selectedVariant?.id, // Include selected variant ID
-          customAmount: selectedVariant ? getCurrentPrice() : undefined, // Use variant price if different
+          ...(selectedVariant?.id && { 
+            printfulVariantId: String(selectedVariant.id) // Convert to string if exists
+          }),
+          ...(selectedVariant && getCurrentPrice() !== selectedProduct.price && getCurrentPrice() > 0 && {
+            customAmount: getCurrentPrice() // Only send if variant price differs from product price
+          }),
         }),
       });
 
@@ -132,8 +136,11 @@ export default function StorePage() {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        console.error('Checkout failed:', data.error);
-        alert('Checkout failed. Please try again.');
+        console.error('Checkout failed:', data.error, data.details);
+        const errorMessage = data.details && Array.isArray(data.details) 
+          ? data.details.join(', ')
+          : data.error || 'Checkout failed. Please try again.';
+        alert(errorMessage);
       }
     } catch (error) {
       console.error('Checkout error:', error);
