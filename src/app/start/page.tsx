@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { StartPageClient } from './start-page-client';
-import { ButtonLink } from './button-link';
 import { SocialIcons } from './social-icons';
 import { StructuredData } from './structured-data';
+import { StartPageContent } from './start-page-content';
 
 export const metadata: Metadata = {
   title: 'Wine With Pete',
@@ -105,87 +105,7 @@ export default function StartPage() {
           </p>
 
           {/* Sections */}
-          <div className="space-y-10">
-            {/* Connect & Belong */}
-            <section className="space-y-3">
-              <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
-                Connect & Belong
-              </h2>
-              <ButtonLink href="/join" variant="primary" className="text-lg">
-                Join the Circle
-              </ButtonLink>
-            </section>
-
-            {/* Section separator */}
-            <div className="h-px bg-[#f6f3ef]/10"></div>
-
-            {/* Make Something Delicious */}
-            <section className="space-y-3">
-              <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
-                Make Something Delicious
-              </h2>
-              <ButtonLink href="/recipes" variant="primary" className="text-lg">
-                Recipes & Guides
-              </ButtonLink>
-            </section>
-
-            {/* Section separator */}
-            <div className="h-px bg-[#f6f3ef]/10"></div>
-
-            {/* Shop Merch */}
-            <section className="space-y-3">
-              <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
-                Shop Merch
-              </h2>
-              <ButtonLink href="/store" variant="primary" className="text-lg">
-                Browse Store
-              </ButtonLink>
-            </section>
-
-            {/* Section separator */}
-            <div className="h-px bg-[#f6f3ef]/10"></div>
-
-            {/* Explore Ideas & Stories */}
-            <section className="space-y-3">
-              <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
-                Explore Ideas & Stories
-              </h2>
-              <div className="space-y-3">
-                <ButtonLink href="/essays" variant="primary" className="text-lg">
-                  Read an Essay
-                </ButtonLink>
-                <ButtonLink href="/essays" variant="secondary" className="text-base">
-                  Browse All Essays
-                </ButtonLink>
-              </div>
-            </section>
-
-            {/* Section separator */}
-            <div className="h-px bg-[#f6f3ef]/10"></div>
-
-            {/* Return to Your Foundation */}
-            <section className="space-y-3">
-              <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
-                Return to Your Foundation
-              </h2>
-              <ButtonLink href="/baseline-method" variant="primary" className="text-lg">
-                The Baseline Method
-              </ButtonLink>
-            </section>
-
-            {/* Section separator */}
-            <div className="h-px bg-[#f6f3ef]/10"></div>
-
-            {/* Join In Person */}
-            <section className="space-y-3">
-              <h2 className="text-xl font-serif font-medium text-[#f6f3ef]/95 text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
-                Join In Person
-              </h2>
-              <ButtonLink href="/gatherings" variant="primary" className="text-lg">
-                See Gatherings
-              </ButtonLink>
-            </section>
-          </div>
+          <StartPageContent />
 
           {/* Bottom links */}
           <div className="mt-16 space-y-3 text-center">

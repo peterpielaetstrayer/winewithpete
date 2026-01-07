@@ -31,6 +31,7 @@ export const checkoutSchema = z.object({
 
 // Admin product update validation
 export const productUpdateSchema = z.object({
+  is_featured: z.boolean().optional(),
   id: uuidSchema,
   name: nameSchema.optional(),
   description: z.string().max(1000, 'Description too long').optional(),

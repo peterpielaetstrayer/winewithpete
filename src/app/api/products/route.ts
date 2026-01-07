@@ -6,11 +6,17 @@ export async function GET(request: NextRequest) {
     const supabase = createClient();
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category'); // 'digital' or 'physical'
+    const featured = searchParams.get('featured'); // 'true' to get only featured products
     
     let query = supabase
       .from('products')
       .select('*')
       .eq('is_active', true);
+    
+    // Filter by featured if provided
+    if (featured === 'true') {
+      query = query.eq('is_featured', true);
+    }
     
     // Filter by category if provided
     if (category === 'digital') {

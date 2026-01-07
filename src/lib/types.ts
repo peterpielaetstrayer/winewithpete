@@ -85,6 +85,7 @@ export interface FeaturedEssay {
   published_date: string | null;
   display_order: number;
   is_active: boolean;
+  featured_essay?: boolean;
   created_at: string;
   updated_at: string;
 }

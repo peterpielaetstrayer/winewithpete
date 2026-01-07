@@ -323,12 +323,47 @@ export default function AdminPage() {
                       <Badge variant={product.is_active ? 'default' : 'secondary'}>
                         {product.is_active ? 'Active' : 'Inactive'}
                       </Badge>
+                      {product.is_featured && (
+                        <Badge variant="default" className="bg-ember/20 text-ember border-ember/30">
+                          Featured
+                        </Badge>
+                      )}
                       <Badge variant="outline">{product.product_type}</Badge>
                     </div>
                     <p className="text-black/70 mb-2">{product.description}</p>
                     <p className="text-ember font-medium">${product.price}</p>
                   </div>
                   <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        const { supabase } = await import('@/lib/supabase/client');
+                        const { data: { session } } = await supabase.auth.getSession();
+                        if (!session) return;
+                        
+                        const response = await fetch('/api/admin/products', {
+                          method: 'PATCH',
+                          headers: {
+                            'Authorization': `Bearer ${session.access_token}`,
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            id: product.id,
+                            is_featured: !product.is_featured,
+                          }),
+                        });
+                        
+                        if (response.ok) {
+                          setProducts(products.map(p => 
+                            p.id === product.id ? { ...p, is_featured: !product.is_featured } : p
+                          ));
+                        }
+                      }}
+                      className={product.is_featured ? 'bg-ember/10 border-ember/30' : ''}
+                    >
+                      {product.is_featured ? '★ Featured' : '☆ Feature'}
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
@@ -1141,7 +1176,14 @@ export default function AdminPage() {
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
-                          <h3 className="font-medium text-lg">{essay.title || 'Untitled Essay'}</h3>
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="font-medium text-lg">{essay.title || 'Untitled Essay'}</h3>
+                            {essay.featured_essay && (
+                              <Badge variant="default" className="bg-ember/20 text-ember border-ember/30 text-xs">
+                                Featured
+                              </Badge>
+                            )}
+                          </div>
                           {essay.image_url && (
                             <img 
                               src={essay.image_url} 
@@ -1151,6 +1193,37 @@ export default function AdminPage() {
                           )}
                         </div>
                         <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                              const { supabase } = await import('@/lib/supabase/client');
+                              const { data: { session } } = await supabase.auth.getSession();
+                              
+                              if (!session) return;
+
+                              const res = await fetch('/api/admin/essays', {
+                                method: 'PATCH',
+                                headers: {
+                                  'Authorization': `Bearer ${session.access_token}`,
+                                  'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                  id: essay.id,
+                                  featured_essay: !essay.featured_essay,
+                                }),
+                              });
+
+                              if (res.ok) {
+                                setEssays(essays.map(e => 
+                                  e.id === essay.id ? { ...e, featured_essay: !essay.featured_essay } : e
+                                ));
+                              }
+                            }}
+                            className={essay.featured_essay ? 'bg-ember/10 border-ember/30' : ''}
+                          >
+                            {essay.featured_essay ? '★ Featured' : '☆ Feature'}
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"
