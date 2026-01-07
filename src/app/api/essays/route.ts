@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { successResponse, errorResponse } from '@/lib/api-response';
 
 // Public API to fetch active featured essays
 export async function GET(request: NextRequest) {
@@ -21,30 +22,17 @@ export async function GET(request: NextRequest) {
     const { data: essays, error } = await query.order('display_order', { ascending: true });
 
     if (error) {
-      console.error('Essays fetch error:', error);
-      return NextResponse.json(
-        { 
-          success: false,
-          error: 'Failed to fetch essays' 
-        },
-        { status: 500 }
-      );
+      return errorResponse('Failed to fetch essays', error.message, 'DATABASE_ERROR', 500);
     }
     
-    return NextResponse.json({
-      success: true,
-      data: essays || []
-    });
+    return successResponse(essays || []);
 
   } catch (error) {
-    console.error('Essays API error:', error);
-    
-    return NextResponse.json(
-      { 
-        success: false,
-        error: 'Failed to fetch essays' 
-      },
-      { status: 500 }
+    return errorResponse(
+      'Failed to fetch essays',
+      error instanceof Error ? error.message : 'Unknown error',
+      'INTERNAL_ERROR',
+      500
     );
   }
 }

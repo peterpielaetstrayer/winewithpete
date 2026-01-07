@@ -8,7 +8,7 @@ interface KitSubscriber {
 
 interface KitResponse {
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
 }
 
@@ -82,7 +82,7 @@ export async function addToKitList(subscriber: KitSubscriber): Promise<KitRespon
     ];
 
     let response;
-    let lastError: { status?: number; error?: string | any } | Error | null = null;
+    let lastError: { status?: number; error?: string | unknown } | Error | null = null;
 
     for (const endpoint of endpoints) {
       try {

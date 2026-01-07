@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { emailSchema, nameSchema, validateEmail, validateName } from '@/lib/validations';
 import { z } from 'zod';
+import { successResponse, errorResponse, validationErrorResponse } from '@/lib/api-response';
 
 const gatheringInterestSchema = z.object({
   email: emailSchema,
@@ -17,13 +18,8 @@ export async function POST(request: NextRequest) {
     // Validate input
     const validationResult = gatheringInterestSchema.safeParse(body);
     if (!validationResult.success) {
-      return NextResponse.json(
-        { 
-          error: 'Validation failed', 
-          details: validationResult.error.errors.map(e => e.message)
-        },
-        { status: 400 }
-      );
+      const errors = validationResult.error.errors.map(e => e.message);
+      return validationErrorResponse(errors);
     }
 
     const { email, name, location, interestType } = validationResult.data;
@@ -79,17 +75,17 @@ export async function POST(request: NextRequest) {
         });
     }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Thank you! We\'ll notify you when gatherings are announced in your area.',
-    });
+    return successResponse(
+      null,
+      'Thank you! We\'ll notify you when gatherings are announced in your area.'
+    );
 
   } catch (error) {
-    console.error('Gathering interest error:', error);
-    
-    return NextResponse.json(
-      { error: 'Failed to submit interest. Please try again.' },
-      { status: 500 }
+    return errorResponse(
+      'Failed to submit interest. Please try again.',
+      error instanceof Error ? error.message : 'Unknown error',
+      'INTERNAL_ERROR',
+      500
     );
   }
 }

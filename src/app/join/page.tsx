@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -11,6 +12,7 @@ export default function JoinPage(){
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
     
     try {
       const response = await fetch('/api/newsletter/subscribe', {
@@ -36,20 +38,20 @@ export default function JoinPage(){
       if (response.ok) {
         // Check if it's a duplicate subscription
         if (result.already_subscribed) {
-          alert('You\'re already subscribed! Check your email for our latest updates.');
+          setError('You\'re already subscribed! Check your email for our latest updates.');
           setEmail(''); // Clear the form
         } else {
           setIsSubmitted(true);
+          setError(null);
         }
       } else {
         // Show detailed error if available
         const errorMsg = result.error || result.details || 'Failed to subscribe';
-        console.error('Subscription error:', result);
-        alert(errorMsg + (result.debug ? '\n\nCheck console for details' : ''));
+        setError(errorMsg);
       }
     } catch (error) {
       console.error('Newsletter subscription error:', error);
-      alert('Failed to subscribe. Please try again. Check console for details.');
+      setError('Failed to subscribe. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -61,7 +63,7 @@ export default function JoinPage(){
         <div className="mx-auto max-w-2xl px-4 text-center">
           <div className="bg-white rounded-2xl p-12 shadow-sm border">
             <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-              <img src="/images/icons/icon-connection.png" alt="Welcome" className="w-12 h-12" />
+              <Image src="/images/icons/icon-connection.png" alt="Welcome" width={48} height={48} />
             </div>
             <h1 className="text-3xl font-serif font-medium mb-4 text-charcoal">Welcome to the Circle</h1>
             <p className="text-lg text-black/70 mb-6">
@@ -119,14 +121,26 @@ export default function JoinPage(){
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-4">
-                <Input 
-                  type="email"
-                  placeholder="your@email.com" 
-                  value={email} 
-                  onChange={e => setEmail(e.target.value)}
-                  className="flex-1"
-                  required
-                />
+                <div className="flex-1">
+                  <Input 
+                    type="email"
+                    placeholder="your@email.com" 
+                    value={email} 
+                    onChange={e => {
+                      setEmail(e.target.value);
+                      setError(null);
+                    }}
+                    className="flex-1"
+                    required
+                    aria-invalid={error ? 'true' : 'false'}
+                    aria-describedby={error ? 'email-error' : undefined}
+                  />
+                  {error && (
+                    <p id="email-error" className="text-sm text-red-600 mt-2" role="alert">
+                      {error}
+                    </p>
+                  )}
+                </div>
                 <Button 
                   type="submit"
                   disabled={isSubmitting}

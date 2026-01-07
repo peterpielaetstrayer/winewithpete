@@ -12,6 +12,7 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [featuredEssays, setFeaturedEssays] = useState<FeaturedEssay[]>([]);
   const [essaysLoading, setEssaysLoading] = useState(true);
 
@@ -30,6 +31,7 @@ export default function Home() {
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
     
     try {
       const response = await fetch('/api/newsletter/subscribe', {
@@ -54,13 +56,14 @@ export default function Home() {
       if (response.ok) {
         setIsSubmitted(true);
         setEmail('');
+        setError(null);
       } else {
         const errorMsg = result.error || result.details || 'Failed to subscribe';
-        alert(errorMsg);
+        setError(errorMsg);
       }
     } catch (error) {
       console.error('Newsletter subscription error:', error);
-      alert('Failed to subscribe. Please try again.');
+      setError('Failed to subscribe. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -320,11 +323,13 @@ export default function Home() {
                     ></div>
                     <div className="relative z-10">
                       {essay.image_url && (
-                        <div className="mb-4 -mx-6 -mt-6">
-                          <img 
+                        <div className="mb-4 -mx-6 -mt-6 relative w-full h-48">
+                          <Image 
                             src={essay.image_url} 
                             alt={essay.title || ''} 
-                            className="w-full h-48 object-cover"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 768px"
                           />
                         </div>
                       )}

@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!loopsResponse.ok) {
-      let errorData: any;
+      let errorData: unknown;
       try {
         errorData = await loopsResponse.json();
       } catch {

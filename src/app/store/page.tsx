@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useState, useEffect } from 'react';
-import { Product } from '@/lib/types';
+import { Product, PrintfulVariant } from '@/lib/types';
+import { extractPriceFromVariant } from '@/lib/printful-utils';
 
 export default function StorePage() {
   const [loading, setLoading] = useState<string | null>(null);
@@ -14,7 +15,7 @@ export default function StorePage() {
   const [productsLoading, setProductsLoading] = useState(true);
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedVariant, setSelectedVariant] = useState<any>(null);
+  const [selectedVariant, setSelectedVariant] = useState<PrintfulVariant | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerName, setCustomerName] = useState('');
@@ -56,45 +57,8 @@ export default function StorePage() {
     if (!selectedProduct) return 0;
     
     if (selectedVariant) {
-      // Extract price from variant (same logic as sync route)
-      const toNumber = (value: any): number | null => {
-        if (value === null || value === undefined) return null;
-        const num = typeof value === 'string' ? parseFloat(value) : Number(value);
-        return isNaN(num) ? null : num;
-      };
-      
-      const rawRetailPrice = toNumber(selectedVariant.retail_price);
-      const rawPrice = toNumber(selectedVariant.price);
-      
-      let priceValue = 0;
-      if (rawRetailPrice !== null && rawRetailPrice !== undefined) {
-        if (rawRetailPrice >= 100) {
-          priceValue = Math.round((rawRetailPrice / 100) * 100) / 100;
-        } else if (rawRetailPrice >= 1 && rawRetailPrice < 100) {
-          if (rawRetailPrice % 1 === 0 && rawRetailPrice >= 10) {
-            priceValue = rawRetailPrice;
-          } else {
-            priceValue = rawRetailPrice;
-          }
-        } else {
-          priceValue = rawRetailPrice;
-        }
-      } else if (rawPrice !== null && rawPrice !== undefined) {
-        if (rawPrice >= 100) {
-          priceValue = Math.round((rawPrice / 100) * 100) / 100;
-        } else {
-          priceValue = rawPrice;
-        }
-      }
-      
-      if (priceValue > 0 && priceValue < 1) {
-        const rawValue = rawRetailPrice ?? rawPrice;
-        if (rawValue !== null && rawValue >= 10 && rawValue < 1000) {
-          priceValue = rawValue;
-        }
-      }
-      
-      return Math.round(priceValue * 100) / 100;
+      // Extract price from variant using shared utility
+      return extractPriceFromVariant(selectedVariant);
     }
     
     return selectedProduct.price;

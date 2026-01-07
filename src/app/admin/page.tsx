@@ -6,7 +6,8 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Product, Event, Order, FeaturedEssay } from '@/lib/types';
+import { Product, Event, Order, FeaturedEssay, SupabaseUser, PrintfulSyncError, PrintfulSyncData, PrintfulVariant } from '@/lib/types';
+import { extractPriceFromVariant } from '@/lib/printful-utils';
 
 export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -16,7 +17,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'products' | 'events' | 'orders' | 'campaigns' | 'printful' | 'essays'>('products');
   const [productFilter, setProductFilter] = useState<'all' | 'digital' | 'physical'>('all');
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,12 +32,12 @@ export default function AdminPage() {
   const [campaignResult, setCampaignResult] = useState<{success: boolean; message: string; sent?: number; failed?: number; total?: number} | null>(null);
   
   // Printful state
-  const [printfulProducts, setPrintfulProducts] = useState<any[]>([]);
+  const [printfulProducts, setPrintfulProducts] = useState<PrintfulSyncData[]>([]);
   const [printfulLoading, setPrintfulLoading] = useState(false);
   const [printfulError, setPrintfulError] = useState<{error: string; details?: string; suggestion?: string} | null>(null);
   const [selectedPrintfulProducts, setSelectedPrintfulProducts] = useState<Set<string>>(new Set());
   const [syncing, setSyncing] = useState(false);
-  const [syncResult, setSyncResult] = useState<{success: boolean; message: string; synced?: number; errors?: any[]} | null>(null);
+  const [syncResult, setSyncResult] = useState<{success: boolean; message: string; synced?: number; errors?: PrintfulSyncError[]} | null>(null);
   
   // Essays state
   const [newEssayUrl, setNewEssayUrl] = useState('');
@@ -791,7 +792,7 @@ export default function AdminPage() {
                 <div className="mt-2 text-sm text-red-700">
                   <p className="font-medium">Errors:</p>
                   <ul className="list-disc list-inside">
-                    {syncResult.errors.map((err: any, idx: number) => (
+                    {syncResult.errors.map((err: PrintfulSyncError, idx: number) => (
                       <li key={idx}>{err.product}: {err.error}</li>
                     ))}
                   </ul>
@@ -880,15 +881,15 @@ export default function AdminPage() {
                   const syncProduct = product.sync_product || product;
                   
                   // Ensure syncVariants is an array
-                  let syncVariants: any[] = [];
+                  let syncVariants: PrintfulVariant[] = [];
                   if (Array.isArray(product.sync_variants)) {
-                    syncVariants = product.sync_variants;
+                    syncVariants = product.sync_variants as PrintfulVariant[];
                   } else if (Array.isArray(product.variants)) {
-                    syncVariants = product.variants;
+                    syncVariants = product.variants as PrintfulVariant[];
                   } else if (product.sync_variants && typeof product.sync_variants === 'object') {
                     // Handle object case
                     if (Array.isArray(Object.values(product.sync_variants)[0])) {
-                      syncVariants = Object.values(product.sync_variants)[0] as any[];
+                      syncVariants = Object.values(product.sync_variants)[0] as PrintfulVariant[];
                     } else {
                       syncVariants = Object.values(product.sync_variants);
                     }
@@ -905,46 +906,8 @@ export default function AdminPage() {
                                mainVariant?.files?.[0]?.url ||
                                null;
                   
-                  // Better price extraction (same logic as sync route)
-                  const toNumber = (value: any): number | null => {
-                    if (value === null || value === undefined) return null;
-                    const num = typeof value === 'string' ? parseFloat(value) : Number(value);
-                    return isNaN(num) ? null : num;
-                  };
-                  
-                  const rawRetailPrice = mainVariant ? toNumber(mainVariant.retail_price) : null;
-                  const rawPrice = mainVariant ? toNumber(mainVariant.price) : null;
-                  
-                  let priceValue = 0;
-                  if (rawRetailPrice !== null && rawRetailPrice !== undefined) {
-                    if (rawRetailPrice >= 100) {
-                      priceValue = Math.round((rawRetailPrice / 100) * 100) / 100;
-                    } else if (rawRetailPrice >= 1 && rawRetailPrice < 100) {
-                      if (rawRetailPrice % 1 === 0 && rawRetailPrice >= 10) {
-                        priceValue = rawRetailPrice;
-                      } else {
-                        priceValue = rawRetailPrice;
-                      }
-                    } else {
-                      priceValue = rawRetailPrice;
-                    }
-                  } else if (rawPrice !== null && rawPrice !== undefined) {
-                    if (rawPrice >= 100) {
-                      priceValue = Math.round((rawPrice / 100) * 100) / 100;
-                    } else {
-                      priceValue = rawPrice;
-                    }
-                  }
-                  
-                  // Final check: if price is suspiciously low
-                  if (priceValue > 0 && priceValue < 1) {
-                    const rawValue = rawRetailPrice ?? rawPrice;
-                    if (rawValue !== null && rawValue >= 10 && rawValue < 1000) {
-                      priceValue = rawValue;
-                    }
-                  }
-                  
-                  priceValue = Math.round(priceValue * 100) / 100;
+                  // Extract price from variant using shared utility
+                  const priceValue = mainVariant ? extractPriceFromVariant(mainVariant) : 0;
                   
                   const price = priceValue > 0 
                     ? `$${priceValue.toFixed(2)}`

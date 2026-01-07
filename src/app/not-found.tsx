@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -7,7 +8,7 @@ export default function NotFound() {
       <div className="mx-auto max-w-2xl px-4 text-center">
         <div className="bg-white rounded-2xl p-12 shadow-sm border">
           <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-            <img src="/images/icons/icon-fire.png" alt="404" className="w-12 h-12" />
+            <Image src="/images/icons/icon-fire.png" alt="404" width={48} height={48} />
           </div>
           <h1 className="text-4xl font-serif font-medium mb-4 text-charcoal">Page Not Found</h1>
           <p className="text-lg text-black/70 mb-8">

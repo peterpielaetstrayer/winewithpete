@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { successResponse, errorResponse } from '@/lib/api-response';
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,30 +31,17 @@ export async function GET(request: NextRequest) {
     const { data: products, error } = await query.order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Database error:', error);
-      return NextResponse.json(
-        { 
-          success: false,
-          error: 'Failed to fetch products' 
-        },
-        { status: 500 }
-      );
+      return errorResponse('Failed to fetch products', error.message, 'DATABASE_ERROR', 500);
     }
     
-    return NextResponse.json({
-      success: true,
-      data: products || []
-    });
+    return successResponse(products || []);
 
   } catch (error) {
-    console.error('Products fetch error:', error);
-    
-    return NextResponse.json(
-      { 
-        success: false,
-        error: 'Failed to fetch products' 
-      },
-      { status: 500 }
+    return errorResponse(
+      'Failed to fetch products',
+      error instanceof Error ? error.message : 'Unknown error',
+      'INTERNAL_ERROR',
+      500
     );
   }
 }

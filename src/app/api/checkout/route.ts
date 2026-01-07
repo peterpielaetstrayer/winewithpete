@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
+import Stripe from 'stripe';
+import { logger } from '@/lib/logger';
 import { createClient } from '@/lib/supabase/server';
 import { CreateCheckoutSessionRequest } from '@/lib/types';
 import { checkoutSchema, validateEmail, validateName } from '@/lib/validations';
@@ -20,7 +22,7 @@ export async function POST(request: NextRequest) {
       .map(([key]) => key);
 
     if (missingVars.length > 0) {
-      console.error('Missing environment variables:', missingVars);
+      logger.error('Missing environment variables:', missingVars);
       return NextResponse.json(
         { error: 'Server configuration error' },
         { status: 500 }
@@ -47,12 +49,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log('Checkout request body received:', body);
+    logger.debug('Checkout request body received:', body);
     
     // Validate input with Zod
     const validationResult = checkoutSchema.safeParse(body);
     if (!validationResult.success) {
-      console.error('Validation errors:', validationResult.error.errors);
+      logger.error('Validation errors:', validationResult.error.errors);
       return NextResponse.json(
         { 
           error: 'Validation failed', 
@@ -113,21 +115,21 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (productError || !product) {
-      console.error('Product lookup error:', productError);
+      logger.error('Product lookup error:', productError);
       return NextResponse.json(
         { error: 'Product not found or unavailable' },
         { status: 404 }
       );
     }
 
-    console.log('Product found:', { id: product.id, name: product.name, price: product.price });
+    logger.debug('Product found:', { id: product.id, name: product.name, price: product.price });
 
     // Use variant price if provided and different from product price
     let finalPrice = product.price;
     if (printfulVariantId && customAmount && customAmount > 0) {
       // Variant has different price, use it
       finalPrice = customAmount;
-      console.log('Using variant price:', { variantId: printfulVariantId, price: finalPrice });
+      logger.debug('Using variant price:', { variantId: printfulVariantId, price: finalPrice });
     }
 
     // Handle free products with optional tips
@@ -135,8 +137,8 @@ export async function POST(request: NextRequest) {
       // For free products, allow custom amount (tip)
       const tipAmount = customAmount || 0;
       
-      console.log('Creating Stripe session for free product with tip:', tipAmount);
-      console.log('Stripe secret key available:', !!process.env.STRIPE_SECRET_KEY);
+      logger.debug('Creating Stripe session for free product with tip:', tipAmount);
+      logger.debug('Stripe secret key available:', !!process.env.STRIPE_SECRET_KEY);
       
       try {
         const session = await stripe.checkout.sessions.create({
@@ -179,20 +181,26 @@ export async function POST(request: NextRequest) {
           },
         });
         
-        console.log('Stripe session created successfully:', session.id);
+        logger.info('Stripe session created successfully:', session.id);
         
         return NextResponse.json({ 
           sessionId: session.id,
           url: session.url 
         });
       } catch (stripeError) {
-        console.error('Stripe error:', stripeError);
-        console.error('Stripe error details:', {
-          message: stripeError instanceof Error ? stripeError.message : 'Unknown error',
-          type: (stripeError as any)?.type,
-          code: (stripeError as any)?.code,
-          decline_code: (stripeError as any)?.decline_code
-        });
+        logger.error('Stripe error:', stripeError);
+        if (stripeError instanceof Stripe.errors.StripeError) {
+          logger.error('Stripe error details:', {
+            message: stripeError.message,
+            type: stripeError.type,
+            code: stripeError.code,
+            decline_code: 'decline_code' in stripeError ? stripeError.decline_code : undefined
+          });
+        } else {
+          logger.error('Stripe error details:', {
+            message: stripeError instanceof Error ? stripeError.message : 'Unknown error',
+          });
+        }
         throw stripeError;
       }
     }
@@ -249,8 +257,8 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Checkout error:', error);
-    console.error('Error details:', {
+    logger.error('Checkout error:', error);
+    logger.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
       name: error instanceof Error ? error.name : undefined
