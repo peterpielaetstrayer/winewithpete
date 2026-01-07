@@ -26,6 +26,13 @@ export default function StorePage() {
     fetchProducts();
   }, []);
 
+  // Reset display index when variant changes
+  useEffect(() => {
+    if (selectedVariant) {
+      setDisplayImageIndex(0);
+    }
+  }, [selectedVariant]);
+
   const fetchProducts = async () => {
     try {
       const response = await fetch('/api/products?category=physical');
@@ -346,11 +353,6 @@ export default function StorePage() {
                     if (variantImageData?.images && variantImageData.images.length > 0) {
                       // Show ONLY the selected variant's images
                       imagesToShow = variantImageData.images.filter((img: string) => allImages.includes(img));
-                      
-                      // Reset display index when variant changes
-                      if (imagesToShow.length > 0 && displayImageIndex >= imagesToShow.length) {
-                        setDisplayImageIndex(0);
-                      }
                     } else {
                       // Fallback: if no variant images found, use all images
                       imagesToShow = allImages;
@@ -363,7 +365,8 @@ export default function StorePage() {
                   // Get current image to display
                   let currentImage: string | null = selectedProduct.image_path;
                   if (imagesToShow.length > 0) {
-                    const currentDisplayIndex = displayImageIndex < imagesToShow.length ? displayImageIndex : 0;
+                    // Always use displayImageIndex, which is reset when variant changes
+                    const currentDisplayIndex = Math.min(displayImageIndex, imagesToShow.length - 1);
                     const imageAtIndex = imagesToShow[currentDisplayIndex] || imagesToShow[0];
                     if (imageAtIndex) {
                       currentImage = imageAtIndex;
@@ -513,6 +516,7 @@ export default function StorePage() {
                                       onClick={() => {
                                         setSelectedVariantType(type);
                                         setSelectedVariant(null); // Reset size selection
+                                        setDisplayImageIndex(0); // Reset display index
                                         
                                         // Auto-select first size of this variant type
                                         const sizesForType = getSizesForVariantType(variants, type);
@@ -573,6 +577,7 @@ export default function StorePage() {
                                           type="button"
                                           onClick={() => {
                                             setSelectedVariant(variant);
+                                            setDisplayImageIndex(0); // Reset display index when size changes
                                             
                                             // Update image to match selected variant
                                             const variantImageData = selectedProduct.printful_sync_data?.variant_images?.find(
@@ -636,6 +641,7 @@ export default function StorePage() {
                                   type="button"
                                   onClick={() => {
                                     setSelectedVariant(variant);
+                                    setDisplayImageIndex(0); // Reset display index when size changes
                                     
                                     // Get variant-specific images
                                     const variantImageData = selectedProduct.printful_sync_data?.variant_images?.find(
