@@ -15,6 +15,7 @@ export default function AdminPage() {
   const [essays, setEssays] = useState<FeaturedEssay[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'products' | 'events' | 'orders' | 'campaigns' | 'printful' | 'essays'>('products');
+  const [productFilter, setProductFilter] = useState<'all' | 'digital' | 'physical'>('all');
   const [user, setUser] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [email, setEmail] = useState('');
@@ -307,78 +308,144 @@ export default function AdminPage() {
       </div>
 
       {/* Products Tab */}
-      {activeTab === 'products' && (
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-serif text-charcoal">Products</h2>
-            <Button className="btn-ember">Add Product</Button>
-          </div>
-          <div className="grid gap-4">
-            {products.map((product) => (
-              <Card key={product.id} className="p-6">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-medium text-lg">{product.name}</h3>
-                      <Badge variant={product.is_active ? 'default' : 'secondary'}>
-                        {product.is_active ? 'Active' : 'Inactive'}
-                      </Badge>
-                      {product.is_featured && (
-                        <Badge variant="default" className="bg-ember/20 text-ember border-ember/30">
-                          Featured
-                        </Badge>
-                      )}
-                      <Badge variant="outline">{product.product_type}</Badge>
+      {activeTab === 'products' && (() => {
+        // Filter products by category
+        const filteredProducts = productFilter === 'all' 
+          ? products 
+          : productFilter === 'digital'
+          ? products.filter(p => 
+              ['recipe_card', 'guide', 'ebook', 'bundle'].includes(p.product_type) || 
+              p.product_category === 'digital'
+            )
+          : products.filter(p => 
+              ['physical', 'merch'].includes(p.product_type) || 
+              ['merch', 'wine_bear'].includes(p.product_category || '')
+            );
+
+        return (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-serif text-charcoal">Products</h2>
+              <Button className="btn-ember">Add Product</Button>
+            </div>
+            
+            {/* Category filter tabs */}
+            <div className="flex gap-2 border-b pb-2">
+              <button
+                onClick={() => setProductFilter('all')}
+                className={`px-3 py-1 text-sm font-medium transition-colors ${
+                  productFilter === 'all' 
+                    ? 'text-ember border-b-2 border-ember' 
+                    : 'text-black/70 hover:text-charcoal'
+                }`}
+              >
+                All Products
+              </button>
+              <button
+                onClick={() => setProductFilter('digital')}
+                className={`px-3 py-1 text-sm font-medium transition-colors ${
+                  productFilter === 'digital' 
+                    ? 'text-ember border-b-2 border-ember' 
+                    : 'text-black/70 hover:text-charcoal'
+                }`}
+              >
+                Recipes & Guides
+              </button>
+              <button
+                onClick={() => setProductFilter('physical')}
+                className={`px-3 py-1 text-sm font-medium transition-colors ${
+                  productFilter === 'physical' 
+                    ? 'text-ember border-b-2 border-ember' 
+                    : 'text-black/70 hover:text-charcoal'
+                }`}
+              >
+                Merch
+              </button>
+            </div>
+
+            {/* Help text */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+              <p className="font-medium mb-1">💡 Featured Products</p>
+              <p>You can mark multiple products as featured. Featured <strong>Recipes & Guides</strong> appear in the &quot;Make Something Delicious&quot; section on /start. Featured <strong>Merch</strong> appears in the &quot;Shop Merch&quot; section.</p>
+            </div>
+
+            <div className="grid gap-4">
+              {filteredProducts.map((product) => {
+                const isDigital = ['recipe_card', 'guide', 'ebook', 'bundle'].includes(product.product_type) || product.product_category === 'digital';
+                const isPhysical = ['physical', 'merch'].includes(product.product_type) || ['merch', 'wine_bear'].includes(product.product_category || '');
+                const featuredSection = product.is_featured 
+                  ? (isDigital ? 'Recipes & Guides' : isPhysical ? 'Shop Merch' : 'Other')
+                  : null;
+
+                return (
+                  <Card key={product.id} className="p-6">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                          <h3 className="font-medium text-lg">{product.name}</h3>
+                          <Badge variant={product.is_active ? 'default' : 'secondary'}>
+                            {product.is_active ? 'Active' : 'Inactive'}
+                          </Badge>
+                          {product.is_featured && (
+                            <Badge variant="default" className="bg-ember/20 text-ember border-ember/30">
+                              ★ Featured {featuredSection && `(${featuredSection})`}
+                            </Badge>
+                          )}
+                          <Badge variant="outline">
+                            {isDigital ? '📄 Recipes & Guides' : isPhysical ? '🛍️ Merch' : product.product_type}
+                          </Badge>
+                        </div>
+                        <p className="text-black/70 mb-2">{product.description}</p>
+                        <p className="text-ember font-medium">${product.price}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={async () => {
+                            const { supabase } = await import('@/lib/supabase/client');
+                            const { data: { session } } = await supabase.auth.getSession();
+                            if (!session) return;
+                            
+                            const response = await fetch('/api/admin/products', {
+                              method: 'PATCH',
+                              headers: {
+                                'Authorization': `Bearer ${session.access_token}`,
+                                'Content-Type': 'application/json',
+                              },
+                              body: JSON.stringify({
+                                id: product.id,
+                                is_featured: !product.is_featured,
+                              }),
+                            });
+                            
+                            if (response.ok) {
+                              setProducts(products.map(p => 
+                                p.id === product.id ? { ...p, is_featured: !product.is_featured } : p
+                              ));
+                            }
+                          }}
+                          className={product.is_featured ? 'bg-ember/10 border-ember/30' : ''}
+                        >
+                          {product.is_featured ? '★ Featured' : '☆ Feature'}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleProductStatus(product.id, product.is_active)}
+                        >
+                          {product.is_active ? 'Deactivate' : 'Activate'}
+                        </Button>
+                        <Button variant="outline" size="sm">Edit</Button>
+                      </div>
                     </div>
-                    <p className="text-black/70 mb-2">{product.description}</p>
-                    <p className="text-ember font-medium">${product.price}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={async () => {
-                        const { supabase } = await import('@/lib/supabase/client');
-                        const { data: { session } } = await supabase.auth.getSession();
-                        if (!session) return;
-                        
-                        const response = await fetch('/api/admin/products', {
-                          method: 'PATCH',
-                          headers: {
-                            'Authorization': `Bearer ${session.access_token}`,
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify({
-                            id: product.id,
-                            is_featured: !product.is_featured,
-                          }),
-                        });
-                        
-                        if (response.ok) {
-                          setProducts(products.map(p => 
-                            p.id === product.id ? { ...p, is_featured: !product.is_featured } : p
-                          ));
-                        }
-                      }}
-                      className={product.is_featured ? 'bg-ember/10 border-ember/30' : ''}
-                    >
-                      {product.is_featured ? '★ Featured' : '☆ Feature'}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => toggleProductStatus(product.id, product.is_active)}
-                    >
-                      {product.is_active ? 'Deactivate' : 'Activate'}
-                    </Button>
-                    <Button variant="outline" size="sm">Edit</Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
+                  </Card>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Events Tab */}
       {activeTab === 'events' && (
