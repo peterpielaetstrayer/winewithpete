@@ -82,4 +82,52 @@ export const analyticsEvents = {
     category: 'navigation',
     label: pageName,
   }),
+
+  // Essay events
+  essayClicked: (essayTitle: string, essayUrl: string) => trackEvent({
+    action: 'click',
+    category: 'essays',
+    label: essayTitle,
+    value: 1,
+  }),
+
+  essayViewed: (essayTitle: string) => trackEvent({
+    action: 'view_item',
+    category: 'essays',
+    label: essayTitle,
+  }),
+
+  // Baseline Method events
+  baselineMethodQuickstartViewed: () => trackEvent({
+    action: 'view_item',
+    category: 'baseline_method',
+    label: 'quickstart_guide',
+  }),
+
+  baselineMethodQuickstartToFullGuide: () => trackEvent({
+    action: 'conversion',
+    category: 'baseline_method',
+    label: 'quickstart_to_full_guide',
+    value: 1,
+  }),
+
+  baselineMethodFormStarted: () => trackEvent({
+    action: 'begin_checkout',
+    category: 'baseline_method',
+    label: 'form_started',
+  }),
+
+  baselineMethodFormSubmitted: () => trackEvent({
+    action: 'purchase',
+    category: 'baseline_method',
+    label: 'form_submitted',
+    value: 1,
+  }),
+
+  // Start page button clicks
+  startPageButtonClicked: (buttonLabel: string) => trackEvent({
+    action: 'click',
+    category: 'start_page',
+    label: buttonLabel,
+  }),
 };

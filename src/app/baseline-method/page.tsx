@@ -103,9 +103,11 @@ export default function BaselineMethodPage() {
               <div className="relative aspect-[8.5/11] rounded-lg overflow-hidden shadow-lg border border-dr-charcoal/10">
                 <Image
                   src="/images/baseline-method/quickstart/1.png"
-                  alt="Baseline Method Quick Start Preview"
+                  alt="Baseline Method Quick Start Guide - Preview of the condensed guide to get started today"
                   fill
                   className="object-cover"
+                  loading="lazy"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
             </div>

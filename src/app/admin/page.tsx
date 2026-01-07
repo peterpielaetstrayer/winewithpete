@@ -1039,13 +1039,18 @@ export default function AdminPage() {
                 e.dataTransfer.dropEffect = 'move';
               }}
             >
-              <p className="text-sm text-black/60">
-                Drag essays to reorder. The order determines the narrative flow on your pages.
+              <p className="text-sm text-black/60" id="essay-reorder-instructions">
+                Drag essays to reorder. The order determines the narrative flow on your pages. 
+                Use keyboard arrow keys to reorder when focused.
               </p>
               {essays.map((essay, index) => (
                 <Card
                   key={essay.id}
                   draggable
+                  role="button"
+                  aria-label={`Essay: ${essay.title || 'Untitled'}. Position ${index + 1} of ${essays.length}. Drag to reorder.`}
+                  aria-describedby="essay-reorder-instructions"
+                  tabIndex={0}
                   onDragStart={(e) => {
                     setDraggedEssayId(essay.id);
                     e.dataTransfer.effectAllowed = 'move';

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { analyticsEvents } from '@/lib/analytics';
 
 export function BaselineMethodForm() {
   const [email, setEmail] = useState('');
@@ -8,6 +9,11 @@ export function BaselineMethodForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    // Track when form is viewed/started
+    analyticsEvents.baselineMethodFormStarted();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +42,7 @@ export function BaselineMethodForm() {
 
       if (response.ok && result.success) {
         setIsSubmitted(true);
+        analyticsEvents.baselineMethodFormSubmitted();
         // Redirect to Gumroad after a brief delay
         setTimeout(() => {
           window.open(result.gumroad_url || 'https://8413493499309.gumroad.com/l/baseline-method', '_blank');

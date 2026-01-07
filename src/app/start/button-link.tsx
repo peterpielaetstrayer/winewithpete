@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { analyticsEvents } from '@/lib/analytics';
 
 interface ButtonLinkProps {
   href: string;
@@ -11,6 +12,12 @@ interface ButtonLinkProps {
 
 export function ButtonLink({ href, children, variant = 'primary', className = '' }: ButtonLinkProps) {
   const isPrimary = variant === 'primary';
+  
+  const handleClick = () => {
+    // Track button click on start page
+    const buttonText = typeof children === 'string' ? children : 'Button';
+    analyticsEvents.startPageButtonClicked(buttonText);
+  };
   
   const baseStyles = {
     background: isPrimary
@@ -60,10 +67,11 @@ export function ButtonLink({ href, children, variant = 'primary', className = ''
     `;
 
   return (
-    <Link
-      href={href}
-      className={`group relative block w-full py-4 px-6 rounded-full text-[#1f1f1f] font-medium text-center border border-[#1f1f1f]/15 transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18] overflow-hidden ${className}`}
-      style={baseStyles}
+          <Link
+            href={href}
+            onClick={handleClick}
+            className={`group relative block w-full py-4 px-6 rounded-full text-[#1f1f1f] font-medium text-center border border-[#1f1f1f]/15 transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c98a2b]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#2a1a18] overflow-hidden ${className}`}
+            style={baseStyles}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = hoverShadow;
         e.currentTarget.style.transform = isPrimary ? 'translateY(-2px)' : 'translateY(-1px)';

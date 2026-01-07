@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FeaturedEssay } from '@/lib/types';
+import { analyticsEvents } from '@/lib/analytics';
 import { useState, useEffect } from 'react';
 
 export default function Home() {
@@ -340,6 +341,7 @@ export default function Home() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-ember font-medium hover:text-ember-light transition-colors"
+                        onClick={() => analyticsEvents.essayClicked(essay.title || 'Untitled', essay.url)}
                       >
                         Read essay →
                       </a>

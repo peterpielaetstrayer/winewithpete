@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { FeaturedEssay } from '@/lib/types';
+import { analyticsEvents } from '@/lib/analytics';
 import { useState, useEffect } from 'react';
 
 export default function EssaysPage(){
@@ -84,8 +85,10 @@ export default function EssaysPage(){
                       <div className="mb-6 -mx-8 -mt-8">
                         <img 
                           src={essay.image_url} 
-                          alt={essay.title || ''} 
+                          alt={essay.title ? `${essay.title} - Featured essay image` : 'Featured essay image'} 
                           className="w-full h-64 object-cover rounded-t-2xl"
+                          loading="lazy"
+                          decoding="async"
                         />
                       </div>
                     )}
@@ -102,6 +105,8 @@ export default function EssaysPage(){
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-ember font-medium hover:text-ember-light transition-colors"
+                      onClick={() => analyticsEvents.essayClicked(essay.title || 'Untitled', essay.url)}
+                      aria-label={`Read essay: ${essay.title || 'Untitled'}`}
                     >
                       Read essay →
                     </a>
