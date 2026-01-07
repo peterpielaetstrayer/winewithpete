@@ -130,16 +130,25 @@ export async function POST(request: NextRequest) {
             allImages.push(variant.preview_image);
           }
           
-          // Variant files (mockups and product images)
+          // Variant files - prioritize mockup files
           if (Array.isArray(variant.files)) {
             variant.files.forEach((file) => {
-              // Mockup images (best quality)
-              if (file.preview_url && !allImages.includes(file.preview_url)) {
-                allImages.push(file.preview_url);
-              }
-              // Product images
-              if (file.url && !allImages.includes(file.url)) {
-                allImages.push(file.url);
+              // Mockup images (best quality, variant-specific)
+              if (file.type === 'mockup') {
+                if (file.preview_url && !allImages.includes(file.preview_url)) {
+                  allImages.push(file.preview_url);
+                }
+                if (file.url && !allImages.includes(file.url)) {
+                  allImages.push(file.url);
+                }
+              } else {
+                // Other file types (print files, etc.)
+                if (file.preview_url && !allImages.includes(file.preview_url)) {
+                  allImages.push(file.preview_url);
+                }
+                if (file.url && !allImages.includes(file.url)) {
+                  allImages.push(file.url);
+                }
               }
             });
           }
@@ -157,17 +166,45 @@ export async function POST(request: NextRequest) {
         ) || allImages[0] || null;
         
         // Store all images for gallery display
+        // Priority order for variant images:
+        // 1. Mockup files (file.type === 'mockup') - these are variant-specific visual representations
+        // 2. Variant preview_image
+        // 3. Variant mockup_url
+        // 4. Other preview URLs
         const variantImages = syncVariants.map((variant: PrintfulVariant) => {
           const variantImgs: string[] = [];
           
-          if (variant.preview_image) variantImgs.push(variant.preview_image);
-          if (variant.mockup_url) variantImgs.push(variant.mockup_url);
-          
           if (Array.isArray(variant.files)) {
+            // First, collect mockup files (these are variant-specific)
             variant.files.forEach((file) => {
-              if (file.preview_url) variantImgs.push(file.preview_url);
-              if (file.url && !variantImgs.includes(file.url)) variantImgs.push(file.url);
+              if (file.type === 'mockup') {
+                // Mockup files are the best - they're variant-specific visual representations
+                if (file.preview_url && !variantImgs.includes(file.preview_url)) {
+                  variantImgs.push(file.preview_url);
+                }
+                if (file.url && !variantImgs.includes(file.url)) {
+                  variantImgs.push(file.url);
+                }
+              }
             });
+            
+            // Then add other preview files if no mockups found
+            if (variantImgs.length === 0) {
+              variant.files.forEach((file) => {
+                if (file.preview_url && !variantImgs.includes(file.preview_url)) {
+                  variantImgs.push(file.preview_url);
+                }
+                if (file.url && !variantImgs.includes(file.url)) {
+                  variantImgs.push(file.url);
+                }
+              });
+            }
+          }
+          
+          // Fallback to variant-level images if no files
+          if (variantImgs.length === 0) {
+            if (variant.preview_image) variantImgs.push(variant.preview_image);
+            if (variant.mockup_url) variantImgs.push(variant.mockup_url);
           }
           
           return {
