@@ -323,13 +323,13 @@ export default function Home() {
                     ></div>
                     <div className="relative z-10">
                       {essay.image_url && (
-                        <div className="mb-4 -mx-6 -mt-6 relative w-full h-48">
-                          <Image 
+                        <div className="mb-4 -mx-6 -mt-6">
+                          <img 
                             src={essay.image_url} 
-                            alt={essay.title || ''} 
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 100vw, 768px"
+                            alt={essay.title ? `${essay.title} - Featured essay image` : 'Featured essay image'} 
+                            className="w-full h-48 object-cover"
+                            loading="lazy"
+                            decoding="async"
                           />
                         </div>
                       )}
