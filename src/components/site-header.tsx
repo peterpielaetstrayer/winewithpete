@@ -67,7 +67,7 @@ export function SiteHeader(){
   );
   
   return (
-    <header className="w-full bg-white/80 backdrop-blur border-b border-black/5">
+    <header className="w-full bg-white/80 backdrop-blur border-b border-black/5 relative z-50">
       <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
         <Link href="/" className="text-xl font-serif font-semibold">Wine With Pete</Link>
         
@@ -78,13 +78,13 @@ export function SiteHeader(){
           {link('/gatherings','Gatherings')}
           
           {/* Shop Dropdown */}
-          <NavigationMenu viewport={false}>
+          <NavigationMenu viewport={false} className="relative z-50">
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-sm tracking-wide hover:opacity-80 transition-opacity focus-ring rounded-md px-2 py-1 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent">
                   Shop
                 </NavigationMenuTrigger>
-                <NavigationMenuContent>
+                <NavigationMenuContent className="z-50">
                   <div className="w-48 p-2">
                     <NavigationMenuLink asChild>
                       <Link
