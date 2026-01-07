@@ -197,18 +197,18 @@ export function StartPageContent() {
           isExpanded={expandedSection === 'join'}
           onToggle={handleToggle}
         >
-          <div className="space-y-4">
+          <div>
             <InlineEmailForm onSuccess={() => setExpandedSection(null)} />
-            {/* Always show learn more link */}
-            <div className="mt-6 pt-6 border-t border-[#f6f3ef]/30">
-              <Link 
-                href="/join" 
-                className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-base font-medium transition-colors underline decoration-[#f6f3ef]/40 hover:decoration-[#f6f3ef]"
-                onClick={() => analyticsEvents.startPageButtonClicked('Learn More - Join')}
-              >
-                Learn more →
-              </Link>
-            </div>
+          </div>
+          {/* Always show learn more link - outside wrapper to ensure visibility */}
+          <div className="mt-6 pt-6 border-t border-[#f6f3ef]/30">
+            <Link 
+              href="/join" 
+              className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-base font-medium transition-colors underline decoration-[#f6f3ef]/40 hover:decoration-[#f6f3ef]"
+              onClick={() => analyticsEvents.startPageButtonClicked('Learn More - Join')}
+            >
+              Learn more →
+            </Link>
           </div>
         </ExpandableSection>
 
@@ -238,16 +238,16 @@ export function StartPageContent() {
                 <p className="mb-4">Featured recipes coming soon.</p>
               </div>
             )}
-            {/* Always show browse link */}
-            <div className="mt-6 pt-6 border-t border-[#f6f3ef]/30">
-              <Link
-                href="/recipes"
-                className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-base font-medium transition-colors underline decoration-[#f6f3ef]/40 hover:decoration-[#f6f3ef]"
-                onClick={() => analyticsEvents.startPageButtonClicked('Browse All Recipes')}
-              >
-                Browse all recipes & guides →
-              </Link>
-            </div>
+          </div>
+          {/* Always show browse link - outside space-y-4 to ensure visibility */}
+          <div className="mt-6 pt-6 border-t border-[#f6f3ef]/30">
+            <Link
+              href="/recipes"
+              className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-base font-medium transition-colors underline decoration-[#f6f3ef]/40 hover:decoration-[#f6f3ef]"
+              onClick={() => analyticsEvents.startPageButtonClicked('Browse All Recipes')}
+            >
+              Browse all recipes & guides →
+            </Link>
           </div>
         </ExpandableSection>
 
@@ -275,16 +275,16 @@ export function StartPageContent() {
                 <p className="mb-4">Featured merch coming soon.</p>
               </div>
             )}
-            {/* Always show browse link */}
-            <div className="mt-6 pt-6 border-t border-[#f6f3ef]/30">
-              <Link
-                href="/store"
-                className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-base font-medium transition-colors underline decoration-[#f6f3ef]/40 hover:decoration-[#f6f3ef]"
-                onClick={() => analyticsEvents.startPageButtonClicked('Browse All Merch')}
-              >
-                Browse all merch →
-              </Link>
-            </div>
+            {/* Always show browse link - outside space-y-4 to ensure visibility */}
+          </div>
+          <div className="mt-6 pt-6 border-t border-[#f6f3ef]/30">
+            <Link
+              href="/store"
+              className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-base font-medium transition-colors underline decoration-[#f6f3ef]/40 hover:decoration-[#f6f3ef]"
+              onClick={() => analyticsEvents.startPageButtonClicked('Browse All Merch')}
+            >
+              Browse all merch →
+            </Link>
           </div>
         </ExpandableSection>
 

@@ -29,13 +29,25 @@ export function ExpandableSection({
 
   useEffect(() => {
     if (isExpanded && contentRef.current) {
-      // Use a small delay to ensure all content is rendered before measuring
-      const timer = setTimeout(() => {
+      // Use multiple attempts to ensure height is calculated correctly
+      const calculateHeight = () => {
         if (contentRef.current) {
-          setHeight(contentRef.current.scrollHeight + 10); // Add small buffer
+          const height = contentRef.current.scrollHeight;
+          setHeight(height + 20); // Add buffer for safety
         }
-      }, 50);
-      return () => clearTimeout(timer);
+      };
+      
+      // Immediate calculation
+      calculateHeight();
+      
+      // Also try after a short delay to catch any async content
+      const timer = setTimeout(calculateHeight, 100);
+      const timer2 = setTimeout(calculateHeight, 300);
+      
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(timer2);
+      };
     } else {
       setHeight(0);
     }
@@ -94,14 +106,15 @@ export function ExpandableSection({
       <div
         className="transition-all duration-300 ease-in-out"
         style={{
-          maxHeight: isExpanded ? `${height}px` : '0px',
+          maxHeight: isExpanded ? (height > 0 ? `${height}px` : 'none') : '0px',
           opacity: isExpanded ? 1 : 0,
           overflow: isExpanded ? 'visible' : 'hidden',
         }}
       >
         <div
           ref={contentRef}
-          className="mt-4 pt-4 border-t border-[#f6f3ef]/20"
+          className="mt-4 pt-4 border-t border-[#f6f3ef]/20 pb-2"
+          style={{ minHeight: isExpanded ? 'auto' : 0 }}
         >
           {children}
         </div>
