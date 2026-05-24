@@ -10,3 +10,6 @@ CREATE INDEX IF NOT EXISTS idx_orders_printful_order_id ON orders(printful_order
 -- Add comment for documentation
 COMMENT ON COLUMN orders.printful_order_id IS 'Printful order ID for physical product fulfillment';
 
+
+
+

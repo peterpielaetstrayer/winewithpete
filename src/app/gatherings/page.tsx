@@ -1,10 +1,14 @@
 'use client';
 
 import Image from 'next/image';
+import { Mail } from 'lucide-react';
 import { GatheringInterestForm } from '@/components/gathering-interest-form';
 import { useState, useEffect } from 'react';
 import { Event } from '@/lib/types';
 import { EventCard } from '@/components/event-card';
+
+const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'pete@winewithpete.me';
+const contactMailto = `mailto:${contactEmail}?subject=${encodeURIComponent('Wine With Pete — Gathering Inquiry')}`;
 
 export default function GatheringsPage(){
   const [events, setEvents] = useState<Event[]>([]);
@@ -118,8 +122,25 @@ export default function GatheringsPage(){
         </div>
       )}
 
-      {/* Interest Collection Form */}
-      <div className="max-w-2xl mx-auto">
+      {/* Direct contact + interest form */}
+      <div className="max-w-2xl mx-auto space-y-6">
+        <div className="bg-cream rounded-2xl p-8 border border-black/5 text-center">
+          <h2 className="text-xl font-serif font-medium text-charcoal mb-2">
+            Prefer to reach out directly?
+          </h2>
+          <p className="text-black/70 mb-5 max-w-md mx-auto leading-relaxed">
+            For hosting questions, collaborations, or anything you&apos;d rather say in your own words — I read everything.
+          </p>
+          <a
+            href={contactMailto}
+            className="btn-ember inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium"
+          >
+            <Mail className="w-4 h-4" aria-hidden="true" />
+            Email Pete
+          </a>
+          <p className="text-sm text-black/50 mt-4">{contactEmail}</p>
+        </div>
+
         <GatheringInterestForm />
       </div>
     </div>

@@ -22,3 +22,6 @@ export const featuredEssays: FeaturedEssay[] = [
 // Helper to check if we have featured essays
 export const hasFeaturedEssays = featuredEssays.length > 0;
 
+
+
+
