@@ -1,22 +1,12 @@
 'use client';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuLink,
-} from '@/components/ui/navigation-menu';
-import { cn } from '@/lib/utils';
 
 export function SiteHeader(){
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   
-  // Close menu on Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isMenuOpen) {
@@ -28,7 +18,6 @@ export function SiteHeader(){
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isMenuOpen]);
 
-  // Focus trap when menu is open
   useEffect(() => {
     if (isMenuOpen && menuRef.current) {
       const focusableElements = menuRef.current.querySelectorAll(
@@ -62,8 +51,14 @@ export function SiteHeader(){
     }
   }, [isMenuOpen]);
 
-  const link = (href:string, label:string) => (
-    <Link href={href} className="text-sm tracking-wide hover:opacity-80 transition-opacity focus-ring rounded-md px-2 py-1">{label}</Link>
+  const link = (href: string, label: string, onClick?: () => void) => (
+    <Link
+      href={href}
+      className="text-sm tracking-wide hover:opacity-80 transition-opacity focus-ring rounded-md px-2 py-1"
+      onClick={onClick}
+    >
+      {label}
+    </Link>
   );
   
   return (
@@ -71,60 +66,14 @@ export function SiteHeader(){
       <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
         <Link href="/" className="text-xl font-serif font-semibold">Wine With Pete</Link>
         
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex gap-6 items-center">
-          {link('/start-here','Start Here')}
-          {link('/essays','Essays')}
-          {link('/gatherings','Gatherings')}
-          
-          {/* Shop Dropdown */}
-          <NavigationMenu viewport={false} className="relative z-50">
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="text-sm tracking-wide hover:opacity-80 transition-opacity focus-ring rounded-md px-2 py-1 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent">
-                  Shop
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="z-50">
-                  <div className="w-48 p-2">
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href="/recipes"
-                        className={cn(
-                          "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors",
-                          "hover:bg-cream hover:text-charcoal focus:bg-cream focus:text-charcoal"
-                        )}
-                      >
-                        <div className="text-sm font-medium leading-none">Recipes & Guides</div>
-                        <p className="line-clamp-2 text-sm leading-snug text-black/70 mt-1">
-                          Digital resources for fire cooking
-                        </p>
-                      </Link>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href="/store"
-                        className={cn(
-                          "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors",
-                          "hover:bg-cream hover:text-charcoal focus:bg-cream focus:text-charcoal"
-                        )}
-                      >
-                        <div className="text-sm font-medium leading-none">Merch</div>
-                        <p className="line-clamp-2 text-sm leading-snug text-black/70 mt-1">
-                          Physical products and apparel
-                        </p>
-                      </Link>
-                    </NavigationMenuLink>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          
-          {link('/about','About')}
-          {link('/join','Join')}
+        <nav className="hidden md:flex gap-5 items-center">
+          {link('/plan', 'Plan a Gathering')}
+          {link('/signature-table', 'Signature Table')}
+          {link('/join', 'Founding Table')}
+          {link('/essays', 'Essays')}
+          {link('/about', 'About')}
         </nav>
         
-        {/* Mobile Menu Button */}
         <button 
           ref={menuButtonRef}
           className="md:hidden flex flex-col gap-1 w-6 h-6 focus-ring rounded-md p-1"
@@ -139,7 +88,6 @@ export function SiteHeader(){
         </button>
       </div>
       
-      {/* Mobile Navigation */}
       {isMenuOpen && (
         <div 
           id="mobile-menu"
@@ -149,31 +97,11 @@ export function SiteHeader(){
           aria-label="Mobile navigation"
         >
           <nav className="px-4 py-4 flex flex-col gap-4">
-            {link('/start-here','Start Here')}
-            {link('/essays','Essays')}
-            {link('/gatherings','Gatherings')}
-            
-            {/* Mobile Shop Section */}
-            <div className="flex flex-col gap-2">
-              <div className="text-sm font-medium text-charcoal px-2 py-1">Shop</div>
-              <Link 
-                href="/recipes" 
-                className="text-sm tracking-wide hover:opacity-80 transition-opacity focus-ring rounded-md px-4 py-2 text-black/70"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Recipes & Guides
-              </Link>
-              <Link 
-                href="/store" 
-                className="text-sm tracking-wide hover:opacity-80 transition-opacity focus-ring rounded-md px-4 py-2 text-black/70"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Merch
-              </Link>
-            </div>
-            
-            {link('/about','About')}
-            {link('/join','Join')}
+            {link('/plan', 'Plan a Gathering', () => setIsMenuOpen(false))}
+            {link('/signature-table', 'Signature Table', () => setIsMenuOpen(false))}
+            {link('/join', 'Founding Table', () => setIsMenuOpen(false))}
+            {link('/essays', 'Essays', () => setIsMenuOpen(false))}
+            {link('/about', 'About', () => setIsMenuOpen(false))}
           </nav>
         </div>
       )}

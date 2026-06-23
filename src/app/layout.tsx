@@ -29,9 +29,9 @@ const crimsonText = Crimson_Text({
 });
 
 export const metadata: Metadata = {
-  title: 'Wine With Pete - Slow Living Community',
-  description: 'Join our community for philosophical conversation, fire-cooked meals, and meaningful connections. Weekly essays, recipe cards, and intimate gatherings.',
-  keywords: 'wine, philosophy, community, slow living, fire cooking, conversation, gatherings, essays',
+  title: 'Wine With Pete — Privately Hosted Gatherings',
+  description: 'Gathering design and signature table experiences in host homes and chosen spaces. Plan a custom blueprint, book a privately hosted evening with Pete, or join the Founding Table.',
+  keywords: 'privately hosted gatherings, gathering design, signature table, wine dinners, host home events, salon dinners, community',
   authors: [{ name: 'Pete' }],
   creator: 'Wine With Pete',
   publisher: 'Wine With Pete',
@@ -45,8 +45,8 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'Wine With Pete - Slow Living Community',
-    description: 'Join our community for philosophical conversation, fire-cooked meals, and meaningful connections.',
+    title: 'Wine With Pete — Privately Hosted Gatherings',
+    description: 'Gathering design and signature table experiences in host homes and chosen spaces.',
     url: 'https://winewithpete.me',
     siteName: 'Wine With Pete',
     images: [
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
         url: '/images/hero/hero-campfire.png.png',
         width: 1200,
         height: 630,
-        alt: 'Wine With Pete community gathering around campfire',
+        alt: 'Privately hosted Wine With Pete gathering',
       },
     ],
     locale: 'en_US',
@@ -62,8 +62,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Wine With Pete - Slow Living Community',
-    description: 'Join our community for philosophical conversation, fire-cooked meals, and meaningful connections.',
+    title: 'Wine With Pete — Privately Hosted Gatherings',
+    description: 'Gathering design and signature table experiences in host homes and chosen spaces.',
     images: ['/images/hero/hero-campfire.png.png'],
   },
   robots: {

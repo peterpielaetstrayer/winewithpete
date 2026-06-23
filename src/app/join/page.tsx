@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -24,7 +25,6 @@ export default function JoinPage(){
         body: JSON.stringify({ email }),
       });
 
-      // Check if response is JSON
       const contentType = response.headers.get('content-type');
       let result;
       
@@ -37,16 +37,14 @@ export default function JoinPage(){
       }
 
       if (response.ok) {
-        // Check if it's a duplicate subscription
         if (result.already_subscribed) {
-          setError('You\'re already subscribed! Check your email for our latest updates.');
-          setEmail(''); // Clear the form
+          setError('You\'re already on the Founding Table! Check your email for our latest updates.');
+          setEmail('');
         } else {
           setIsSubmitted(true);
           setError(null);
         }
       } else {
-        // Show detailed error if available
         const errorMsg = result.error || result.details || 'Failed to subscribe';
         setError(errorMsg);
       }
@@ -66,9 +64,10 @@ export default function JoinPage(){
             <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
               <Image src="/images/icons/icon-connection.png" alt="Welcome" width={48} height={48} />
             </div>
-            <h1 className="text-3xl font-serif font-medium mb-4 text-charcoal">Welcome to the Circle</h1>
+            <h1 className="text-3xl font-serif font-medium mb-4 text-charcoal">Welcome to the Founding Table</h1>
             <p className="text-lg text-black/70 mb-6">
-              You&apos;re now part of our community. Check your email for a welcome message and your first update.
+              You&apos;re on the list. Check your email for a welcome note—and we&apos;ll reach out
+              when pilot dinners and invitations open up.
             </p>
             <div className="space-y-4">
               <a 
@@ -80,7 +79,7 @@ export default function JoinPage(){
                 Read Latest Essays
               </a>
               <div className="text-sm text-black/60">
-                <p>While you wait, explore our latest writings on Substack.</p>
+                <p>While you wait, explore essays on Substack.</p>
               </div>
             </div>
           </div>
@@ -91,32 +90,30 @@ export default function JoinPage(){
 
   return (
     <div className="min-h-screen bg-cream">
-      {/* Hero Section */}
       <div className="bg-white py-16">
         <div className="mx-auto max-w-4xl px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-serif font-medium text-charcoal mb-6">
-            Join the Circle
+            Join the Founding Table
           </h1>
-          <p className="text-xl text-black/70 leading-relaxed mb-8">
-            Get weekly philosophical insights, recipe cards, event updates, and personal musings. 
-            A more intimate space for those who want to stay connected to the community.
+          <p className="text-xl text-black/70 leading-relaxed mb-8 max-w-2xl mx-auto">
+            The list for invite-only pilot dinners, essays, gathering notes, and the community
+            layer behind Wine With Pete. A closer circle than the public site.
           </p>
         </div>
       </div>
 
-      {/* Email Capture - MOVED HERE (right after hero) */}
       <div className="bg-white py-16">
         <div className="mx-auto max-w-2xl px-4">
           <div className="bg-cream rounded-2xl p-8 shadow-sm border">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-serif font-medium mb-4 text-charcoal">
-                Stay Connected
+                Get on the list
               </h2>
               <p className="text-black/70 mb-2">
-                Get your free Fire Ritual recipe card when you join.
+                Join with your email. You&apos;ll receive a welcome note and your free Fire Ritual recipe card.
               </p>
               <p className="text-sm text-black/60">
-                Different from my Substack essays, this is my personal space for the community.
+                Different from Substack—this is the inside track for gatherings, pilots, and community.
               </p>
             </div>
 
@@ -147,7 +144,7 @@ export default function JoinPage(){
                   disabled={isSubmitting}
                   className="btn-ember px-8 py-4 rounded-full text-lg font-medium"
                 >
-                  {isSubmitting ? 'Joining...' : 'Join Circle'}
+                  {isSubmitting ? 'Joining...' : 'Join the Founding Table'}
                 </Button>
               </div>
               <p className="text-sm text-black/60 text-center">
@@ -158,7 +155,6 @@ export default function JoinPage(){
         </div>
       </div>
 
-      {/* What You'll Get */}
       <div className="py-16">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="text-3xl font-serif font-medium text-center mb-12 text-charcoal">
@@ -168,62 +164,61 @@ export default function JoinPage(){
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
             <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
               <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                <img src="/images/icons/icon-writing.png" alt="Philosophical Musings" className="w-12 h-12" />
+                <img src="/images/icons/icon-connection.png" alt="" className="w-12 h-12" aria-hidden />
               </div>
-              <h3 className="text-xl font-medium mb-4 text-charcoal">Philosophical Musings</h3>
+              <h3 className="text-xl font-medium mb-4 text-charcoal">Pilot Invitations</h3>
               <p className="text-black/70 leading-relaxed">
-                Weekly insights on connection, truth, and the search for something real in our disconnected world.
+                First access to invite-only pilot dinners and privately hosted gathering experiments.
               </p>
             </div>
 
             <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
               <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                <img src="/images/icons/icon-fire.png" alt="Recipe Cards" className="w-12 h-12" />
+                <img src="/images/icons/icon-writing.png" alt="" className="w-12 h-12" aria-hidden />
               </div>
-              <h3 className="text-xl font-medium mb-4 text-charcoal">Recipe Cards</h3>
+              <h3 className="text-xl font-medium mb-4 text-charcoal">Essays & Notes</h3>
               <p className="text-black/70 leading-relaxed">
-                Fire-friendly recipes designed for pre-prep and easy cooking at gatherings.
+                Writing on gathering design, connection, and the work behind signature table experiences.
               </p>
             </div>
 
             <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
               <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                <img src="/images/icons/icon-connection.png" alt="Event Updates" className="w-12 h-12" />
+                <img src="/images/icons/icon-fire.png" alt="" className="w-12 h-12" aria-hidden />
               </div>
-              <h3 className="text-xl font-medium mb-4 text-charcoal">Event Updates</h3>
+              <h3 className="text-xl font-medium mb-4 text-charcoal">Gathering Notes</h3>
               <p className="text-black/70 leading-relaxed">
-                Invitations to Open Fire Sundays and curated salon events in your area.
+                Recipe cards, hosting insights, and practical notes for privately hosted evenings.
               </p>
             </div>
 
             <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
               <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                <img src="/images/icons/icon-growth.png" alt="Community Insights" className="w-12 h-12" />
+                <img src="/images/icons/icon-growth.png" alt="" className="w-12 h-12" aria-hidden />
               </div>
-              <h3 className="text-xl font-medium mb-4 text-charcoal">Community Insights</h3>
+              <h3 className="text-xl font-medium mb-4 text-charcoal">Community Layer</h3>
               <p className="text-black/70 leading-relaxed">
-                Reflections on gatherings, conversations, and the moments of connection that matter.
+                Reflections from gatherings, conversations, and the community forming around the work.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Difference from Substack */}
       <div className="py-16">
         <div className="mx-auto max-w-4xl px-4">
           <h2 className="text-3xl font-serif font-medium text-center mb-12 text-charcoal">
-            The Circle vs. Substack Essays
+            Founding Table vs. Substack
           </h2>
           
           <div className="grid md:grid-cols-2 gap-12">
             <div className="bg-white rounded-2xl p-8 shadow-sm border">
-              <h3 className="text-xl font-medium mb-4 text-ember">The Circle</h3>
+              <h3 className="text-xl font-medium mb-4 text-ember">Founding Table</h3>
               <ul className="space-y-3 text-black/70">
-                <li>• Weekly philosophical insights and musings</li>
-                <li>• Recipe cards and cooking tips</li>
-                <li>• Event updates and invitations</li>
-                <li>• Community reflections and stories</li>
+                <li>• Invite-only pilot dinner invitations</li>
+                <li>• Gathering notes and hosting insights</li>
+                <li>• Recipe cards for privately hosted evenings</li>
+                <li>• Community reflections and early access</li>
                 <li>• More personal and intimate tone</li>
               </ul>
             </div>
@@ -237,6 +232,24 @@ export default function JoinPage(){
                 <li>• Focus on challenging assumptions</li>
                 <li>• Public platform for broader reach</li>
               </ul>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-black/60 mb-4 text-sm">
+              Ready to plan or book a privately hosted gathering?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/plan">
+                <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
+                  Plan a Gathering
+                </Button>
+              </Link>
+              <Link href="/signature-table">
+                <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
+                  Book a Signature Table
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

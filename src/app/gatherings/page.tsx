@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import Image from 'next/image';
 import { Mail } from 'lucide-react';
 import { GatheringInterestForm } from '@/components/gathering-interest-form';
@@ -32,15 +33,32 @@ export default function GatheringsPage(){
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16">
-      {/* Hero Section */}
-      <div className="text-center mb-16 animate-fade-in">
-        <h1 className="text-display mb-6">Gatherings</h1>
+      <div className="text-center mb-12 animate-fade-in">
+        <h1 className="text-display mb-6">Community Gatherings</h1>
         <p className="text-lg text-black/80 max-w-2xl mx-auto">
-          Wine With Pete events are an invitation to slow down.
+          Open, seasonal gatherings—the community layer of Wine With Pete.
         </p>
-        <p className="text-lg text-black/80 max-w-2xl mx-auto mt-2">
-          We host two types of gatherings:
+        <p className="text-lg text-black/70 max-w-2xl mx-auto mt-2">
+          For privately hosted gathering design or a signature table with Pete, start with our main offers.
         </p>
+      </div>
+
+      {/* Cross-links to primary paths */}
+      <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-16">
+        <Link
+          href="/plan"
+          className="card-enhanced bg-white rounded-2xl p-6 shadow-sm border text-center hover:shadow-md transition-shadow"
+        >
+          <h2 className="text-lg font-serif font-medium text-charcoal mb-2">Plan a Gathering</h2>
+          <p className="text-sm text-black/70">Custom blueprint for your privately hosted evening</p>
+        </Link>
+        <Link
+          href="/signature-table"
+          className="card-enhanced bg-white rounded-2xl p-6 shadow-sm border text-center hover:shadow-md transition-shadow"
+        >
+          <h2 className="text-lg font-serif font-medium text-charcoal mb-2">Book a Signature Table</h2>
+          <p className="text-sm text-black/70">Pete hosts in your home or chosen space</p>
+        </Link>
       </div>
 
       {/* Event Types */}

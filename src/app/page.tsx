@@ -3,16 +3,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { FeaturedEssay } from '@/lib/types';
 import { analyticsEvents } from '@/lib/analytics';
 import { useState, useEffect } from 'react';
 
 export default function Home() {
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [featuredEssays, setFeaturedEssays] = useState<FeaturedEssay[]>([]);
   const [essaysLoading, setEssaysLoading] = useState(true);
 
@@ -28,63 +23,20 @@ export default function Home() {
       .finally(() => setEssaysLoading(false));
   }, []);
 
-  const handleNewsletterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-    
-    try {
-      const response = await fetch('/api/newsletter/subscribe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const contentType = response.headers.get('content-type');
-      let result;
-      
-      if (contentType && contentType.includes('application/json')) {
-        result = await response.json();
-      } else {
-        const text = await response.text();
-        console.error('Non-JSON response:', text);
-        throw new Error('Server returned non-JSON response');
-      }
-
-      if (response.ok) {
-        setIsSubmitted(true);
-        setEmail('');
-        setError(null);
-      } else {
-        const errorMsg = result.error || result.details || 'Failed to subscribe';
-        setError(errorMsg);
-      }
-    } catch (error) {
-      console.error('Newsletter subscription error:', error);
-      setError('Failed to subscribe. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <div className="relative h-[75vh] min-h-[600px] flex items-center justify-center overflow-hidden">
-        {/* Campfire Background */}
         <div className="absolute inset-0">
           <Image
             src="/images/hero/hero-campfire.png.png"
-            alt="Community gathering around campfire"
+            alt="Privately hosted gathering around fire and wine"
             fill
             className="object-cover scale-105"
             style={{ opacity: 0.6 }}
             priority
             sizes="100vw"
           />
-          {/* Subtle texture overlay */}
           <div 
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -95,33 +47,36 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent"></div>
         </div>
         
-        {/* Hero Content */}
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto animate-fade-in">
           <h1 className="text-hero text-white leading-relaxed mb-6 tracking-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
-            In a world that moves too fast, we create space for something different.
+            Privately hosted gatherings, thoughtfully designed.
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-4 leading-relaxed">
-            Fire, food, and conversations that stay with you long after the embers die.
+            Wine With Pete helps you create signature table experiences—in host homes and chosen spaces.
           </p>
           <p className="text-lg text-white/80 mb-12 leading-relaxed max-w-2xl mx-auto">
-            We gather around open flames to pause, listen, and turn toward what matters.
+            Whether you want a custom gathering blueprint or a fully hosted evening with Pete, start here.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
-            <Link href="/join">
+            <Link href="/plan">
               <Button className="btn-ember text-white rounded-full px-8 py-4 text-lg font-medium focus-ring">
-                Join the Circle
+                Plan a Gathering
               </Button>
             </Link>
-            <Link href="/start-here">
+            <Link href="/signature-table">
               <Button variant="outline" className="bg-white/95 border-2 border-white text-charcoal hover:bg-white hover:text-ember rounded-full px-8 py-4 text-lg font-medium focus-ring shadow-lg">
-                Start Here
+                Book a Signature Table
+              </Button>
+            </Link>
+            <Link href="/join">
+              <Button variant="outline" className="bg-white/10 border-2 border-white/80 text-white hover:bg-white hover:text-charcoal rounded-full px-8 py-4 text-lg font-medium focus-ring">
+                Join the Founding Table
               </Button>
             </Link>
           </div>
         </div>
         
-        {/* Curved bottom edge */}
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[var(--wwp-cream)] to-transparent"></div>
       </div>
 
@@ -132,7 +87,6 @@ export default function Home() {
           boxShadow: '0 -10px 40px rgba(0,0,0,0.1), 0 10px 40px rgba(91,35,32,0.05)'
         }}
       >
-        {/* Subtle texture overlay */}
         <div 
           className="absolute inset-0 opacity-[0.02] pointer-events-none rounded-t-3xl"
           style={{
@@ -141,11 +95,11 @@ export default function Home() {
         ></div>
         <div className="mx-auto max-w-3xl px-4 text-center relative z-10">
           <h2 className="text-3xl md:text-4xl font-serif font-medium mb-6 text-charcoal animate-fade-in tracking-tight">
-            A movement toward slower, more meaningful connections
+            Gathering design for people who want more than a dinner party
           </h2>
           <p className="text-xl text-black/70 leading-relaxed max-w-2xl mx-auto animate-fade-in">
-            In a world that moves too fast, we create spaces where people can slow down, 
-            share stories, and build genuine connections around fire, food, and honest conversation.
+            We work with hosts who care about conversation, atmosphere, and the slow unfolding of a
+            real evening—not a preset menu dropped at the door.
           </p>
         </div>
       </div>
@@ -157,40 +111,39 @@ export default function Home() {
             <div className="text-center animate-fade-in">
               <h2 className="text-xl font-serif font-medium mb-4 text-charcoal">What This Is</h2>
               <p className="text-black/70 leading-relaxed">
-                Wine With Pete is a community built around open-fire food, thoughtful wine, and salon-style conversation. 
-                We create spaces where people can slow down, share stories, and build genuine connections.
+                Wine With Pete is gathering design for privately hosted experiences—custom blueprints
+                you execute, or signature tables Pete hosts in your space.
               </p>
             </div>
             
             <div className="text-center animate-fade-in">
               <h2 className="text-xl font-serif font-medium mb-4 text-charcoal">Who It&apos;s For</h2>
               <p className="text-black/70 leading-relaxed">
-                For those who feel disconnected in a hyper-connected world. 
-                For people who value depth over breadth, quality over quantity, and conversations that stay with you long after the fire burns out.
+                Hosts with a home or chosen space who want depth—milestone dinners, founder tables,
+                intimate friend groups, and evenings that stay with people.
               </p>
             </div>
             
             <div className="text-center animate-fade-in">
               <h2 className="text-xl font-serif font-medium mb-4 text-charcoal">How It Works</h2>
               <p className="text-black/70 leading-relaxed">
-                Read our weekly essays. Stay connected for recipes and insights. 
-                Attend gatherings in your area. Cook together. Talk honestly. Build something real.
+                Choose a blueprint to plan your own gathering, book a signature table with Pete, or
+                join the Founding Table for pilots, essays, and future invitations.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Featured Pathways (3 Cards) */}
+      {/* Three Doors */}
       <div className="bg-white space-content">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="text-section text-center mb-16 text-charcoal animate-fade-in tracking-tight">
-            Choose Your Path
+            Three ways in
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Read - Essays */}
-            <Link href="/essays" className="group animate-scale-in">
+            <Link href="/plan" className="group animate-scale-in">
               <div 
                 className="card-enhanced bg-white rounded-2xl p-8 text-center h-full relative overflow-hidden"
                 style={{
@@ -198,7 +151,6 @@ export default function Home() {
                   background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
                 }}
               >
-                {/* Texture overlay */}
                 <div 
                   className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
                   style={{
@@ -207,21 +159,21 @@ export default function Home() {
                 ></div>
                 <div className="relative z-10">
                   <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                    <Image src="/images/icons/icon-writing.png" alt="Writing" width={48} height={48} />
+                    <Image src="/images/icons/icon-growth.png" alt="" width={48} height={48} aria-hidden />
                   </div>
-                  <h3 className="text-xl font-medium mb-4 text-charcoal tracking-tight">Read</h3>
+                  <h3 className="text-xl font-medium mb-4 text-charcoal tracking-tight">Plan a Gathering</h3>
                   <p className="text-black/70 leading-relaxed mb-4">
-                    Weekly essays exploring philosophy, connection, and the stories we tell.
+                    A custom gathering blueprint—menu direction, wine, flow, and conversation—for
+                    your privately hosted evening.
                   </p>
                   <div className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors duration-300">
-                    Read Essays →
+                    Get a blueprint →
                   </div>
                 </div>
               </div>
             </Link>
 
-            {/* Gather - Events */}
-            <Link href="/gatherings" className="group animate-scale-in">
+            <Link href="/signature-table" className="group animate-scale-in">
               <div 
                 className="card-enhanced bg-white rounded-2xl p-8 text-center h-full relative overflow-hidden"
                 style={{
@@ -229,7 +181,6 @@ export default function Home() {
                   background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
                 }}
               >
-                {/* Texture overlay */}
                 <div 
                   className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
                   style={{
@@ -238,21 +189,21 @@ export default function Home() {
                 ></div>
                 <div className="relative z-10">
                   <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                    <Image src="/images/icons/icon-fire.png" alt="Fire" width={48} height={48} />
+                    <Image src="/images/icons/icon-wine.png" alt="" width={48} height={48} aria-hidden />
                   </div>
-                  <h3 className="text-xl font-medium mb-4 text-charcoal tracking-tight">Gather</h3>
+                  <h3 className="text-xl font-medium mb-4 text-charcoal tracking-tight">Book a Signature Table</h3>
                   <p className="text-black/70 leading-relaxed mb-4">
-                    Open Fire Sundays and curated salon events. Bring food, share stories, slow down.
+                    Pete designs and hosts a privately hosted signature table experience in your home
+                    or chosen space.
                   </p>
                   <div className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors duration-300">
-                    See Gatherings →
+                    Inquire about hosting →
                   </div>
                 </div>
               </div>
             </Link>
 
-            {/* Cook - Recipes */}
-            <Link href="/recipes" className="group animate-scale-in">
+            <Link href="/join" className="group animate-scale-in">
               <div 
                 className="card-enhanced bg-white rounded-2xl p-8 text-center h-full relative overflow-hidden"
                 style={{
@@ -260,7 +211,6 @@ export default function Home() {
                   background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
                 }}
               >
-                {/* Texture overlay */}
                 <div 
                   className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
                   style={{
@@ -269,14 +219,15 @@ export default function Home() {
                 ></div>
                 <div className="relative z-10">
                   <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                    <Image src="/images/icons/icon-wine.png" alt="Wine" width={48} height={48} />
+                    <Image src="/images/icons/icon-connection.png" alt="" width={48} height={48} aria-hidden />
                   </div>
-                  <h3 className="text-xl font-medium mb-4 text-charcoal tracking-tight">Cook</h3>
+                  <h3 className="text-xl font-medium mb-4 text-charcoal tracking-tight">Join the Founding Table</h3>
                   <p className="text-black/70 leading-relaxed mb-4">
-                    Fire-friendly recipes and guides for building community around honest conversation.
+                    The list for invite-only pilots, essays, gathering notes, and the community
+                    layer behind the work.
                   </p>
                   <div className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors duration-300">
-                    Explore Recipes →
+                    Join the list →
                   </div>
                 </div>
               </div>
@@ -285,12 +236,15 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Featured Essay Section */}
+      {/* Featured Essay Section — secondary layer */}
       <div className="bg-[var(--wwp-cream)] space-content">
         <div className="mx-auto max-w-4xl px-4">
-          <h2 className="text-section text-center mb-12 text-charcoal animate-fade-in tracking-tight">
-            Start with one essay
+          <h2 className="text-section text-center mb-4 text-charcoal animate-fade-in tracking-tight">
+            From the Founding Table
           </h2>
+          <p className="text-center text-black/60 mb-12 max-w-xl mx-auto">
+            Essays and writing for those building toward slower, more meaningful gatherings.
+          </p>
           
           {essaysLoading ? (
             <div className="text-center py-8 text-black/60">Loading essays...</div>
@@ -298,7 +252,6 @@ export default function Home() {
             <div className="space-y-8 mb-8">
               {featuredEssays.slice(0, 3).map((essay, index) => (
                 <div key={essay.id}>
-                  {/* Narrative flow text between essays */}
                   {index > 0 && (
                     <div className="text-center mb-6">
                       <p className="text-black/50 italic text-sm font-serif">
@@ -314,7 +267,6 @@ export default function Home() {
                       background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
                     }}
                   >
-                    {/* Texture overlay */}
                     <div 
                       className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
                       style={{
@@ -363,17 +315,9 @@ export default function Home() {
                 background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
               }}
             >
-              {/* Texture overlay */}
-              <div 
-                className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
-                style={{
-                  backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`
-                }}
-              ></div>
               <div className="relative z-10">
                 <p className="text-black/70 leading-relaxed mb-6">
-                  We&apos;re curating a selection of flagship essays to help you get started. 
-                  In the meantime, explore our full archive on Substack.
+                  We&apos;re curating essays for the Founding Table. Explore the full archive on Substack in the meantime.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <a 
@@ -397,16 +341,15 @@ export default function Home() {
           <div className="text-center">
             <Link href="/essays">
               <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
-                {featuredEssays.length > 0 ? 'Browse All Essays' : 'Explore More'}
+                {featuredEssays.length > 0 ? 'Browse All Essays' : 'Explore Essays'}
               </Button>
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Email Capture Section with Lead Magnet */}
+      {/* Founding Table CTA */}
       <div className="bg-white space-section relative">
-        {/* Subtle background texture */}
         <div 
           className="absolute inset-0 opacity-[0.015] pointer-events-none"
           style={{
@@ -421,7 +364,6 @@ export default function Home() {
               background: 'linear-gradient(to bottom, #f6f3ef, #f0ebe5)'
             }}
           >
-            {/* Texture overlay */}
             <div 
               className="absolute inset-0 rounded-2xl opacity-[0.02] pointer-events-none"
               style={{
@@ -430,49 +372,20 @@ export default function Home() {
             ></div>
             <div className="relative z-10">
               <h2 className="text-3xl font-serif font-medium mb-4 text-charcoal tracking-tight">
-                Get a free Fire Ritual recipe card
+                Join the Founding Table
               </h2>
               <p className="text-lg text-black/70 mb-8 leading-relaxed">
-                Join 200+ people exploring slow living, one fire at a time. 
-                Weekly insights, recipe cards, and invitations to gather.
+                Get on the list for invite-only pilot dinners, gathering notes, essays, and early
+                access as the community layer grows.
               </p>
-              
-              {!isSubmitted ? (
-                <form onSubmit={handleNewsletterSubmit} className="space-y-4">
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <Input
-                      type="email"
-                      placeholder="your@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="flex-1 focus-ring"
-                    />
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting || !email}
-                      className="btn-ember px-8 py-4 rounded-full text-lg font-medium"
-                    >
-                      {isSubmitting ? 'Joining...' : 'Join Circle'}
-                    </Button>
-                  </div>
-                  <p className="text-sm text-black/60">
-                    We respect your privacy. Unsubscribe anytime. No spam, just thoughtful content.
-                  </p>
-                </form>
-              ) : (
-                <div 
-                  className="bg-white rounded-lg p-6"
-                  style={{
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
-                  }}
-                >
-                  <p className="text-ember font-medium mb-2 text-lg">✓ Welcome to the Circle!</p>
-                  <p className="text-black/70">
-                    Check your email for your welcome message and free recipe card.
-                  </p>
-                </div>
-              )}
+              <Link href="/join">
+                <Button className="btn-ember px-8 py-4 rounded-full text-lg font-medium">
+                  Join the Founding Table
+                </Button>
+              </Link>
+              <p className="text-sm text-black/60 mt-6">
+                We respect your privacy. Unsubscribe anytime.
+              </p>
             </div>
           </div>
         </div>

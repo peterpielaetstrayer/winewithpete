@@ -8,7 +8,7 @@ export default function AboutPage(){
       <div className="text-center mb-16">
         <h1 className="text-4xl md:text-5xl font-serif font-semibold mb-6">About Wine With Pete</h1>
         <p className="text-lg text-black/80 max-w-2xl mx-auto">
-          A movement toward slower, more meaningful connections in a world that moves too fast.
+          A doorway into privately hosted gathering design and signature table experiences.
         </p>
       </div>
 
@@ -62,17 +62,31 @@ export default function AboutPage(){
           <h2 className="text-2xl font-serif font-semibold mb-4">What We Do</h2>
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
-              <h3 className="text-lg font-medium mb-2">🔥 Open Fire Sundays</h3>
+              <h3 className="text-lg font-medium mb-2">📋 Gathering Blueprints</h3>
               <p className="text-black/70 text-sm">
-                Casual, coastal gatherings where we cook over fire, share stories, and connect with 
-                nature and each other. No agenda, just good food and real conversation.
+                Custom gathering design for hosts who want to create privately hosted evenings in
+                their own homes or chosen spaces—with menu, wine, flow, and conversation planned for them.
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-medium mb-2">🍷 Salon Dinners</h3>
+              <h3 className="text-lg font-medium mb-2">🍷 Signature Tables</h3>
               <p className="text-black/70 text-sm">
-                Intimate, curated dinners around hard questions and honest conversation. 
-                Smaller groups, deeper discussions, lasting connections.
+                Privately hosted experiences where Pete designs and hosts the evening—intimate,
+                curated, and built for real conversation.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-medium mb-2">🔥 Community Gatherings</h3>
+              <p className="text-black/70 text-sm">
+                Open Fire Sundays and seasonal pilot events—the community layer for those who want
+                to gather without booking a private experience.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-medium mb-2">✉️ The Founding Table</h3>
+              <p className="text-black/70 text-sm">
+                Essays, gathering notes, and invite-only pilots for people building toward slower,
+                more meaningful connection.
               </p>
             </div>
           </div>
@@ -81,13 +95,14 @@ export default function AboutPage(){
         <div className="bg-white rounded-2xl p-8 shadow-sm border mb-8">
           <h2 className="text-2xl font-serif font-semibold mb-4">What We&apos;re Becoming</h2>
           <p className="text-black/80 leading-relaxed mb-4">
-            Wine With Pete is evolving into a platform for essays, gatherings, recipes, and media that support slow living and genuine connection. 
-            We&apos;re building something that extends beyond individual events into a movement toward more meaningful relationships.
+            Wine With Pete is becoming a clear doorway into privately hosted gathering design—not
+            just a philosophy site. We help hosts create signature table experiences, offer custom
+            blueprints for those who want to host themselves, and build a Founding Table community
+            around essays, pilots, and gathering notes.
           </p>
           <p className="text-black/80 leading-relaxed">
-            Through weekly essays, curated gatherings, fire-friendly recipes, and thoughtful content, 
-            we&apos;re creating resources and experiences that help people slow down, connect authentically, 
-            and build communities around what truly matters.
+            The public community gatherings remain—but the heart of the work is gathering design
+            for host homes and chosen spaces, and signature table experiences hosted by Pete.
           </p>
         </div>
 
@@ -121,20 +136,20 @@ export default function AboutPage(){
 
       {/* Call to Action */}
       <div className="text-center bg-white rounded-2xl p-12 border">
-        <h3 className="text-2xl font-serif font-semibold mb-4">Ready to Join Us?</h3>
+        <h3 className="text-2xl font-serif font-semibold mb-4">Ready to begin?</h3>
         <p className="text-black/70 mb-6 max-w-lg mx-auto">
-          Whether you&apos;re looking for deeper connections, want to host your own gathering, 
-          or simply believe in the power of slow conversation, we&apos;d love to have you.
+          Plan a privately hosted gathering, book a signature table, or join the Founding Table
+          for pilots, essays, and community.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/join">
+          <Link href="/plan">
             <Button className="bg-[var(--wwp-ember)] hover:opacity-90 text-white rounded-full px-8">
-              Join the Circle
+              Plan a Gathering
             </Button>
           </Link>
-          <Link href="/wine-with">
+          <Link href="/join">
             <Button variant="outline" className="border-[var(--wwp-ember)] text-[var(--wwp-ember)] hover:bg-[var(--wwp-ember)] hover:text-white rounded-full px-8">
-              Become a Host
+              Join the Founding Table
             </Button>
           </Link>
         </div>
