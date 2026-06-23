@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Mail } from 'lucide-react';
+import { buildInquiryMailto, contactEmail } from '@/lib/inquiry-mailto';
 import { GatheringInterestForm } from '@/components/gathering-interest-form';
 import { useState, useEffect } from 'react';
 import { Event } from '@/lib/types';
 import { EventCard } from '@/components/event-card';
 
-const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'pete@winewithpete.me';
-const contactMailto = `mailto:${contactEmail}?subject=${encodeURIComponent('Wine With Pete — Gathering Inquiry')}`;
+const contactMailto = buildInquiryMailto('Wine With Pete — Gathering Inquiry');
 
 export default function GatheringsPage(){
   const [events, setEvents] = useState<Event[]>([]);
@@ -57,7 +57,7 @@ export default function GatheringsPage(){
           className="card-enhanced bg-white rounded-2xl p-6 shadow-sm border text-center hover:shadow-md transition-shadow"
         >
           <h2 className="text-lg font-serif font-medium text-charcoal mb-2">Book a Signature Table</h2>
-          <p className="text-sm text-black/70">Pete hosts in your home or chosen space</p>
+          <p className="text-sm text-black/70">Pete designs and hosts a signature table in your home or chosen space</p>
         </Link>
       </div>
 
@@ -151,7 +151,7 @@ export default function GatheringsPage(){
           </p>
           <a
             href={contactMailto}
-            className="btn-ember inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium"
+            className="btn-ember focus-ring inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium"
           >
             <Mail className="w-4 h-4" aria-hidden="true" />
             Email Pete

@@ -141,18 +141,14 @@ export default function AboutPage(){
           Plan a privately hosted gathering, book a signature table, or join the Founding Table
           for pilots, essays, and community.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/plan">
-            <Button className="bg-[var(--wwp-ember)] hover:opacity-90 text-white rounded-full px-8">
-              Plan a Gathering
-            </Button>
-          </Link>
-          <Link href="/join">
-            <Button variant="outline" className="border-[var(--wwp-ember)] text-[var(--wwp-ember)] hover:bg-[var(--wwp-ember)] hover:text-white rounded-full px-8">
-              Join the Founding Table
-            </Button>
-          </Link>
-        </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild className="bg-[var(--wwp-ember)] hover:opacity-90 text-white rounded-full px-8">
+                <Link href="/plan">Plan a Gathering</Link>
+              </Button>
+              <Button asChild variant="outline" className="border-[var(--wwp-ember)] text-[var(--wwp-ember)] hover:bg-[var(--wwp-ember)] hover:text-white rounded-full px-8">
+                <Link href="/join">Join the Founding Table</Link>
+              </Button>
+            </div>
       </div>
     </div>
   );

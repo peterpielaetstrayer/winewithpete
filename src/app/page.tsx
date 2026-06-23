@@ -55,25 +55,20 @@ export default function Home() {
             Wine With Pete helps you create signature table experiences—in host homes and chosen spaces.
           </p>
           <p className="text-lg text-white/80 mb-12 leading-relaxed max-w-2xl mx-auto">
-            Whether you want a custom gathering blueprint or a fully hosted evening with Pete, start here.
+            Plan a gathering blueprint, book a privately hosted Signature Table, or join the Founding
+            Table—for invitations, essays, and the community ahead.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
-            <Link href="/plan">
-              <Button className="btn-ember text-white rounded-full px-8 py-4 text-lg font-medium focus-ring">
-                Plan a Gathering
-              </Button>
-            </Link>
-            <Link href="/signature-table">
-              <Button variant="outline" className="bg-white/95 border-2 border-white text-charcoal hover:bg-white hover:text-ember rounded-full px-8 py-4 text-lg font-medium focus-ring shadow-lg">
-                Book a Signature Table
-              </Button>
-            </Link>
-            <Link href="/join">
-              <Button variant="outline" className="bg-white/10 border-2 border-white/80 text-white hover:bg-white hover:text-charcoal rounded-full px-8 py-4 text-lg font-medium focus-ring">
-                Join the Founding Table
-              </Button>
-            </Link>
+            <Button asChild className="btn-ember text-white rounded-full px-8 py-4 text-lg font-medium focus-ring">
+              <Link href="/plan">Plan a Gathering</Link>
+            </Button>
+            <Button asChild variant="outline" className="bg-white/95 border-2 border-white text-charcoal hover:bg-white hover:text-ember rounded-full px-8 py-4 text-lg font-medium focus-ring shadow-lg">
+              <Link href="/signature-table">Book a Signature Table</Link>
+            </Button>
+            <Button asChild variant="outline" className="bg-white/10 border-2 border-white/80 text-white hover:bg-white hover:text-charcoal rounded-full px-8 py-4 text-lg font-medium focus-ring">
+              <Link href="/join">Join the Founding Table</Link>
+            </Button>
           </div>
         </div>
         
@@ -328,22 +323,20 @@ export default function Home() {
                   >
                     Read on Substack
                   </a>
-                  <Link href="/essays">
-                    <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
-                      Browse All Essays
-                    </Button>
-                  </Link>
+                  <Button asChild variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
+                    <Link href="/essays">Browse All Essays</Link>
+                  </Button>
                 </div>
               </div>
             </div>
           )}
           
           <div className="text-center">
-            <Link href="/essays">
-              <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
+            <Button asChild variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
+              <Link href="/essays">
                 {featuredEssays.length > 0 ? 'Browse All Essays' : 'Explore Essays'}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -378,11 +371,9 @@ export default function Home() {
                 Get on the list for invite-only pilot dinners, gathering notes, essays, and early
                 access as the community layer grows.
               </p>
-              <Link href="/join">
-                <Button className="btn-ember px-8 py-4 rounded-full text-lg font-medium">
-                  Join the Founding Table
-                </Button>
-              </Link>
+              <Button asChild className="btn-ember px-8 py-4 rounded-full text-lg font-medium">
+                <Link href="/join">Join the Founding Table</Link>
+              </Button>
               <p className="text-sm text-black/60 mt-6">
                 We respect your privacy. Unsubscribe anytime.
               </p>

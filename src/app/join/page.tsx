@@ -240,16 +240,12 @@ export default function JoinPage(){
               Ready to plan or book a privately hosted gathering?
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/plan">
-                <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
-                  Plan a Gathering
-                </Button>
-              </Link>
-              <Link href="/signature-table">
-                <Button variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
-                  Book a Signature Table
-                </Button>
-              </Link>
+              <Button asChild variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
+                <Link href="/plan">Plan a Gathering</Link>
+              </Button>
+              <Button asChild variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
+                <Link href="/signature-table">Book a Signature Table</Link>
+              </Button>
             </div>
           </div>
         </div>

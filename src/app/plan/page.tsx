@@ -3,8 +3,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Mail } from 'lucide-react';
 
-const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'pete@winewithpete.me';
-const inquiryMailto = `mailto:${contactEmail}?subject=${encodeURIComponent('Plan a Gathering — Blueprint Inquiry')}`;
+import { buildInquiryMailto, contactEmail } from '@/lib/inquiry-mailto';
+
+const inquiryMailto = buildInquiryMailto(
+  'Plan a Gathering — Blueprint Inquiry',
+  'What kind of gathering are you imagining?'
+);
 
 export const metadata: Metadata = {
   title: 'Plan a Gathering | Wine With Pete',
@@ -32,8 +36,8 @@ export default function PlanPage() {
             A custom gathering blueprint for privately hosted dinners in host homes and chosen spaces.
           </p>
           <p className="text-lg text-black/60 max-w-2xl mx-auto">
-            This is gathering design—not catering. You receive a thoughtful plan for flow, menu,
-            wine, conversation, and atmosphere. You host; we help you shape the evening.
+            A design-only blueprint for flow, menu, wine, conversation, and atmosphere—you host
+            the evening in your home or chosen space, with a plan shaped for your guests and setting.
           </p>
         </div>
       </div>
@@ -117,7 +121,7 @@ export default function PlanPage() {
             <p className="text-black/70 leading-relaxed max-w-xl mx-auto">
               Hosts who want a privately hosted gathering with real depth—anniversaries, small friend
               groups, leadership dinners, or a first salon at home—and want expert gathering design
-              without handing the evening over to a caterer.
+              while keeping the evening in your hands.
             </p>
           </div>
         </div>
@@ -136,7 +140,7 @@ export default function PlanPage() {
             </p>
             <a
               href={inquiryMailto}
-              className="btn-ember inline-flex items-center gap-2 px-8 py-4 rounded-full text-lg font-medium"
+              className="btn-ember focus-ring inline-flex items-center gap-2 px-8 py-4 rounded-full text-lg font-medium"
             >
               <Mail className="w-5 h-5" aria-hidden="true" />
               Email Pete

@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Mail } from 'lucide-react';
+import { buildInquiryMailto, contactEmail } from '@/lib/inquiry-mailto';
 
-const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'pete@winewithpete.me';
-const inquiryMailto = `mailto:${contactEmail}?subject=${encodeURIComponent('Signature Table Inquiry')}`;
+const inquiryMailto = buildInquiryMailto('Signature Table Inquiry');
 
 export const metadata: Metadata = {
   title: 'Book a Signature Table | Wine With Pete',
@@ -29,13 +29,12 @@ export default function SignatureTablePage() {
             Book a Signature Table
           </h1>
           <p className="text-xl text-black/70 leading-relaxed max-w-2xl mx-auto mb-4">
-            A privately hosted Wine With Pete experience—in your home or a chosen space.
+            A privately hosted table experience shaped around your space, your people, and the kind
+            of conversation you want to make possible.
           </p>
           <p className="text-lg text-black/60 max-w-2xl mx-auto">
-            Pete designs, hosts, and helps bring the table to life. Food, wine direction, pacing,
-            and conversation are shaped around the host setting and guest count—prepared and
-            executed as appropriate for the space. This is gathering design and hosting, not
-            catering or a private chef service.
+            Pete designs the flow, food direction, wine arc, atmosphere, and conversation structure
+            around the host setting—prepared and brought together as appropriate for your space.
           </p>
         </div>
       </div>
@@ -80,7 +79,7 @@ export default function SignatureTablePage() {
               {
                 icon: '/images/icons/icon-wine.png',
                 title: 'Menu & Wine Direction',
-                body: 'Food and wine shaped around your guests and setting—not a generic preset or drop-off menu.',
+                body: 'Food and wine shaped around your guests and setting—a cohesive arc for the evening.',
               },
               {
                 icon: '/images/icons/icon-connection.png',
@@ -122,6 +121,10 @@ export default function SignatureTablePage() {
               Availability is limited and location-dependent. Inquiries help us confirm fit before
               we schedule.
             </p>
+            <p className="text-sm text-black/50 text-center mt-4 max-w-md mx-auto leading-relaxed">
+              Signature tables are gathering design and hosting for host homes and chosen spaces—a
+              curated evening, not a drop-off menu.
+            </p>
           </div>
         </div>
       </div>
@@ -139,7 +142,7 @@ export default function SignatureTablePage() {
             </p>
             <a
               href={inquiryMailto}
-              className="btn-ember inline-flex items-center gap-2 px-8 py-4 rounded-full text-lg font-medium"
+              className="btn-ember focus-ring inline-flex items-center gap-2 px-8 py-4 rounded-full text-lg font-medium"
             >
               <Mail className="w-5 h-5" aria-hidden="true" />
               Email Pete
