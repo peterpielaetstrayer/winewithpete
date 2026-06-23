@@ -10,6 +10,10 @@ export default function AboutPage(){
         <p className="text-lg text-black/80 max-w-2xl mx-auto">
           A doorway into privately hosted gathering design and signature table experiences.
         </p>
+        <p className="text-lg text-black/70 max-w-2xl mx-auto mt-4">
+          It is still a movement toward slower, more meaningful connection—built one table, one
+          conversation, and one invitation at a time.
+        </p>
       </div>
 
       {/* Main Content */}
@@ -95,10 +99,10 @@ export default function AboutPage(){
         <div className="bg-white rounded-2xl p-8 shadow-sm border mb-8">
           <h2 className="text-2xl font-serif font-semibold mb-4">What We&apos;re Becoming</h2>
           <p className="text-black/80 leading-relaxed mb-4">
-            Wine With Pete is becoming a clear doorway into privately hosted gathering design—not
-            just a philosophy site. We help hosts create signature table experiences, offer custom
-            blueprints for those who want to host themselves, and build a Founding Table community
-            around essays, pilots, and gathering notes.
+            Wine With Pete is becoming a doorway into gathering design—and still a home for essays,
+            pilots, recipes, and the slow work of rebuilding how we gather. We help hosts create
+            signature table experiences, offer custom blueprints for those who want to host
+            themselves, and build a Founding Table community around essays, pilots, and gathering notes.
           </p>
           <p className="text-black/80 leading-relaxed">
             The public community gatherings remain—but the heart of the work is gathering design

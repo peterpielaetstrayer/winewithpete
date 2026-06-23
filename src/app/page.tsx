@@ -94,7 +94,8 @@ export default function Home() {
           </h2>
           <p className="text-xl text-black/70 leading-relaxed max-w-2xl mx-auto animate-fade-in">
             We work with hosts who care about conversation, atmosphere, and the slow unfolding of a
-            real evening—not a preset menu dropped at the door.
+            real evening—not a preset menu dropped at the door. Each table is still rooted in the
+            deeper Wine With Pete thesis: fire, food, and conversation that stays with you.
           </p>
         </div>
       </div>

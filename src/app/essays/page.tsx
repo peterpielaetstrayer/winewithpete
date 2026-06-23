@@ -200,7 +200,7 @@ export default function EssaysPage(){
             </p>
             <Link href="/join">
               <Button className="btn-ember px-8 py-4 rounded-full text-lg font-medium">
-                Join the Circle
+                Join the Founding Table
               </Button>
             </Link>
           </div>

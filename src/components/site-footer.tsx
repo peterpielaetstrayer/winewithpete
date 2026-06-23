@@ -11,7 +11,8 @@ export function SiteFooter(){
           <div className="md:col-span-2">
             <h3 className="text-xl font-serif font-semibold mb-4 text-charcoal">Wine With Pete</h3>
             <p className="text-black/70 leading-relaxed mb-4">
-              Privately hosted gatherings and gathering design—in host homes and chosen spaces.
+              Privately hosted gatherings and gathering design—in host homes and chosen spaces,
+              rooted in fire, food, and the slow unfolding of conversation.
             </p>
             <p className="text-sm text-black/60">© {new Date().getFullYear()} Wine With Pete</p>
           </div>
