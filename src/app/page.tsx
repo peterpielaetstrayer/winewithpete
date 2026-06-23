@@ -26,8 +26,8 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative flex items-center justify-center overflow-hidden py-10 pb-14 sm:py-12 md:h-[75vh] md:min-h-[600px] md:py-0">
-        <div className="absolute inset-0">
+      <div className="relative flex items-center justify-center py-10 pb-16 sm:py-12 sm:pb-14 md:min-h-[75vh] md:py-16 lg:min-h-[600px]">
+        <div className="absolute inset-0 overflow-hidden">
           <Image
             src="/images/hero/hero-campfire.png.png"
             alt="Privately hosted gathering around fire and wine"
@@ -45,6 +45,7 @@ export default function Home() {
             }}
           ></div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-12 md:h-16 bg-gradient-to-t from-[var(--wwp-cream)] to-transparent" />
         </div>
         
         <div className="relative z-10 text-center px-4 w-full max-w-4xl mx-auto animate-fade-in">
@@ -71,13 +72,11 @@ export default function Home() {
             </Button>
           </div>
         </div>
-        
-        <div className="absolute bottom-0 left-0 right-0 h-12 md:h-16 bg-gradient-to-t from-[var(--wwp-cream)] to-transparent"></div>
       </div>
 
       {/* Mission Statement Section */}
       <div 
-        className="bg-white py-20 -mt-20 relative z-20 rounded-t-3xl"
+        className="bg-white py-16 md:py-20 -mt-0 md:-mt-16 lg:-mt-20 relative z-20 rounded-t-3xl"
         style={{
           boxShadow: '0 -10px 40px rgba(0,0,0,0.1), 0 10px 40px rgba(91,35,32,0.05)'
         }}
