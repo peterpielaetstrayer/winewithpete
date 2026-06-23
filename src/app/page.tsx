@@ -26,7 +26,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative h-[75vh] min-h-[600px] flex items-center justify-center overflow-hidden">
+      <div className="relative flex items-center justify-center overflow-hidden py-10 pb-14 sm:py-12 md:h-[75vh] md:min-h-[600px] md:py-0">
         <div className="absolute inset-0">
           <Image
             src="/images/hero/hero-campfire.png.png"
@@ -47,32 +47,32 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent"></div>
         </div>
         
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto animate-fade-in">
-          <h1 className="text-hero text-white leading-relaxed mb-6 tracking-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
+        <div className="relative z-10 text-center px-4 w-full max-w-4xl mx-auto animate-fade-in">
+          <h1 className="text-hero text-white leading-snug md:leading-relaxed mb-4 md:mb-6 tracking-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
             Privately hosted gatherings, thoughtfully designed.
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 mb-4 leading-relaxed">
+          <p className="text-lg md:text-xl lg:text-2xl text-white/90 mb-3 md:mb-4 leading-snug md:leading-relaxed">
             Wine With Pete helps you create signature table experiences—in host homes and chosen spaces.
           </p>
-          <p className="text-lg text-white/80 mb-12 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-white/80 mb-6 md:mb-12 leading-snug md:leading-relaxed max-w-2xl mx-auto">
             Plan a gathering blueprint, book a privately hosted Signature Table, or join the Founding
             Table—for invitations, essays, and the community ahead.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
-            <Button asChild className="btn-ember text-white rounded-full px-8 py-4 text-lg font-medium focus-ring">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full max-w-xs sm:max-w-none mx-auto animate-slide-up">
+            <Button asChild className="btn-ember text-white rounded-full w-full sm:w-auto px-8 py-3 md:py-4 text-base md:text-lg font-medium focus-ring">
               <Link href="/plan">Plan a Gathering</Link>
             </Button>
-            <Button asChild variant="outline" className="bg-white/95 border-2 border-white text-charcoal hover:bg-white hover:text-ember rounded-full px-8 py-4 text-lg font-medium focus-ring shadow-lg">
+            <Button asChild variant="outline" className="bg-white/95 border-2 border-white text-charcoal hover:bg-white hover:text-ember rounded-full w-full sm:w-auto px-8 py-3 md:py-4 text-base md:text-lg font-medium focus-ring shadow-lg">
               <Link href="/signature-table">Book a Signature Table</Link>
             </Button>
-            <Button asChild variant="outline" className="bg-white/10 border-2 border-white/80 text-white hover:bg-white hover:text-charcoal rounded-full px-8 py-4 text-lg font-medium focus-ring">
+            <Button asChild variant="outline" className="bg-white/10 border-2 border-white/80 text-white hover:bg-white hover:text-charcoal rounded-full w-full sm:w-auto px-8 py-3 md:py-4 text-base md:text-lg font-medium focus-ring">
               <Link href="/join">Join the Founding Table</Link>
             </Button>
           </div>
         </div>
         
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[var(--wwp-cream)] to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-12 md:h-16 bg-gradient-to-t from-[var(--wwp-cream)] to-transparent"></div>
       </div>
 
       {/* Mission Statement Section */}
