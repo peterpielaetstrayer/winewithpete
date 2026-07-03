@@ -5,7 +5,10 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { FeaturedEssay } from '@/lib/types';
 import { analyticsEvents } from '@/lib/analytics';
+import { getFeaturedRecipes } from '@/data/recipes';
 import { useState, useEffect } from 'react';
+
+const featuredFireRecipe = getFeaturedRecipes()[0];
 
 export default function Home() {
   const [featuredEssays, setFeaturedEssays] = useState<FeaturedEssay[]>([]);
@@ -230,6 +233,51 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* From the Fire — featured field recipe */}
+      {featuredFireRecipe && (
+        <div className="bg-[var(--wwp-cream)] space-content border-t border-ember/5">
+          <div className="mx-auto max-w-4xl px-4">
+            <h2 className="text-section text-center mb-4 text-charcoal animate-fade-in tracking-tight">
+              From the Fire
+            </h2>
+            <p className="text-center text-black/60 mb-10 max-w-xl mx-auto">
+              Field recipes built for summer tables, live fire, and hands-on gathering.
+            </p>
+            <Link href={`/recipes/${featuredFireRecipe.slug}`} className="group block">
+              <div
+                className="bg-white rounded-2xl p-6 md:p-8 relative overflow-hidden hover:shadow-xl transition-all duration-300"
+                style={{
+                  boxShadow:
+                    '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
+                  background: 'linear-gradient(to bottom, #ffffff, #faf9f7)',
+                }}
+              >
+                <div
+                  className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
+                  style={{
+                    backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`,
+                  }}
+                />
+                <div className="relative z-10">
+                  <p className="text-xs font-medium uppercase tracking-widest text-ember/80 mb-3">
+                    Field Recipe · {featuredFireRecipe.meta.occasion}
+                  </p>
+                  <h3 className="text-2xl font-serif font-medium mb-3 text-charcoal group-hover:text-ember transition-colors">
+                    {featuredFireRecipe.title}
+                  </h3>
+                  <p className="text-black/70 leading-relaxed mb-4 max-w-2xl">
+                    {featuredFireRecipe.subtitle}
+                  </p>
+                  <span className="text-ember font-medium group-hover:text-ember-light transition-colors">
+                    Read the recipe →
+                  </span>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Featured Essay Section — secondary layer */}
       <div className="bg-[var(--wwp-cream)] space-content">

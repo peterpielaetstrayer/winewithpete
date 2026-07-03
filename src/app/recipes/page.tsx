@@ -7,6 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useState, useEffect } from 'react';
 import { Product } from '@/lib/types';
+import { getFeaturedRecipes } from '@/data/recipes';
+
+const featuredRecipes = getFeaturedRecipes();
 
 export default function RecipesPage() {
   const [loading, setLoading] = useState<string | null>(null);
@@ -144,14 +147,71 @@ export default function RecipesPage() {
         </p>
       </div>
 
-      {/* Coming Soon Message */}
+      {/* Featured Recipes */}
+      {featuredRecipes.length > 0 && (
+        <section className="mb-16">
+          <h2 className="text-section text-center mb-4 text-charcoal">Featured Recipes</h2>
+          <p className="text-center text-black/60 mb-10 max-w-xl mx-auto">
+            Field recipes from the fire — built for summer tables and hands-on gathering.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {featuredRecipes.map((recipe) => (
+              <Link
+                key={recipe.slug}
+                href={`/recipes/${recipe.slug}`}
+                className="group card-enhanced animate-scale-in block"
+              >
+                <div
+                  className="aspect-[4/5] relative overflow-hidden rounded-t-2xl bg-gradient-to-br from-ember/10 via-cream to-ember/5 flex items-end p-6"
+                  style={{
+                    backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.04) 1px, rgba(91,35,32,0.04) 2px)`,
+                  }}
+                >
+                  <div className="relative z-10">
+                    <p className="text-xs font-medium uppercase tracking-widest text-ember/80 mb-2">
+                      Field Recipe
+                    </p>
+                    <h3 className="text-2xl font-serif font-medium text-charcoal group-hover:text-ember transition-colors">
+                      {recipe.title}
+                    </h3>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <p className="text-black/70 leading-relaxed mb-4 line-clamp-3">{recipe.subtitle}</p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <Badge variant="outline" className="text-ember border-ember text-xs">
+                      {recipe.meta.format}
+                    </Badge>
+                    <Badge variant="outline" className="text-black/60 border-black/20 text-xs">
+                      {recipe.meta.occasion}
+                    </Badge>
+                  </div>
+                  <span className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors">
+                    Read recipe →
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Recipe Bundles & Guides */}
+      <section className="mb-8">
+        <div className="border-t border-ember/10 pt-12 mb-10">
+          <h2 className="text-section text-center mb-4 text-charcoal">Recipe Bundles &amp; Guides</h2>
+          <p className="text-center text-black/60 max-w-xl mx-auto">
+            Digital bundles and hosting guides — available for purchase when live.
+          </p>
+        </div>
+
       {showPlaceholderMessage && (
         <div className="bg-cream rounded-2xl p-8 mb-12 text-center">
-          <h2 className="text-2xl font-serif font-medium mb-4 text-charcoal">
-            Recipe Bundles Coming Soon
-          </h2>
+          <h3 className="text-xl font-serif font-medium mb-4 text-charcoal">
+            Bundles Coming Soon
+          </h3>
           <p className="text-black/70 leading-relaxed mb-6 max-w-2xl mx-auto">
-            We&apos;re curating our first collection of fire-friendly recipes and guides. 
+            We&apos;re curating our first collection of fire-friendly recipe bundles and guides.
             Stay connected to be notified when they&apos;re available.
           </p>
           <Link href="/join">
@@ -362,6 +422,7 @@ export default function RecipesPage() {
           )}
         </>
       )}
+      </section>
 
       {/* Philosophy Section */}
       <div className="text-center bg-cream rounded-2xl p-12">

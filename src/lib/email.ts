@@ -113,7 +113,7 @@ export const emailTemplates = {
           </p>
         </div>
         ` : ''}
-        <p>The Circle is a small, intentional space. It's where I share things that don't always fit neatly on social media or in longer essays. Thoughts in progress. Recipes meant to be cooked over fire or slow heat. Invitations to gather, reflect, and pay attention.</p>
+        <p>The Founding Table is a small, intentional space. It's where I share things that don't always fit neatly on social media or in longer essays. Thoughts in progress. Recipes meant to be cooked over fire or slow heat. Invitations to gather, reflect, and pay attention.</p>
         <p>Here's what you can expect, at a human pace:</p>
         <ul style="list-style: none; padding-left: 0;">
           <li style="margin-bottom: 8px;">• Weekly reflections — short, grounded ideas about ritual, attention, food, and being human</li>
@@ -121,7 +121,7 @@ export const emailTemplates = {
           <li style="margin-bottom: 8px;">• Occasional invitations — dinners, gatherings, or moments worth showing up for</li>
           <li style="margin-bottom: 8px;">• Community notes — reflections that come from cooking, hosting, and listening</li>
         </ul>
-        <p>This is different from my longer essays on Substack. Those are more structured. The Circle is closer to a journal you open once a week.</p>
+        <p>This is different from my longer essays on Substack. Those are more structured. The Founding Table is closer to a journal you open once a week.</p>
         <p>If you'd like to explore a bit right now, you can:</p>
         <ul style="list-style: none; padding-left: 0;">
           <li style="margin-bottom: 8px;">• Read the essays <a href="https://winewithpete.substack.com" style="color: #5b2320; text-decoration: underline;">here</a></li>
@@ -129,7 +129,7 @@ export const emailTemplates = {
         </ul>
         <p>No rush. No algorithm to satisfy. Come and go as you need.</p>
         <p>Mostly, I just want you to know this: you're welcome here. You don't need to optimize anything. Just show up when it feels right.</p>
-        <p>Glad you're in the Circle.</p>
+        <p>Glad you're at the Founding Table.</p>
         <p>Warmly,<br>Pete</p>
       </div>
     `,
@@ -137,7 +137,7 @@ export const emailTemplates = {
 
 I'm really glad you found your way here.
 
-${recipeCardUrl ? `Your Fire Ritual Recipe Card: ${recipeCardUrl}\n\n` : ''}The Circle is a small, intentional space. It's where I share things that don't always fit neatly on social media or in longer essays. Thoughts in progress. Recipes meant to be cooked over fire or slow heat. Invitations to gather, reflect, and pay attention.
+${recipeCardUrl ? `Your Fire Ritual Recipe Card: ${recipeCardUrl}\n\n` : ''}The Founding Table is a small, intentional space. It's where I share things that don't always fit neatly on social media or in longer essays. Thoughts in progress. Recipes meant to be cooked over fire or slow heat. Invitations to gather, reflect, and pay attention.
 
 Here's what you can expect, at a human pace:
 
@@ -146,7 +146,7 @@ Here's what you can expect, at a human pace:
 • Occasional invitations — dinners, gatherings, or moments worth showing up for
 • Community notes — reflections that come from cooking, hosting, and listening
 
-This is different from my longer essays on Substack. Those are more structured. The Circle is closer to a journal you open once a week.
+This is different from my longer essays on Substack. Those are more structured. The Founding Table is closer to a journal you open once a week.
 
 If you'd like to explore a bit right now, you can:
 
@@ -157,7 +157,7 @@ No rush. No algorithm to satisfy. Come and go as you need.
 
 Mostly, I just want you to know this: you're welcome here. You don't need to optimize anything. Just show up when it feels right.
 
-Glad you're in the Circle.
+Glad you're at the Founding Table.
 
 Warmly,
 Pete`
