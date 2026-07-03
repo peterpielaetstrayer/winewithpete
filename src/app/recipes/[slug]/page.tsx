@@ -42,11 +42,50 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-function MetaRow({ label, value }: { label: string; value: string }) {
+function MetaRow({
+  label,
+  value,
+  className = '',
+}: {
+  label: string;
+  value: string;
+  className?: string;
+}) {
   return (
-    <div className="text-center sm:text-left">
-      <dt className="text-xs font-medium uppercase tracking-wider text-ember mb-1">{label}</dt>
-      <dd className="text-sm text-charcoal leading-snug">{value}</dd>
+    <div className={`text-center sm:text-left ${className}`}>
+      <dt className="text-xs font-medium uppercase tracking-wider text-ember mb-1.5">{label}</dt>
+      <dd className="text-sm text-charcoal leading-relaxed">{value}</dd>
+    </div>
+  );
+}
+
+function CookingSummary({ items }: { items: PublicRecipe['cookingSummary'] }) {
+  if (!items?.length) return null;
+
+  return (
+    <div className="mb-10 p-5 md:p-6 bg-cream/50 rounded-xl border border-ember/10">
+      <p className="text-xs font-medium uppercase tracking-widest text-ember/80 mb-4 text-center md:text-left">
+        At a glance
+      </p>
+      <dl className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        {items.map((item) => (
+          <div key={item.label}>
+            <dt className="text-xs font-medium uppercase tracking-wide text-black/50 mb-1">
+              {item.label}
+            </dt>
+            <dd className="text-sm font-medium text-charcoal leading-snug">{item.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+function FireCueCallout({ text }: { text: string }) {
+  return (
+    <div className="mt-3 p-4 bg-ember/5 rounded-lg border border-ember/15 border-l-4 border-l-ember">
+      <p className="text-xs font-medium uppercase tracking-widest text-ember mb-2">Live-fire cue</p>
+      <p className="text-sm text-black/75 leading-relaxed">{text}</p>
     </div>
   );
 }
@@ -69,7 +108,9 @@ function RecipeCard({ recipe }: { recipe: PublicRecipe }) {
           Wine With Pete · Field Recipe
         </p>
 
-        <div className="grid md:grid-cols-2 gap-10 md:gap-12 mb-10">
+        <CookingSummary items={recipe.cookingSummary} />
+
+        <div className="grid md:grid-cols-2 gap-10 md:gap-14 lg:gap-16 mb-10">
           <section>
             <h2 className="text-xl font-serif font-medium text-charcoal mb-4 border-b border-ember/10 pb-2">
               Ingredients
@@ -94,9 +135,10 @@ function RecipeCard({ recipe }: { recipe: PublicRecipe }) {
                   <span className="flex-shrink-0 w-7 h-7 rounded-full bg-ember/10 text-ember text-sm font-medium flex items-center justify-center mt-0.5">
                     {index + 1}
                   </span>
-                  <div>
+                  <div className="min-w-0">
                     <h3 className="font-medium text-charcoal mb-1">{step.title}</h3>
                     <p className="text-black/75 leading-relaxed">{step.body}</p>
+                    {step.fireCue && <FireCueCallout text={step.fireCue} />}
                   </div>
                 </li>
               ))}
@@ -158,10 +200,15 @@ export default async function RecipePage({ params }: PageProps) {
       </div>
 
       <div className="py-10 md:py-12">
-        <div className="mx-auto max-w-3xl px-4">
-          <dl className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 mb-10 p-6 bg-white rounded-xl border border-ember/5 shadow-sm">
+        <div className="mx-auto max-w-4xl px-4">
+          <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6 mb-10 p-6 md:p-8 bg-white rounded-xl border border-ember/5 shadow-sm">
             {metaEntries.map((entry) => (
-              <MetaRow key={entry.label} label={entry.label} value={entry.value} />
+              <MetaRow
+                key={entry.label}
+                label={entry.label}
+                value={entry.value}
+                className={entry.label === 'Best with' ? 'lg:col-span-2' : ''}
+              />
             ))}
           </dl>
 

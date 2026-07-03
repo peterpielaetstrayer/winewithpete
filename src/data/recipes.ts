@@ -6,9 +6,15 @@ export type RecipeMeta = {
   status: string;
 };
 
+export type CookingSummaryItem = {
+  label: string;
+  value: string;
+};
+
 export type RecipeMethodStep = {
   title: string;
   body: string;
+  fireCue?: string;
 };
 
 export type PublicRecipe = {
@@ -18,6 +24,7 @@ export type PublicRecipe = {
   featured: boolean;
   meta: RecipeMeta;
   ingredients: string[];
+  cookingSummary?: CookingSummaryItem[];
   method: RecipeMethodStep[];
   petesNote: string;
   ctaText: string;
@@ -50,6 +57,12 @@ export const recipes: PublicRecipe[] = [
       'Extra lime wedges, for serving',
       'Extra cilantro, for finishing',
     ],
+    cookingSummary: [
+      { label: 'Grill temp', value: '375–425°F' },
+      { label: 'Cook time', value: '25–35 minutes' },
+      { label: 'Turn', value: 'Every 5–7 minutes' },
+      { label: 'Internal temp', value: '165°F minimum, 175–185°F preferred' },
+    ],
     method: [
       {
         title: 'Marinate the wings.',
@@ -57,11 +70,13 @@ export const recipes: PublicRecipe[] = [
       },
       {
         title: 'Build the fire.',
-        body: 'Prepare a grill, smoker, or live-fire setup for medium to medium-high heat. If using a grill with a lid thermometer, aim for about 375–425°F. If cooking over wood or coals, hold your palm about 5 inches above the cooking grate over the cooking zone. You should be able to keep it there for about 4–5 seconds before pulling away. If you have to pull away after 1–2 seconds, the fire is too hot; if you can hold it there much longer than 6–7 seconds, build more heat. Red oak works beautifully here. You want enough heat to render the skin and enough smoke to make the wings taste like they came from outside.',
+        body: 'Prepare a grill, smoker, or live-fire setup for medium to medium-high heat. If using a grill with a lid thermometer, aim for about 375–425°F. Red oak works beautifully here. You want enough heat to render the skin and enough smoke to make the wings taste like they came from outside.',
+        fireCue:
+          'If cooking over wood or coals, hold your palm about 5 inches above the cooking grate over the cooking zone. You should be able to keep it there for about 4–5 seconds before pulling away. If you have to pull away after 1–2 seconds, the fire is too hot. If you can hold it there much longer than 6–7 seconds, build more heat.',
       },
       {
         title: 'Cook the wings.',
-        body: 'Set up the grill, smoker, or live-fire area for medium to medium-high heat, roughly 375–425°F if using a grill with a lid thermometer. Cook the wings for about 25–35 minutes, turning every 5–7 minutes, until the skin is deeply browned, lightly charred in spots, and the thickest part of the wing reaches at least 165°F. For a more tender, rendered wing, aim closer to 175–185°F.',
+        body: 'Cook the wings for about 25–35 minutes, turning every 5–7 minutes, until the skin is deeply browned, lightly charred in spots, and the thickest part of the wing reaches at least 165°F. For a more tender, rendered wing, aim closer to 175–185°F.',
       },
       {
         title: 'Glaze at the end.',
