@@ -156,6 +156,40 @@ export interface NewsletterFormData {
   name?: string;
 }
 
+export interface GatheringInterestFormData {
+  name: string;
+  email: string;
+  location?: string;
+  interestType?: 'attend' | 'host' | 'collaborate';
+  interestTypes?: string[];
+  note?: string;
+  source?: string;
+  newsletterOptIn?: boolean;
+  utm?: {
+    source?: string;
+    medium?: string;
+    campaign?: string;
+  };
+  pagePath?: string;
+}
+
+export interface GatheringInterest {
+  id: string;
+  subscriber_id: string | null;
+  email: string;
+  name: string;
+  location: string | null;
+  source: string;
+  interest_types: string[];
+  note: string | null;
+  newsletter_opt_in: boolean;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  page_path: string | null;
+  created_at: string;
+}
+
 // Stripe types
 export interface StripeCheckoutSession {
   id: string;

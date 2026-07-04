@@ -19,6 +19,23 @@ export const newsletterSchema = z.object({
   name: nameSchema.optional(),
 });
 
+export const gatheringInterestSchema = z.object({
+  email: emailSchema,
+  name: nameSchema,
+  location: z.string().max(200, 'Location too long').optional(),
+  interestType: z.enum(['attend', 'host', 'collaborate']).optional(),
+  interestTypes: z.array(z.string().min(1, 'Interest type is required').max(100, 'Interest type too long')).max(10, 'Too many interest types').optional(),
+  note: z.string().max(2000, 'Note too long').optional(),
+  source: z.string().max(100, 'Source too long').optional(),
+  newsletterOptIn: z.boolean().optional(),
+  utm: z.object({
+    source: z.string().max(100, 'UTM source too long').optional(),
+    medium: z.string().max(100, 'UTM medium too long').optional(),
+    campaign: z.string().max(100, 'UTM campaign too long').optional(),
+  }).optional(),
+  pagePath: z.string().max(255, 'Page path too long').optional(),
+});
+
 // Checkout validation
 export const checkoutSchema = z.object({
   productId: z.string().min(1, 'Product ID is required'),
