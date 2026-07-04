@@ -70,6 +70,7 @@ export function SiteHeader(){
           {link('/plan', 'Plan a Gathering')}
           {link('/signature-table', 'Signature Table')}
           {link('/join', 'Founding Table')}
+          {link('/gatherings', 'Gatherings')}
           {link('/essays', 'Essays')}
           {link('/about', 'About')}
         </nav>
@@ -100,6 +101,7 @@ export function SiteHeader(){
             {link('/plan', 'Plan a Gathering', () => setIsMenuOpen(false))}
             {link('/signature-table', 'Signature Table', () => setIsMenuOpen(false))}
             {link('/join', 'Founding Table', () => setIsMenuOpen(false))}
+            {link('/gatherings', 'Gatherings', () => setIsMenuOpen(false))}
             {link('/essays', 'Essays', () => setIsMenuOpen(false))}
             {link('/about', 'About', () => setIsMenuOpen(false))}
           </nav>
