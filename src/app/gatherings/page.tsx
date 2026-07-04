@@ -23,7 +23,7 @@ export default function GatheringsPage(){
     try {
       const response = await fetch('/api/events');
       const data = await response.json();
-      setEvents(data.events || []);
+      setEvents(data.data || data.events || []);
     } catch (error) {
       console.error('Failed to fetch events:', error);
     } finally {
@@ -58,6 +58,28 @@ export default function GatheringsPage(){
         >
           <h2 className="text-lg font-serif font-medium text-charcoal mb-2">Book a Signature Table</h2>
           <p className="text-sm text-black/70">Pete designs and hosts a signature table in your home or chosen space</p>
+        </Link>
+      </div>
+
+      {/* Featured table */}
+      <div className="max-w-4xl mx-auto mb-16">
+        <Link
+          href="/gatherings/taino-fire-table"
+          className="card-enhanced group block bg-white rounded-2xl p-8 md:p-10 shadow-sm border hover:shadow-md transition-shadow"
+        >
+          <p className="text-xs font-medium uppercase tracking-[0.22em] text-ember/80 mb-3">
+            Featured Table
+          </p>
+          <h2 className="text-3xl font-serif font-medium text-charcoal mb-3 group-hover:text-ember transition-colors">
+            Taíno Fire Table
+          </h2>
+          <p className="text-black/70 leading-relaxed mb-5 max-w-2xl">
+            A Puerto Rican–Nordic feast rooted in achiote, live-fire cooking, roots, sea,
+            curated wines, and conversation.
+          </p>
+          <span className="text-ember font-medium group-hover:text-ember-light transition-colors">
+            View the Featured Table →
+          </span>
         </Link>
       </div>
 
