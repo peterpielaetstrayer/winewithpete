@@ -48,8 +48,10 @@ export const recipes: PublicRecipe[] = [
       '4 pounds chicken wings, split into flats and drums',
       '3 limes, juiced',
       'Zest of 1 lime',
-      '2–3 chipotle peppers in adobo, finely chopped',
-      '2 tablespoons adobo sauce from the can',
+      '2–3 chipotle peppers in adobo, plus 2–3 tablespoons adobo sauce',
+      '1–2 serrano peppers, stemmed',
+      '3–4 garlic cloves, or 1 teaspoon garlic powder',
+      '1/4 small onion, roughly chopped, or 1 teaspoon onion powder',
       '1/2 cup chopped cilantro',
       '1 tablespoon neutral oil',
       '1 1/2 tablespoons Diamond Crystal kosher salt, or about 2 1/4 teaspoons Morton kosher salt',
@@ -66,7 +68,7 @@ export const recipes: PublicRecipe[] = [
     method: [
       {
         title: 'Marinate the wings.',
-        body: 'In a large bowl or bag, combine the wings, lime juice, lime zest, chopped chipotle, adobo sauce, cilantro, oil, and salt. Toss well. Refrigerate for at least 4 hours, ideally overnight.',
+        body: 'In a blender, combine the lime juice, lime zest, chipotle peppers, adobo sauce, serrano peppers, garlic or garlic powder, onion or onion powder, cilantro, oil, and salt. Blend until mostly smooth. Toss the wings with the marinade in a large bowl or bag, making sure they are well coated. Refrigerate for at least 4 hours, ideally overnight.',
       },
       {
         title: 'Build the fire.',
@@ -88,7 +90,7 @@ export const recipes: PublicRecipe[] = [
       },
     ],
     petesNote:
-      'These wings are part of the Wine With Pete field recipe series: food built around fire, gathering, and the kind of table people remember.\n\nThey are not meant to be precious. They are meant to be passed around, eaten outside, and shared with people who keep reaching for one more.',
+      'For a balanced version, use 2–3 chipotle peppers from the can plus a few spoonfuls of adobo sauce. For a deeper, smokier, spicier Wine With Pete version, use the whole can of chipotles in adobo. Serranos add fresh green heat, so adjust them to taste. Fresh garlic and onion give the marinade more body and depth, but garlic powder and onion powder work well when you want to keep it simple.',
     ctaText:
       'Join the Founding Table for future recipes, dinner notes, and private gathering invites.',
   },
