@@ -18,8 +18,9 @@ export function SiteFooter() {
           </div>
 
           <nav aria-label="Footer navigation" className="space-y-3 text-sm text-white/68">
-            <Link href="/#gather" className="block transition-colors hover:text-white">Gather</Link>
-            <Link href="/#journal" className="block transition-colors hover:text-white">Journal</Link>
+            <Link href="/gather" className="block transition-colors hover:text-white">Gather</Link>
+            <Link href="/journal" className="block transition-colors hover:text-white">Journal</Link>
+            <Link href="/tables" className="block transition-colors hover:text-white">Tables</Link>
             <Link href="/about" className="block transition-colors hover:text-white">About</Link>
             <Link href="/join" className="block transition-colors hover:text-white">Founding Table</Link>
           </nav>
