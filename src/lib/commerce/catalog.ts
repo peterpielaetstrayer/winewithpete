@@ -4,8 +4,6 @@ import type { Offer } from './types';
  * First-party Wine With Pete offers that are not backed by the legacy
  * `products` table. This catalog proves the Offer domain can describe the
  * actual business, not just ecommerce SKUs.
- *
- * Nothing consumes this catalog yet; it is intentionally non-behavioral.
  */
 export const STATIC_OFFERS = [
   {
@@ -90,6 +88,78 @@ export const STATIC_OFFERS = [
     source: {
       type: 'static',
       id: 'baseline-method',
+    },
+  },
+  {
+    id: 'support-5',
+    slug: 'support-coffee',
+    title: 'Buy Me a Coffee',
+    description: 'A small one-time contribution to support Wine With Pete.',
+    kind: 'support',
+    pagePath: '/support',
+    availability: {
+      status: 'active',
+    },
+    price: {
+      amountCents: 500,
+      currency: 'usd',
+    },
+    commerce: {
+      type: 'stripe',
+      mode: 'payment',
+      fulfillment: { type: 'none' },
+    },
+    source: {
+      type: 'static',
+      id: 'support-5',
+    },
+  },
+  {
+    id: 'support-7',
+    slug: 'support-glass-of-wine',
+    title: 'Buy Me a Glass of Wine',
+    description: 'A one-time contribution to support Wine With Pete.',
+    kind: 'support',
+    pagePath: '/support',
+    availability: {
+      status: 'active',
+    },
+    price: {
+      amountCents: 700,
+      currency: 'usd',
+    },
+    commerce: {
+      type: 'stripe',
+      mode: 'payment',
+      fulfillment: { type: 'none' },
+    },
+    source: {
+      type: 'static',
+      id: 'support-7',
+    },
+  },
+  {
+    id: 'support-50',
+    slug: 'support-vision',
+    title: 'Support the Vision',
+    description: 'A larger one-time contribution to support Wine With Pete.',
+    kind: 'support',
+    pagePath: '/support',
+    availability: {
+      status: 'active',
+    },
+    price: {
+      amountCents: 5000,
+      currency: 'usd',
+    },
+    commerce: {
+      type: 'stripe',
+      mode: 'payment',
+      fulfillment: { type: 'none' },
+    },
+    source: {
+      type: 'static',
+      id: 'support-50',
     },
   },
 ] satisfies Offer[];
