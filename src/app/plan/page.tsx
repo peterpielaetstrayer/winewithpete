@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Mail } from 'lucide-react';
 
 import { buildInquiryMailto, contactEmail } from '@/lib/inquiry-mailto';
@@ -11,150 +11,141 @@ const inquiryMailto = buildInquiryMailto(
 );
 
 export const metadata: Metadata = {
-  title: 'Plan a Gathering | Wine With Pete',
+  title: 'Gathering Blueprint | Wine With Pete',
   description:
-    'A custom gathering blueprint for privately hosted dinners in host homes and chosen spaces. Design-only guidance for meaningful gatherings.',
+    'A custom Wine With Pete gathering blueprint for hosts who want to bring the evening to life themselves: menu direction, wine, flow, conversation, and atmosphere.',
   alternates: { canonical: '/plan' },
   openGraph: {
-    title: 'Plan a Gathering | Wine With Pete',
-    description:
-      'Custom gathering design for privately hosted experiences in host homes and chosen spaces.',
+    title: 'Gathering Blueprint | Wine With Pete',
+    description: 'A custom gathering plan shaped around your people, place, menu, wine, and the kind of evening you want to create.',
     url: 'https://winewithpete.me/plan',
   },
 };
 
 export default function PlanPage() {
   return (
-    <div className="min-h-screen bg-cream">
-      {/* Hero */}
-      <div className="bg-white py-16 md:py-20">
-        <div className="mx-auto max-w-4xl px-4 text-center animate-fade-in">
-          <h1 className="text-4xl md:text-5xl font-serif font-medium text-charcoal mb-6">
-            Plan a Gathering
-          </h1>
-          <p className="text-xl text-black/70 leading-relaxed max-w-2xl mx-auto mb-4">
-            A custom gathering blueprint for privately hosted dinners in host homes and chosen spaces.
-          </p>
-          <p className="text-lg text-black/60 max-w-2xl mx-auto">
-            A design-only blueprint for flow, menu, wine, conversation, and atmosphere—you host
-            the evening in your home or chosen space, with a plan shaped for your guests and setting.
-          </p>
+    <main className="bg-[#f4efe7] text-[#211d19]">
+      <section className="border-b border-black/10 px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_.9fr] lg:items-end lg:gap-20">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Gathering Blueprint</p>
+            <h1 className="mt-5 max-w-[10ch] font-serif text-5xl font-medium leading-[.98] tracking-[-0.035em] sm:text-6xl md:text-7xl">
+              Your table. Your people. A plan built for the evening.
+            </h1>
+          </div>
+          <div className="max-w-xl lg:justify-self-end">
+            <p className="font-crimson text-2xl leading-9 text-black/68 sm:text-[1.55rem] sm:leading-10">
+              Wine With Pete designs the gathering. You bring it to life in your own home or chosen space.
+            </p>
+            <a href={inquiryMailto} className="mt-8 inline-flex min-h-12 items-center justify-center gap-3 bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+              <Mail className="h-4 w-4" aria-hidden="true" />
+              Start a blueprint inquiry
+            </a>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* What's included */}
-      <div className="py-16">
-        <div className="mx-auto max-w-4xl px-4">
-          <h2 className="text-section text-center mb-12 text-charcoal">What&apos;s Included</h2>
-          <div className="grid md:grid-cols-2 gap-8">
+      <section className="px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">What arrives</p>
+            <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">The architecture for a gathering you can actually host.</h2>
+          </div>
+
+          <div className="border-y border-black/15">
             {[
-              {
-                title: 'Gathering Blueprint',
-                body: 'A tailored plan for your space, guest count, and the kind of evening you want to create.',
-              },
-              {
-                title: 'Menu & Wine Direction',
-                body: 'Fire-friendly or kitchen-friendly menu framing, wine pairings, and prep guidance—designed for you to execute.',
-              },
-              {
-                title: 'Conversation Architecture',
-                body: 'Prompts, pacing, and salon-style structure so the night unfolds with intention, not awkwardness.',
-              },
-              {
-                title: 'Atmosphere Notes',
-                body: 'Lighting, table flow, and small details that turn a dinner into a signature table experience.',
-              },
-            ].map((item) => (
-              <div key={item.title} className="card-enhanced bg-white rounded-2xl p-8 shadow-sm border">
-                <h3 className="text-xl font-serif font-medium mb-3 text-charcoal">{item.title}</h3>
-                <p className="text-black/70 leading-relaxed">{item.body}</p>
+              ['The gathering idea', 'A clear concept for the evening shaped around the occasion, guests, setting, and what you want the table to feel like.'],
+              ['Food & wine direction', 'A practical menu and wine arc built for your space and your ability to execute—not complexity for its own sake.'],
+              ['Flow & conversation', 'A suggested rhythm for arrival, serving, transitions, and conversation so the night has shape without feeling scripted.'],
+              ['Atmosphere & details', 'Notes on the table, lighting, music, fire, service, and the small choices that help the evening feel like one coherent thing.'],
+            ].map(([title, body], index) => (
+              <div key={title} className="grid gap-4 border-b border-black/10 py-8 last:border-b-0 sm:grid-cols-[70px_190px_1fr] sm:gap-6">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9c3d24]">{String(index + 1).padStart(2, '0')}</p>
+                <h3 className="font-serif text-2xl">{title}</h3>
+                <p className="max-w-2xl text-base leading-7 text-black/58">{body}</p>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* How it works */}
-      <div className="bg-white py-16">
-        <div className="mx-auto max-w-3xl px-4">
-          <h2 className="text-section text-center mb-12 text-charcoal">How It Works</h2>
-          <ol className="space-y-8">
-            {[
-              {
-                step: '1',
-                title: 'Share your vision',
-                body: 'Tell us about your space, your guests, and the gathering you want to create.',
-              },
-              {
-                step: '2',
-                title: 'We design the blueprint',
-                body: 'Pete shapes a custom plan—menu direction, wine, flow, and conversation—for your privately hosted evening.',
-              },
-              {
-                step: '3',
-                title: 'You host in your space',
-                body: 'You bring it to life in your home or chosen space. The blueprint is yours to keep and reuse.',
-              },
-            ].map((item) => (
-              <li key={item.step} className="flex items-start gap-6">
-                <div className="flex-shrink-0 w-12 h-12 bg-ember/10 rounded-full flex items-center justify-center">
-                  <span className="text-xl font-serif font-semibold text-ember">{item.step}</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-serif font-medium mb-2 text-charcoal">{item.title}</h3>
-                  <p className="text-black/70 leading-relaxed">{item.body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </div>
+      <section className="border-y border-black/10 bg-[#eee4d7] px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:gap-20">
+          <div className="relative min-h-[500px] overflow-hidden bg-black sm:min-h-[640px]">
+            <Image
+              src="/images/about/about-pete-beach-fire.png.png"
+              alt="Planning a Wine With Pete gathering around fire and hospitality"
+              fill
+              sizes="(max-width: 1024px) 100vw, 52vw"
+              className="object-cover"
+            />
+          </div>
 
-      {/* Who it's for */}
-      <div className="py-16">
-        <div className="mx-auto max-w-3xl px-4">
-          <div className="card-enhanced bg-white rounded-2xl p-8 md:p-12 shadow-sm border text-center">
-            <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-              <Image src="/images/icons/icon-fire.png" alt="" width={48} height={48} aria-hidden />
+          <div className="max-w-xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">How it works</p>
+            <div className="mt-6 border-y border-black/15">
+              {[
+                ['01', 'Tell Pete about the evening', 'Who is coming, where you are hosting, what the occasion is, and what you want people to remember.'],
+                ['02', 'The blueprint takes shape', 'Pete turns those constraints into one coherent gathering plan rather than a pile of disconnected recommendations.'],
+                ['03', 'You host it', 'The blueprint stays with you. Use it for the evening, adapt it as needed, and keep what is useful for future tables.'],
+              ].map(([number, title, body]) => (
+                <div key={number} className="border-b border-black/10 py-7 last:border-b-0">
+                  <div className="flex items-baseline gap-4">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9c3d24]">{number}</span>
+                    <h3 className="font-serif text-2xl">{title}</h3>
+                  </div>
+                  <p className="mt-3 pl-10 text-base leading-7 text-black/58">{body}</p>
+                </div>
+              ))}
             </div>
-            <h2 className="text-2xl font-serif font-medium mb-4 text-charcoal">Who It&apos;s For</h2>
-            <p className="text-black/70 leading-relaxed max-w-xl mx-auto">
-              Hosts who want a privately hosted gathering with real depth—anniversaries, small friend
-              groups, leadership dinners, or a first salon at home—and want expert gathering design
-              while keeping the evening in your hands.
-            </p>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* CTA */}
-      <div className="bg-white py-16">
-        <div className="mx-auto max-w-2xl px-4 text-center">
-          <div className="bg-cream rounded-2xl p-10 shadow-sm border">
-            <h2 className="text-2xl font-serif font-medium mb-4 text-charcoal">
-              Start a blueprint inquiry
-            </h2>
-            <p className="text-black/70 mb-8 leading-relaxed">
-              Email Pete with a few lines about your space, guest count, and the evening you have in mind.
-              We&apos;ll follow up to see if gathering design is the right fit.
+      <section className="px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">What it is not</p>
+            <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">A blueprint is design, not drop-off catering.</h2>
+          </div>
+          <div className="max-w-3xl">
+            <p className="font-serif text-3xl leading-[1.12] sm:text-4xl">
+              You remain the host. That is part of the point.
             </p>
-            <a
-              href={inquiryMailto}
-              className="btn-ember focus-ring inline-flex items-center gap-2 px-8 py-4 rounded-full text-lg font-medium"
-            >
-              <Mail className="w-5 h-5" aria-hidden="true" />
+            <div className="mt-7 space-y-5 text-lg leading-8 text-black/62">
+              <p>
+                The blueprint is for people who want expert help thinking through the whole gathering while keeping the act of hosting in their own hands.
+              </p>
+              <p>
+                It works especially well for milestone dinners, intimate friend groups, first salons, leadership tables, and hosts who know they want the evening to feel different but do not want to invent every detail from scratch.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-black/10 bg-[#211d19] px-5 py-20 text-[#f4efe7] sm:px-8 md:px-12 md:py-24 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_.8fr] lg:items-end lg:gap-20">
+          <div className="max-w-3xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#d78959]">Start the conversation</p>
+            <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">What kind of evening are you imagining?</h2>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-white/58">
+              Send a few lines about your location, guest count, occasion, and the table you have in mind. We&apos;ll start there.
+            </p>
+          </div>
+          <div className="lg:justify-self-end">
+            <a href={inquiryMailto} className="inline-flex min-h-12 items-center justify-center gap-3 bg-[#a64225] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+              <Mail className="h-4 w-4" aria-hidden="true" />
               Email Pete
             </a>
-            <p className="text-sm text-black/50 mt-4">{contactEmail}</p>
+            <p className="mt-3 text-xs text-white/42">{contactEmail}</p>
           </div>
-          <p className="mt-8 text-black/60 text-sm">
-            Want Pete to host the evening?{' '}
-            <Link href="/signature-table" className="text-ember hover:text-ember-light underline">
-              Book a Signature Table
-            </Link>
-          </p>
         </div>
-      </div>
-    </div>
+        <div className="mx-auto mt-12 max-w-7xl border-t border-white/10 pt-6 text-sm text-white/52">
+          Want Pete to host the evening instead?{' '}
+          <Link href="/signature-table" className="border-b border-white/35 text-white/82">Explore the Signature Table →</Link>
+        </div>
+      </section>
+    </main>
   );
 }
