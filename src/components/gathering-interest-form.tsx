@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { analyticsEvents } from '@/lib/analytics';
 
 export function GatheringInterestForm() {
   const [email, setEmail] = useState('');
@@ -30,6 +31,7 @@ export function GatheringInterestForm() {
       const data = await response.json();
 
       if (response.ok) {
+        analyticsEvents.communityInterestSubmitted(interestType);
         setIsSubmitted(true);
         setEmail('');
         setName('');
