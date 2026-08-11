@@ -1,11 +1,14 @@
 export function SiteStructuredData() {
+  const description =
+    'Wine With Pete is a gathering culture project rebuilding the table through food, wine, fire, hospitality, conversation, stories, and thoughtfully designed gatherings.';
+
   const organizationData = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Wine With Pete',
     url: 'https://winewithpete.me',
     logo: 'https://winewithpete.me/images/hero/hero-campfire.png.png',
-    description: 'A community for philosophical conversation, fire-cooked meals, and meaningful connections.',
+    description,
     sameAs: [
       process.env.NEXT_PUBLIC_INSTAGRAM_URL,
       process.env.NEXT_PUBLIC_TWITTER_URL,
@@ -21,7 +24,7 @@ export function SiteStructuredData() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Wine With Pete',
-    description: 'Join our community for philosophical conversation, fire-cooked meals, and meaningful connections.',
+    description,
     url: 'https://winewithpete.me',
     publisher: {
       '@type': 'Organization',
@@ -42,7 +45,3 @@ export function SiteStructuredData() {
     </>
   );
 }
-
-
-
-
