@@ -29,9 +29,9 @@ const crimsonText = Crimson_Text({
 });
 
 export const metadata: Metadata = {
-  title: 'Wine With Pete — Privately Hosted Gatherings',
-  description: 'Gathering design and signature table experiences in host homes and chosen spaces. Plan a custom blueprint, book a privately hosted evening with Pete, or join the Founding Table.',
-  keywords: 'privately hosted gatherings, gathering design, signature table, wine dinners, host home events, salon dinners, community',
+  title: 'Wine With Pete — Rebuilding the Table',
+  description: 'A gathering culture project shaped around food, wine, fire, hospitality, conversation, stories, and thoughtfully designed tables.',
+  keywords: 'gathering culture, gathering design, signature table, private gatherings, food and wine, live fire cooking, hospitality, essays, recipes',
   authors: [{ name: 'Pete' }],
   creator: 'Wine With Pete',
   publisher: 'Wine With Pete',
@@ -45,8 +45,8 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'Wine With Pete — Privately Hosted Gatherings',
-    description: 'Gathering design and signature table experiences in host homes and chosen spaces.',
+    title: 'Wine With Pete — Rebuilding the Table',
+    description: 'Gatherings, stories, recipes, and objects shaped around food, wine, fire, hospitality, and conversation.',
     url: 'https://winewithpete.me',
     siteName: 'Wine With Pete',
     images: [
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
         url: '/images/hero/hero-campfire.png.png',
         width: 1200,
         height: 630,
-        alt: 'Privately hosted Wine With Pete gathering',
+        alt: 'Wine With Pete gathering around fire',
       },
     ],
     locale: 'en_US',
@@ -62,8 +62,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Wine With Pete — Privately Hosted Gatherings',
-    description: 'Gathering design and signature table experiences in host homes and chosen spaces.',
+    title: 'Wine With Pete — Rebuilding the Table',
+    description: 'Gatherings, stories, recipes, and objects shaped around food, wine, fire, hospitality, and conversation.',
     images: ['/images/hero/hero-campfire.png.png'],
   },
   robots: {
