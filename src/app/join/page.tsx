@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { analyticsEvents } from '@/lib/analytics';
 
 export default function JoinPage() {
   const [email, setEmail] = useState('');
@@ -31,6 +32,7 @@ export default function JoinPage() {
           setError("You're already at the Founding Table. Keep an eye on your inbox for the next note.");
           setEmail('');
         } else {
+          analyticsEvents.newsletterSignup();
           setIsSubmitted(true);
         }
       } else {
@@ -56,10 +58,10 @@ export default function JoinPage() {
             You&apos;re on the list. The next note, invitation, recipe, or experiment will find you there.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-5 sm:flex-row">
-            <Link href="/journal" className="inline-flex min-h-12 items-center justify-center bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+            <Link href="/journal" data-analytics-event="journal_enter" data-analytics-category="navigation" data-analytics-label="founding_table_success" className="inline-flex min-h-12 items-center justify-center bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
               Enter the Journal
             </Link>
-            <Link href="/gather" className="border-b border-black/40 pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-black/70">
+            <Link href="/gather" data-analytics-event="gather_enter" data-analytics-category="navigation" data-analytics-label="founding_table_success" className="border-b border-black/40 pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-black/70">
               Explore Gather →
             </Link>
           </div>
@@ -158,10 +160,10 @@ export default function JoinPage() {
             <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">See what the table is becoming.</h2>
           </div>
           <div className="flex flex-col gap-4 sm:flex-row">
-            <Link href="/journal" className="inline-flex min-h-12 items-center justify-center bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+            <Link href="/journal" data-analytics-event="journal_enter" data-analytics-category="navigation" data-analytics-label="founding_table_bottom" className="inline-flex min-h-12 items-center justify-center bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
               Read the Journal
             </Link>
-            <Link href="/gather" className="inline-flex min-h-12 items-center justify-center border border-black/30 px-6 text-xs font-semibold uppercase tracking-[0.18em] text-[#211d19]">
+            <Link href="/gather" data-analytics-event="gather_enter" data-analytics-category="navigation" data-analytics-label="founding_table_bottom" className="inline-flex min-h-12 items-center justify-center border border-black/30 px-6 text-xs font-semibold uppercase tracking-[0.18em] text-[#211d19]">
               Explore Gather
             </Link>
           </div>
