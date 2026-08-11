@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { Event } from '@/lib/types';
+import { analyticsEvents } from '@/lib/analytics';
 
 interface EventCardProps {
   event: Event;
@@ -36,6 +37,7 @@ export function EventCard({ event }: EventCardProps) {
       const result = await response.json();
 
       if (response.ok) {
+        analyticsEvents.rsvpSubmitted(event.title);
         setIsSubmitted(true);
       } else {
         alert(result.error || 'Failed to submit RSVP');
@@ -94,7 +96,10 @@ export function EventCard({ event }: EventCardProps) {
       {!isRSVPOpen ? (
         <button
           type="button"
-          onClick={() => setIsRSVPOpen(true)}
+          onClick={() => {
+            analyticsEvents.eventViewed(event.title);
+            setIsRSVPOpen(true);
+          }}
           disabled={isFull}
           className="mt-6 min-h-11 w-full bg-[#9c3d24] px-5 text-xs font-semibold uppercase tracking-[0.16em] text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
