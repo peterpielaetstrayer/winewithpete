@@ -107,6 +107,10 @@ export async function POST(request: NextRequest) {
           order = data;
         }
 
+        if (!order) {
+          throw new Error('Order unavailable after checkout processing');
+        }
+
         if (productId) {
           const { data: existingItem, error: itemLookupError } = await supabase
             .from('order_items')
