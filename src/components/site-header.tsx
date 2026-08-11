@@ -1,109 +1,104 @@
 'use client';
-import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
 
-export function SiteHeader(){
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+
+export function SiteHeader() {
+  const pathname = usePathname();
+  const isHome = pathname === '/';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  
+
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isMenuOpen) {
+    setIsMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isMenuOpen) {
         setIsMenuOpen(false);
         menuButtonRef.current?.focus();
       }
     };
+
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isMenuOpen]);
 
-  useEffect(() => {
-    if (isMenuOpen && menuRef.current) {
-      const focusableElements = menuRef.current.querySelectorAll(
-        'a, button, [tabindex]:not([tabindex="-1"])'
-      );
-      const firstElement = focusableElements[0] as HTMLElement;
-      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-      
-      const handleTab = (e: KeyboardEvent) => {
-        if (e.key !== 'Tab') return;
-        
-        if (e.shiftKey) {
-          if (document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement?.focus();
-          }
-        } else {
-          if (document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement?.focus();
-          }
-        }
-      };
-      
-      menuRef.current.addEventListener('keydown', handleTab);
-      firstElement?.focus();
-      
-      return () => {
-        menuRef.current?.removeEventListener('keydown', handleTab);
-      };
-    }
-  }, [isMenuOpen]);
+  const linkClass = isHome
+    ? 'text-white/90 hover:text-white'
+    : 'text-[#211d19]/75 hover:text-[#9c3d24]';
 
-  const link = (href: string, label: string, onClick?: () => void) => (
-    <Link
-      href={href}
-      className="text-sm tracking-wide hover:opacity-80 transition-opacity focus-ring rounded-md px-2 py-1"
-      onClick={onClick}
-    >
-      {label}
-    </Link>
-  );
-  
   return (
-    <header className="w-full bg-white/80 backdrop-blur border-b border-black/5 relative z-50">
-      <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="text-xl font-serif font-semibold">Wine With Pete</Link>
-        
-        <nav className="hidden md:flex gap-5 items-center">
-          {link('/plan', 'Plan a Gathering')}
-          {link('/signature-table', 'Signature Table')}
-          {link('/join', 'Founding Table')}
-          {link('/gatherings', 'Gatherings')}
-          {link('/essays', 'Essays')}
-          {link('/about', 'About')}
+    <header
+      className={`${isHome ? 'absolute inset-x-0 top-0 border-white/15 bg-black/10 text-white' : 'relative border-black/10 bg-[#f4efe7] text-[#211d19]'} z-50 border-b`}
+    >
+      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8 md:px-12 lg:px-16">
+        <Link
+          href="/"
+          className="font-serif text-xl font-semibold tracking-[0.02em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9c3d24]"
+          aria-label="Wine With Pete home"
+        >
+          Wine With Pete
+        </Link>
+
+        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary navigation">
+          <Link href={isHome ? '#gather' : '/#gather'} className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
+            Gather
+          </Link>
+          <Link href={isHome ? '#journal' : '/#journal'} className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
+            Journal
+          </Link>
+          <Link href="/about" className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
+            About
+          </Link>
+          <Link
+            href="/join"
+            className={`border-b pb-1 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${isHome ? 'border-[#d78959] text-[#e5a17b] hover:text-white' : 'border-[#9c3d24] text-[#9c3d24] hover:text-[#6f2819]'}`}
+          >
+            Join the Table
+          </Link>
         </nav>
-        
-        <button 
+
+        <button
           ref={menuButtonRef}
-          className="md:hidden flex flex-col gap-1 w-6 h-6 focus-ring rounded-md p-1"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          type="button"
+          className="flex h-10 w-10 items-center justify-center md:hidden"
+          onClick={() => setIsMenuOpen((open) => !open)}
           aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMenuOpen}
-          aria-controls="mobile-menu"
+          aria-controls="mobile-navigation"
         >
-          <div className={`w-full h-0.5 bg-black transition-transform ${isMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></div>
-          <div className={`w-full h-0.5 bg-black transition-opacity ${isMenuOpen ? 'opacity-0' : ''}`}></div>
-          <div className={`w-full h-0.5 bg-black transition-transform ${isMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></div>
+          <span className="sr-only">Menu</span>
+          <span className="relative block h-4 w-6">
+            <span className={`absolute left-0 top-0 h-px w-6 bg-current transition-transform ${isMenuOpen ? 'translate-y-[7px] rotate-45' : ''}`} />
+            <span className={`absolute left-0 top-[7px] h-px w-6 bg-current transition-opacity ${isMenuOpen ? 'opacity-0' : ''}`} />
+            <span className={`absolute left-0 top-[14px] h-px w-6 bg-current transition-transform ${isMenuOpen ? '-translate-y-[7px] -rotate-45' : ''}`} />
+          </span>
         </button>
       </div>
-      
+
       {isMenuOpen && (
-        <div 
-          id="mobile-menu"
+        <div
+          id="mobile-navigation"
           ref={menuRef}
-          className="md:hidden bg-white border-t border-black/5"
-          role="navigation"
-          aria-label="Mobile navigation"
+          className="absolute inset-x-0 top-[72px] border-b border-black/10 bg-[#f4efe7] px-5 py-8 text-[#211d19] shadow-[0_20px_50px_rgba(0,0,0,.12)] sm:px-8 md:hidden"
         >
-          <nav className="px-4 py-4 flex flex-col gap-4">
-            {link('/plan', 'Plan a Gathering', () => setIsMenuOpen(false))}
-            {link('/signature-table', 'Signature Table', () => setIsMenuOpen(false))}
-            {link('/join', 'Founding Table', () => setIsMenuOpen(false))}
-            {link('/gatherings', 'Gatherings', () => setIsMenuOpen(false))}
-            {link('/essays', 'Essays', () => setIsMenuOpen(false))}
-            {link('/about', 'About', () => setIsMenuOpen(false))}
+          <nav className="mx-auto flex max-w-7xl flex-col" aria-label="Mobile navigation">
+            <Link href={isHome ? '#gather' : '/#gather'} className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
+              Gather
+            </Link>
+            <Link href={isHome ? '#journal' : '/#journal'} className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
+              Journal
+            </Link>
+            <Link href="/about" className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
+              About
+            </Link>
+            <Link href="/join" className="mt-6 text-xs font-semibold uppercase tracking-[0.18em] text-[#9c3d24]" onClick={() => setIsMenuOpen(false)}>
+              Join the Founding Table →
+            </Link>
           </nav>
         </div>
       )}
