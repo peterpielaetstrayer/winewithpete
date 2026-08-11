@@ -1,434 +1,307 @@
-'use client';
-
-import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { FeaturedEssay } from '@/lib/types';
-import { analyticsEvents } from '@/lib/analytics';
-import { getFeaturedRecipes } from '@/data/recipes';
-import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
-const featuredFireRecipe = getFeaturedRecipes()[0];
+const journalItems = [
+  {
+    eyebrow: 'Essay',
+    title: 'Why the Table Still Matters',
+    copy: 'On belonging, ritual, and one of the oldest social technologies we have.',
+    href: '/essays',
+    image: '/images/about/about-pete-beach-fire.png.png',
+  },
+  {
+    eyebrow: 'Recipe',
+    title: 'Chipotle-Lime Fire Wings',
+    copy: 'Smoke, lime, chipotle, agave, and cilantro — food built to be eaten outside.',
+    href: '/recipes/chipotle-lime-fire-wings',
+    image: '/images/hero/hero-campfire.png.png',
+  },
+  {
+    eyebrow: 'Table',
+    title: 'From the Table',
+    copy: 'A growing record of the meals, fires, menus, and conversations behind Wine With Pete.',
+    href: '/gatherings',
+    image: '/images/events/events-community-gathering.png.png',
+  },
+];
 
 export default function Home() {
-  const [featuredEssays, setFeaturedEssays] = useState<FeaturedEssay[]>([]);
-  const [essaysLoading, setEssaysLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('/api/essays')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setFeaturedEssays(data.data || []);
-        }
-      })
-      .catch(err => console.error('Failed to fetch essays:', err))
-      .finally(() => setEssaysLoading(false));
-  }, []);
-
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <div className="relative flex items-center justify-center py-10 pb-16 sm:py-12 sm:pb-14 md:min-h-[75vh] md:py-16 lg:min-h-[600px]">
-        <div className="absolute inset-0 overflow-hidden">
-          <Image
-            src="/images/hero/hero-campfire.png.png"
-            alt="Privately hosted gathering around fire and wine"
-            fill
-            className="object-cover scale-105"
-            style={{ opacity: 0.6 }}
-            priority
-            sizes="100vw"
-          />
-          <div 
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.01) 2px, rgba(0,0,0,0.01) 4px)`,
-              mixBlendMode: 'overlay',
-            }}
-          ></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent"></div>
-          <div className="absolute bottom-0 left-0 right-0 h-12 md:h-16 bg-gradient-to-t from-[var(--wwp-cream)] to-transparent" />
-        </div>
-        
-        <div className="relative z-10 text-center px-4 w-full max-w-4xl mx-auto animate-fade-in">
-          <h1 className="text-hero text-white leading-snug md:leading-relaxed mb-4 md:mb-6 tracking-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
-            Privately hosted gatherings, thoughtfully designed.
-          </h1>
-          <p className="text-lg md:text-xl lg:text-2xl text-white/90 mb-3 md:mb-4 leading-snug md:leading-relaxed">
-            Wine With Pete helps you create signature table experiences—in host homes and chosen spaces.
-          </p>
-          <p className="text-base md:text-lg text-white/80 mb-6 md:mb-12 leading-snug md:leading-relaxed max-w-2xl mx-auto">
-            Plan a gathering blueprint, book a privately hosted Signature Table, or join the Founding
-            Table—for invitations, essays, and the community ahead.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full max-w-xs sm:max-w-none mx-auto animate-slide-up">
-            <Button asChild className="btn-ember text-white rounded-full w-full sm:w-auto px-8 py-3 md:py-4 text-base md:text-lg font-medium focus-ring">
-              <Link href="/plan">Plan a Gathering</Link>
-            </Button>
-            <Button asChild variant="outline" className="bg-white/95 border-2 border-white text-charcoal hover:bg-white hover:text-ember rounded-full w-full sm:w-auto px-8 py-3 md:py-4 text-base md:text-lg font-medium focus-ring shadow-lg">
-              <Link href="/signature-table">Book a Signature Table</Link>
-            </Button>
-            <Button asChild variant="outline" className="bg-white/10 border-2 border-white/80 text-white hover:bg-white hover:text-charcoal rounded-full w-full sm:w-auto px-8 py-3 md:py-4 text-base md:text-lg font-medium focus-ring">
-              <Link href="/join">Join the Founding Table</Link>
-            </Button>
-          </div>
-        </div>
-      </div>
+    <div className="bg-[#f4efe7] text-[#211d19]">
+      {/* Opening */}
+      <section className="relative min-h-[86svh] overflow-hidden bg-black text-white md:min-h-[92vh]">
+        <Image
+          src="/images/hero/hero-campfire.png.png"
+          alt="A Wine With Pete gathering around fire"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,8,6,.88)_0%,rgba(10,8,6,.58)_42%,rgba(10,8,6,.18)_72%,rgba(10,8,6,.25)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/55 to-transparent" />
 
-      {/* Mission Statement Section */}
-      <div 
-        className="bg-white py-16 md:py-20 -mt-0 md:-mt-16 lg:-mt-20 relative z-20 rounded-t-3xl"
-        style={{
-          boxShadow: '0 -10px 40px rgba(0,0,0,0.1), 0 10px 40px rgba(91,35,32,0.05)'
-        }}
-      >
-        <div 
-          className="absolute inset-0 opacity-[0.02] pointer-events-none rounded-t-3xl"
-          style={{
-            backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(91,35,32,0.03) 10px, rgba(91,35,32,0.03) 11px)`
-          }}
-        ></div>
-        <div className="mx-auto max-w-3xl px-4 text-center relative z-10">
-          <h2 className="text-3xl md:text-4xl font-serif font-medium mb-6 text-charcoal animate-fade-in tracking-tight">
-            Gathering design for people who want more than a dinner party
-          </h2>
-          <p className="text-xl text-black/70 leading-relaxed max-w-2xl mx-auto animate-fade-in">
-            We work with hosts who care about conversation, atmosphere, and the slow unfolding of a
-            real evening—not a preset menu dropped at the door. Each table is still rooted in the
-            deeper Wine With Pete thesis: fire, food, and conversation that stays with you.
-          </p>
-        </div>
-      </div>
-
-      {/* What This Is / Who It's For / How It Works */}
-      <div className="bg-[var(--wwp-cream)] space-section">
-        <div className="mx-auto max-w-4xl px-4">
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <div className="text-center animate-fade-in">
-              <h2 className="text-xl font-serif font-medium mb-4 text-charcoal">What This Is</h2>
-              <p className="text-black/70 leading-relaxed">
-                Wine With Pete is gathering design for privately hosted experiences—custom blueprints
-                you execute, or signature tables Pete hosts in your space.
-              </p>
-            </div>
-            
-            <div className="text-center animate-fade-in">
-              <h2 className="text-xl font-serif font-medium mb-4 text-charcoal">Who It&apos;s For</h2>
-              <p className="text-black/70 leading-relaxed">
-                Hosts with a home or chosen space who want depth—milestone dinners, founder tables,
-                intimate friend groups, and evenings that stay with people.
-              </p>
-            </div>
-            
-            <div className="text-center animate-fade-in">
-              <h2 className="text-xl font-serif font-medium mb-4 text-charcoal">How It Works</h2>
-              <p className="text-black/70 leading-relaxed">
-                Choose a blueprint to plan your own gathering, book a signature table with Pete, or
-                join the Founding Table for pilots, essays, and future invitations.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Three Doors */}
-      <div className="bg-white space-content">
-        <div className="mx-auto max-w-6xl px-4">
-          <h2 className="text-section text-center mb-16 text-charcoal animate-fade-in tracking-tight">
-            Three ways in
-          </h2>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <Link href="/plan" className="group animate-scale-in">
-              <div 
-                className="card-enhanced bg-white rounded-2xl p-8 text-center h-full relative overflow-hidden"
-                style={{
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
-                  background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
-                }}
-              >
-                <div 
-                  className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
-                  style={{
-                    backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`
-                  }}
-                ></div>
-                <div className="relative z-10">
-                  <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                    <Image src="/images/icons/icon-growth.png" alt="" width={48} height={48} aria-hidden />
-                  </div>
-                  <h3 className="text-xl font-medium mb-4 text-charcoal tracking-tight">Plan a Gathering</h3>
-                  <p className="text-black/70 leading-relaxed mb-4">
-                    A custom gathering blueprint—menu direction, wine, flow, and conversation—for
-                    your privately hosted evening.
-                  </p>
-                  <div className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors duration-300">
-                    Get a blueprint →
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            <Link href="/signature-table" className="group animate-scale-in">
-              <div 
-                className="card-enhanced bg-white rounded-2xl p-8 text-center h-full relative overflow-hidden"
-                style={{
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
-                  background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
-                }}
-              >
-                <div 
-                  className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
-                  style={{
-                    backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`
-                  }}
-                ></div>
-                <div className="relative z-10">
-                  <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                    <Image src="/images/icons/icon-wine.png" alt="" width={48} height={48} aria-hidden />
-                  </div>
-                  <h3 className="text-xl font-medium mb-4 text-charcoal tracking-tight">Book a Signature Table</h3>
-                  <p className="text-black/70 leading-relaxed mb-4">
-                    Pete designs and hosts a privately hosted signature table experience in your home
-                    or chosen space.
-                  </p>
-                  <div className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors duration-300">
-                    Inquire about hosting →
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            <Link href="/join" className="group animate-scale-in">
-              <div 
-                className="card-enhanced bg-white rounded-2xl p-8 text-center h-full relative overflow-hidden"
-                style={{
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
-                  background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
-                }}
-              >
-                <div 
-                  className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
-                  style={{
-                    backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`
-                  }}
-                ></div>
-                <div className="relative z-10">
-                  <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                    <Image src="/images/icons/icon-connection.png" alt="" width={48} height={48} aria-hidden />
-                  </div>
-                  <h3 className="text-xl font-medium mb-4 text-charcoal tracking-tight">Join the Founding Table</h3>
-                  <p className="text-black/70 leading-relaxed mb-4">
-                    The list for invite-only pilots, essays, gathering notes, and the community
-                    layer behind the work.
-                  </p>
-                  <div className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors duration-300">
-                    Join the list →
-                  </div>
-                </div>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* From the Fire — featured field recipe */}
-      {featuredFireRecipe && (
-        <div className="bg-[var(--wwp-cream)] space-content border-t border-ember/5">
-          <div className="mx-auto max-w-4xl px-4">
-            <h2 className="text-section text-center mb-4 text-charcoal animate-fade-in tracking-tight">
-              From the Fire
-            </h2>
-            <p className="text-center text-black/60 mb-10 max-w-xl mx-auto">
-              Field recipes built for summer tables, live fire, and hands-on gathering.
+        <div className="relative z-10 mx-auto flex min-h-[86svh] max-w-7xl items-end px-5 pb-16 pt-32 sm:px-8 md:min-h-[92vh] md:items-center md:px-12 md:pb-10 md:pt-28 lg:px-16">
+          <div className="max-w-3xl">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.28em] text-[#d78959] md:text-xs">
+              Wine With Pete
             </p>
-            <Link href={`/recipes/${featuredFireRecipe.slug}`} className="group block">
-              <div
-                className="bg-white rounded-2xl p-6 md:p-8 relative overflow-hidden hover:shadow-xl transition-all duration-300"
-                style={{
-                  boxShadow:
-                    '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
-                  background: 'linear-gradient(to bottom, #ffffff, #faf9f7)',
-                }}
+            <h1 className="max-w-[14ch] font-serif text-[clamp(2.8rem,6.2vw,5.8rem)] font-medium leading-[0.98] tracking-[-0.035em] text-white">
+              Rebuilding the table in an age that keeps teaching us to leave it.
+            </h1>
+            <p className="mt-7 max-w-xl text-base leading-7 text-white/82 sm:text-lg md:mt-8 md:text-xl md:leading-8">
+              Gatherings, stories, and objects shaped around food, wine, fire, hospitality, and conversation.
+            </p>
+            <div className="mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center md:mt-10">
+              <Link
+                href="#gather"
+                className="inline-flex min-h-12 items-center justify-center bg-[#a64225] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-[#85351f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
-                <div
-                  className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
-                  style={{
-                    backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`,
-                  }}
-                />
-                <div className="relative z-10">
-                  <p className="text-xs font-medium uppercase tracking-widest text-ember/80 mb-3">
-                    Field Recipe · {featuredFireRecipe.meta.occasion}
-                  </p>
-                  <h3 className="text-2xl font-serif font-medium mb-3 text-charcoal group-hover:text-ember transition-colors">
-                    {featuredFireRecipe.title}
-                  </h3>
-                  <p className="text-black/70 leading-relaxed mb-4 max-w-2xl">
-                    {featuredFireRecipe.subtitle}
-                  </p>
-                  <span className="text-ember font-medium group-hover:text-ember-light transition-colors">
-                    Read the recipe →
-                  </span>
-                </div>
-              </div>
-            </Link>
+                Gather with us <span className="ml-3" aria-hidden>→</span>
+              </Link>
+              <Link
+                href="#journal"
+                className="border-b border-[#d78959] pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:text-[#e3a078] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              >
+                Enter the Journal
+              </Link>
+            </div>
           </div>
         </div>
-      )}
+      </section>
 
-      {/* Featured Essay Section — secondary layer */}
-      <div className="bg-[var(--wwp-cream)] space-content">
-        <div className="mx-auto max-w-4xl px-4">
-          <h2 className="text-section text-center mb-4 text-charcoal animate-fade-in tracking-tight">
-            From the Founding Table
-          </h2>
-          <p className="text-center text-black/60 mb-12 max-w-xl mx-auto">
-            Essays and writing for those building toward slower, more meaningful gatherings.
-          </p>
-          
-          {essaysLoading ? (
-            <div className="text-center py-8 text-black/60">Loading essays...</div>
-          ) : featuredEssays.length > 0 ? (
-            <div className="space-y-8 mb-8">
-              {featuredEssays.slice(0, 3).map((essay, index) => (
-                <div key={essay.id}>
-                  {index > 0 && (
-                    <div className="text-center mb-6">
-                      <p className="text-black/50 italic text-sm font-serif">
-                        Then explore this...
-                      </p>
-                    </div>
-                  )}
-                  
-                  <div 
-                    className="bg-white rounded-2xl p-6 relative overflow-hidden hover:shadow-xl transition-all duration-300"
-                    style={{
-                      boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
-                      background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
-                    }}
-                  >
-                    <div 
-                      className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
-                      style={{
-                        backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`
-                      }}
-                    ></div>
-                    <div className="relative z-10">
-                      {essay.image_url && (
-                        <div className="mb-4 -mx-6 -mt-6">
-                          <img 
-                            src={essay.image_url} 
-                            alt={essay.title ? `${essay.title} - Featured essay image` : 'Featured essay image'} 
-                            className="w-full h-48 object-cover"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        </div>
-                      )}
-                      <h3 className="text-xl font-serif font-medium mb-2 text-charcoal tracking-tight">
-                        {essay.title || 'Untitled Essay'}
-                      </h3>
-                      {essay.excerpt && (
-                        <p className="text-black/70 leading-relaxed mb-4">
-                          {essay.excerpt}
-                        </p>
-                      )}
-                      <a 
-                        href={essay.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-ember font-medium hover:text-ember-light transition-colors"
-                        onClick={() => analyticsEvents.essayClicked(essay.title || 'Untitled', essay.url)}
-                      >
-                        Read essay →
-                      </a>
-                    </div>
-                  </div>
+      {/* Why the table */}
+      <section className="border-b border-black/10 bg-[#f4efe7] px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-12 md:grid-cols-[1.05fr_.95fr] md:items-center md:gap-16 lg:gap-24">
+          <div className="max-w-2xl">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Why the table</p>
+            <h2 className="font-serif text-4xl font-medium leading-[1.05] tracking-[-0.025em] sm:text-5xl lg:text-6xl">
+              The table is one of humanity&apos;s oldest social technologies.
+            </h2>
+            <div className="mt-8 max-w-xl space-y-5 font-crimson text-xl leading-8 text-black/72 sm:text-[1.35rem]">
+              <p>We eat there. Argue there. Celebrate there. Pass things down there. Learn who each other are there.</p>
+              <p>Wine With Pete is an attempt to make that space matter again.</p>
+            </div>
+          </div>
+
+          <figure className="relative mx-auto aspect-[4/5] w-full max-w-xl overflow-hidden md:mx-0">
+            <Image
+              src="/images/about/about-pete-beach-fire.png.png"
+              alt="Wine With Pete around the fire"
+              fill
+              sizes="(max-width: 768px) 100vw, 45vw"
+              className="object-cover"
+            />
+          </figure>
+        </div>
+      </section>
+
+      {/* Around the table */}
+      <section className="border-b border-black/10 bg-[#f4efe7] px-5 py-20 sm:px-8 md:px-12 md:py-24 lg:px-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[.72fr_1.28fr] lg:gap-16">
+            <div className="max-w-md lg:sticky lg:top-10 lg:self-start">
+              <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Around the table</p>
+              <h2 className="font-serif text-4xl font-medium leading-[1.08] tracking-[-0.025em] sm:text-5xl">
+                A growing record of the meals, fires, and conversations that make up Wine With Pete.
+              </h2>
+              <Link href="/gatherings" className="mt-8 inline-block border-b border-[#9c3d24] pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#9c3d24]">
+                Explore the tables →
+              </Link>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2">
+              <article className="sm:col-span-2">
+                <div className="relative aspect-[16/9] overflow-hidden bg-black">
+                  <Image
+                    src="/images/events/events-community-gathering.png.png"
+                    alt="A Wine With Pete gathering"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 65vw"
+                    className="object-cover transition-transform duration-700 hover:scale-[1.015]"
+                  />
                 </div>
+                <div className="mt-4 border-t border-black/15 pt-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">Table notes</p>
+                  <h3 className="mt-2 font-serif text-2xl">Gatherings with a reason to exist.</h3>
+                </div>
+              </article>
+
+              <article>
+                <div className="relative aspect-[4/5] overflow-hidden bg-black">
+                  <Image
+                    src="/images/hero/hero-campfire.png.png"
+                    alt="Cooking over fire"
+                    fill
+                    sizes="(max-width: 640px) 100vw, 32vw"
+                    className="object-cover"
+                  />
+                </div>
+                <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-black/50">From the fire</p>
+                <h3 className="mt-1 font-serif text-xl">Fire changes the pace of an evening.</h3>
+              </article>
+
+              <article className="sm:pt-16">
+                <div className="relative aspect-[4/5] overflow-hidden bg-black">
+                  <Image
+                    src="/images/about/about-pete-beach-fire.png.png"
+                    alt="A gathering shaped around fire and conversation"
+                    fill
+                    sizes="(max-width: 640px) 100vw, 32vw"
+                    className="object-cover"
+                  />
+                </div>
+                <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-black/50">The work</p>
+                <h3 className="mt-1 font-serif text-xl">Food is part of it. The table is the point.</h3>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gather */}
+      <section id="gather" className="scroll-mt-20 border-b border-black/10 bg-[#eee4d7] px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-12 max-w-3xl md:mb-16">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Gather</p>
+            <h2 className="font-serif text-4xl font-medium leading-[1.05] tracking-[-0.025em] sm:text-5xl lg:text-6xl">
+              Bring people together. We&apos;ll help shape what happens around the table.
+            </h2>
+          </div>
+
+          <div className="grid gap-px bg-black/15 lg:grid-cols-2">
+            <article className="grid bg-[#f4efe7] md:grid-cols-[1.02fr_.98fr] lg:grid-cols-1 xl:grid-cols-[1.02fr_.98fr]">
+              <div className="relative min-h-[340px] md:min-h-[460px] lg:min-h-[390px] xl:min-h-[500px]">
+                <Image
+                  src="/images/events/events-community-gathering.png.png"
+                  alt="A privately hosted Wine With Pete table"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 32vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex flex-col justify-between p-7 sm:p-9">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">Signature Table</p>
+                  <h3 className="mt-5 font-serif text-3xl leading-tight">Pete designs and hosts the table.</h3>
+                  <p className="mt-5 leading-7 text-black/65">
+                    A privately hosted Wine With Pete evening shaped around your people, place, food, wine, and reason for gathering.
+                  </p>
+                </div>
+                <Link href="/signature-table" className="mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-[#9c3d24]">
+                  Host a Signature Table →
+                </Link>
+              </div>
+            </article>
+
+            <article className="grid bg-[#f4efe7] md:grid-cols-[1.02fr_.98fr] lg:grid-cols-1 xl:grid-cols-[1.02fr_.98fr]">
+              <div className="relative min-h-[340px] md:min-h-[460px] lg:min-h-[390px] xl:min-h-[500px]">
+                <Image
+                  src="/images/about/about-pete-beach-fire.png.png"
+                  alt="Planning a gathering with Wine With Pete"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 32vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex flex-col justify-between p-7 sm:p-9">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">Gathering Blueprint</p>
+                  <h3 className="mt-5 font-serif text-3xl leading-tight">Your table. Your people. A plan built for the evening.</h3>
+                  <p className="mt-5 leading-7 text-black/65">
+                    Wine With Pete designs the menu direction, wine, flow, atmosphere, and gathering structure. You bring it to life.
+                  </p>
+                </div>
+                <Link href="/plan" className="mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-[#9c3d24]">
+                  Plan your gathering →
+                </Link>
+              </div>
+            </article>
+          </div>
+
+          <p className="mt-8 text-sm text-black/60">
+            Not every table is private. From time to time, we open the table.{' '}
+            <Link href="/gatherings" className="border-b border-black/35 text-black/80">Explore community tables →</Link>
+          </p>
+        </div>
+      </section>
+
+      {/* Journal */}
+      <section id="journal" className="scroll-mt-20 border-b border-black/10 bg-[#f4efe7] px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-12 lg:grid-cols-[.68fr_1.32fr] lg:gap-16">
+            <div className="max-w-lg">
+              <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">The Journal</p>
+              <h2 className="font-serif text-4xl font-medium leading-[1.07] tracking-[-0.025em] sm:text-5xl">
+                Food, wine, fire, places, people — and what happens when we gather around them.
+              </h2>
+              <Link href="/essays" className="mt-8 inline-block border-b border-[#9c3d24] pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#9c3d24]">
+                Enter the Journal →
+              </Link>
+            </div>
+
+            <div className="divide-y divide-black/15 border-y border-black/15">
+              {journalItems.map((item) => (
+                <Link key={item.title} href={item.href} className="group grid gap-5 py-5 sm:grid-cols-[180px_1fr] sm:items-center md:grid-cols-[220px_1fr]">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-black">
+                    <Image src={item.image} alt="" fill sizes="220px" className="object-cover transition-transform duration-500 group-hover:scale-[1.025]" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">{item.eyebrow}</p>
+                    <h3 className="mt-2 font-serif text-2xl transition-colors group-hover:text-[#9c3d24]">{item.title}</h3>
+                    <p className="mt-2 max-w-xl text-sm leading-6 text-black/58">{item.copy}</p>
+                  </div>
+                </Link>
               ))}
             </div>
-          ) : (
-            <div 
-              className="bg-white rounded-2xl p-8 mb-8 relative overflow-hidden"
-              style={{
-                boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
-                background: 'linear-gradient(to bottom, #ffffff, #faf9f7)'
-              }}
-            >
-              <div className="relative z-10">
-                <p className="text-black/70 leading-relaxed mb-6">
-                  We&apos;re curating essays for the Founding Table. Explore the full archive on Substack in the meantime.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <a 
-                    href="https://winewithpete.substack.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="btn-ember px-6 py-3 rounded-full text-center"
-                  >
-                    Read on Substack
-                  </a>
-                  <Button asChild variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
-                    <Link href="/essays">Browse All Essays</Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          <div className="text-center">
-            <Button asChild variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
-              <Link href="/essays">
-                {featuredEssays.length > 0 ? 'Browse All Essays' : 'Explore Essays'}
-              </Link>
-            </Button>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Founding Table CTA */}
-      <div className="bg-white space-section relative">
-        <div 
-          className="absolute inset-0 opacity-[0.015] pointer-events-none"
-          style={{
-            backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(91,35,32,0.02) 20px, rgba(91,35,32,0.02) 21px)`
-          }}
-        ></div>
-        <div className="mx-auto max-w-2xl px-4 relative z-10">
-          <div 
-            className="bg-cream rounded-2xl p-12 text-center relative overflow-hidden"
-            style={{
-              boxShadow: '0 8px 30px rgba(0,0,0,0.1), 0 2px 8px rgba(91,35,32,0.08), 0 0 0 1px rgba(91,35,32,0.05)',
-              background: 'linear-gradient(to bottom, #f6f3ef, #f0ebe5)'
-            }}
-          >
-            <div 
-              className="absolute inset-0 rounded-2xl opacity-[0.02] pointer-events-none"
-              style={{
-                backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(91,35,32,0.03) 2px, rgba(91,35,32,0.03) 4px)`
-              }}
-            ></div>
-            <div className="relative z-10">
-              <h2 className="text-3xl font-serif font-medium mb-4 text-charcoal tracking-tight">
-                Join the Founding Table
-              </h2>
-              <p className="text-lg text-black/70 mb-8 leading-relaxed">
-                Get on the list for invite-only pilot dinners, gathering notes, essays, and early
-                access as the community layer grows.
-              </p>
-              <Button asChild className="btn-ember px-8 py-4 rounded-full text-lg font-medium">
-                <Link href="/join">Join the Founding Table</Link>
-              </Button>
-              <p className="text-sm text-black/60 mt-6">
-                We respect your privacy. Unsubscribe anytime.
-              </p>
-            </div>
+      {/* Manifesto */}
+      <section className="relative isolate overflow-hidden bg-black px-5 py-24 text-white sm:px-8 md:px-12 md:py-32 lg:px-16">
+        <Image
+          src="/images/hero/hero-campfire.png.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="-z-20 object-cover opacity-55"
+        />
+        <div className="absolute inset-0 -z-10 bg-black/55" />
+        <blockquote className="mx-auto max-w-5xl text-center font-serif text-4xl leading-[1.08] tracking-[-0.02em] sm:text-5xl md:text-6xl">
+          The point was never dinner.
+          <br />
+          The point was what dinner made possible.
+        </blockquote>
+      </section>
+
+      {/* Founding Table */}
+      <section className="bg-[#f4efe7] px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.9fr_1.1fr] lg:items-center lg:gap-20">
+          <div className="relative aspect-[4/3] overflow-hidden bg-black">
+            <Image
+              src="/images/events/events-community-gathering.png.png"
+              alt="A place at the Wine With Pete table"
+              fill
+              sizes="(max-width: 1024px) 100vw, 45vw"
+              className="object-cover"
+            />
+          </div>
+          <div className="max-w-2xl">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Founding Table</p>
+            <h2 className="font-serif text-5xl font-medium leading-none tracking-[-0.025em] sm:text-6xl">Pull up a chair.</h2>
+            <p className="mt-7 max-w-xl font-crimson text-xl leading-8 text-black/68">
+              The Founding Table is the closer circle around Wine With Pete — new tables, invitations, field notes, essays, recipes, and things we&apos;re building before they reach everyone else.
+            </p>
+            <Link
+              href="/join"
+              className="mt-9 inline-flex min-h-12 items-center justify-center bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-[#7f301d]"
+            >
+              Join the Founding Table <span className="ml-3" aria-hidden>→</span>
+            </Link>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
