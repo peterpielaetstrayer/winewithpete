@@ -2,18 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { Button } from '@/components/ui/button';
 import {
   getAllRecipeSlugs,
   getRecipeBySlug,
   type PublicRecipe,
 } from '@/data/recipes';
-
-const cardSurfaceStyle = {
-  boxShadow:
-    '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(91,35,32,0.1), 0 0 0 1px rgba(91,35,32,0.05)',
-  background: 'linear-gradient(to bottom, #ffffff, #faf9f7)',
-} as const;
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -42,120 +35,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-function MetaRow({
-  label,
-  value,
-  className = '',
-}: {
-  label: string;
-  value: string;
-  className?: string;
-}) {
-  return (
-    <div className={`text-center sm:text-left ${className}`}>
-      <dt className="text-xs font-medium uppercase tracking-wider text-ember mb-1.5">{label}</dt>
-      <dd className="text-sm text-charcoal leading-relaxed">{value}</dd>
-    </div>
-  );
-}
-
 function CookingSummary({ items }: { items: PublicRecipe['cookingSummary'] }) {
   if (!items?.length) return null;
 
   return (
-    <div className="mb-10 p-5 md:p-6 bg-cream/50 rounded-xl border border-ember/10">
-      <p className="text-xs font-medium uppercase tracking-widest text-ember/80 mb-4 text-center md:text-left">
-        At a glance
-      </p>
-      <dl className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        {items.map((item) => (
-          <div key={item.label}>
-            <dt className="text-xs font-medium uppercase tracking-wide text-black/50 mb-1">
-              {item.label}
-            </dt>
-            <dd className="text-sm font-medium text-charcoal leading-snug">{item.value}</dd>
-          </div>
-        ))}
-      </dl>
-    </div>
-  );
-}
-
-function FireCueCallout({ text }: { text: string }) {
-  return (
-    <div className="mt-3 p-4 bg-ember/5 rounded-lg border border-ember/15 border-l-4 border-l-ember">
-      <p className="text-xs font-medium uppercase tracking-widest text-ember mb-2">Live-fire cue</p>
-      <p className="text-sm text-black/75 leading-relaxed">{text}</p>
-    </div>
-  );
-}
-
-function RecipeCard({ recipe }: { recipe: PublicRecipe }) {
-  return (
-    <article
-      className="rounded-2xl p-6 md:p-10 relative overflow-hidden border border-ember/5"
-      style={cardSurfaceStyle}
-    >
-      <div
-        className="absolute inset-0 rounded-2xl opacity-[0.015] pointer-events-none"
-        style={{
-          backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.05) 1px, rgba(91,35,32,0.05) 2px)`,
-        }}
-      />
-
-      <div className="relative z-10">
-        <p className="text-xs font-medium uppercase tracking-widest text-ember/80 mb-6 text-center">
-          Wine With Pete · Field Recipe
-        </p>
-
-        <CookingSummary items={recipe.cookingSummary} />
-
-        <div className="grid md:grid-cols-2 gap-10 md:gap-14 lg:gap-16 mb-10">
-          <section>
-            <h2 className="text-xl font-serif font-medium text-charcoal mb-4 border-b border-ember/10 pb-2">
-              Ingredients
-            </h2>
-            <ul className="space-y-2">
-              {recipe.ingredients.map((item) => (
-                <li key={item} className="text-black/75 leading-relaxed flex gap-2">
-                  <span className="text-ember mt-1.5 shrink-0">·</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-serif font-medium text-charcoal mb-4 border-b border-ember/10 pb-2">
-              Method
-            </h2>
-            <ol className="space-y-5">
-              {recipe.method.map((step, index) => (
-                <li key={step.title} className="flex gap-4">
-                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-ember/10 text-ember text-sm font-medium flex items-center justify-center mt-0.5">
-                    {index + 1}
-                  </span>
-                  <div className="min-w-0">
-                    <h3 className="font-medium text-charcoal mb-1">{step.title}</h3>
-                    <p className="text-black/75 leading-relaxed">{step.body}</p>
-                    {step.fireCue && <FireCueCallout text={step.fireCue} />}
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </section>
+    <dl className="grid gap-px border-y border-black/15 bg-black/15 sm:grid-cols-2 lg:grid-cols-4">
+      {items.map((item) => (
+        <div key={item.label} className="bg-[#f4efe7] px-5 py-5">
+          <dt className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#9c3d24]">{item.label}</dt>
+          <dd className="mt-2 text-sm font-medium leading-6 text-black/70">{item.value}</dd>
         </div>
+      ))}
+    </dl>
+  );
+}
 
-        <section className="bg-cream/60 rounded-xl p-6 md:p-8 border border-ember/5">
-          <h2 className="text-lg font-serif font-medium text-charcoal mb-3">Pete&apos;s Note</h2>
-          {recipe.petesNote.split('\n\n').map((paragraph) => (
-            <p key={paragraph.slice(0, 40)} className="text-black/75 leading-relaxed italic mb-3 last:mb-0">
-              {paragraph}
-            </p>
-          ))}
-        </section>
-      </div>
-    </article>
+function FireCue({ text }: { text: string }) {
+  return (
+    <aside className="mt-5 border-l-2 border-[#9c3d24] pl-5">
+      <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#9c3d24]">Live-fire cue</p>
+      <p className="mt-2 text-sm leading-6 text-black/60">{text}</p>
+    </aside>
   );
 }
 
@@ -164,71 +64,110 @@ export default async function RecipePage({ params }: PageProps) {
   const recipe = getRecipeBySlug(slug);
   if (!recipe) notFound();
 
-  const metaEntries: { label: string; value: string }[] = [
-    { label: 'Format', value: recipe.meta.format },
-    { label: 'Occasion', value: recipe.meta.occasion },
-    { label: 'Flavor', value: recipe.meta.flavor },
-    { label: 'Best with', value: recipe.meta.bestWith },
-    { label: 'Status', value: recipe.meta.status },
+  const metaEntries = [
+    ['Format', recipe.meta.format],
+    ['Occasion', recipe.meta.occasion],
+    ['Flavor', recipe.meta.flavor],
+    ['Best with', recipe.meta.bestWith],
+    ['Status', recipe.meta.status],
   ];
 
   return (
-    <div className="min-h-screen bg-cream">
-      <div className="bg-white border-b border-ember/5">
-        <div className="mx-auto max-w-3xl px-4 py-4">
-          <Link
-            href="/recipes"
-            className="text-sm text-ember hover:text-ember-light transition-colors font-medium"
-          >
-            ← All recipes
+    <main className="bg-[#f4efe7] text-[#211d19]">
+      <section className="border-b border-black/10 px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto max-w-7xl">
+          <Link href="/recipes" className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/45 hover:text-[#9c3d24]">
+            ← Recipes & Guides
           </Link>
-        </div>
-      </div>
-
-      <div className="bg-white py-12 md:py-16">
-        <div className="mx-auto max-w-3xl px-4 text-center animate-fade-in">
-          <p className="text-xs font-medium uppercase tracking-widest text-ember/80 mb-4">
-            Field Recipe
-          </p>
-          <h1 className="text-4xl md:text-5xl font-serif font-medium text-charcoal mb-5">
-            {recipe.title}
-          </h1>
-          <p className="text-lg md:text-xl text-black/70 leading-relaxed max-w-2xl mx-auto">
-            {recipe.subtitle}
-          </p>
-        </div>
-      </div>
-
-      <div className="py-10 md:py-12">
-        <div className="mx-auto max-w-4xl px-4">
-          <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6 mb-10 p-6 md:p-8 bg-white rounded-xl border border-ember/5 shadow-sm">
-            {metaEntries.map((entry) => (
-              <MetaRow
-                key={entry.label}
-                label={entry.label}
-                value={entry.value}
-                className={entry.label === 'Best with' ? 'lg:col-span-2' : ''}
-              />
-            ))}
-          </dl>
-
-          <RecipeCard recipe={recipe} />
-        </div>
-      </div>
-
-      <div className="bg-white py-16">
-        <div className="mx-auto max-w-2xl px-4 text-center">
-          <div className="bg-cream rounded-2xl p-10 shadow-sm border border-ember/5">
-            <h2 className="text-2xl font-serif font-medium mb-4 text-charcoal">
-              More from the fire
-            </h2>
-            <p className="text-black/70 mb-8 leading-relaxed">{recipe.ctaText}</p>
-            <Button asChild className="btn-ember px-8 py-4 rounded-full text-lg font-medium">
-              <Link href="/join">Join the Founding Table</Link>
-            </Button>
+          <div className="mt-10 grid gap-12 lg:grid-cols-[1.08fr_.92fr] lg:items-end lg:gap-20">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Field Recipe</p>
+              <h1 className="mt-5 max-w-[11ch] font-serif text-5xl font-medium leading-[.98] tracking-[-0.035em] sm:text-6xl md:text-7xl">
+                {recipe.title}
+              </h1>
+            </div>
+            <p className="max-w-xl font-crimson text-2xl leading-9 text-black/68 sm:text-[1.55rem] sm:leading-10 lg:justify-self-end">
+              {recipe.subtitle}
+            </p>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      <section className="px-5 py-12 sm:px-8 md:px-12 md:py-16 lg:px-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-4 border-y border-black/15 py-6 sm:grid-cols-2 lg:grid-cols-5">
+            {metaEntries.map(([label, value]) => (
+              <dl key={label}>
+                <dt className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#9c3d24]">{label}</dt>
+                <dd className="mt-2 text-sm leading-6 text-black/60">{value}</dd>
+              </dl>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-5 pb-20 sm:px-8 md:px-12 md:pb-28 lg:px-16">
+        <div className="mx-auto max-w-7xl">
+          <CookingSummary items={recipe.cookingSummary} />
+
+          <div className="mt-16 grid gap-14 lg:grid-cols-[.78fr_1.22fr] lg:gap-24">
+            <aside className="lg:sticky lg:top-8 lg:self-start">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Ingredients</p>
+              <ul className="mt-6 divide-y divide-black/10 border-y border-black/15">
+                {recipe.ingredients.map((item) => (
+                  <li key={item} className="py-3 text-sm leading-6 text-black/64">{item}</li>
+                ))}
+              </ul>
+            </aside>
+
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Method</p>
+              <ol className="mt-2">
+                {recipe.method.map((step, index) => (
+                  <li key={step.title} className="grid gap-5 border-b border-black/12 py-9 sm:grid-cols-[60px_1fr] sm:gap-7">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9c3d24]">{String(index + 1).padStart(2, '0')}</p>
+                    <div>
+                      <h2 className="font-serif text-3xl leading-[1.08]">{step.title}</h2>
+                      <p className="mt-4 text-base leading-7 text-black/62">{step.body}</p>
+                      {step.fireCue && <FireCue text={step.fireCue} />}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-black/10 bg-[#eee4d7] px-5 py-20 sm:px-8 md:px-12 md:py-24 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.65fr_1.35fr] lg:gap-20">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Pete&apos;s note</p>
+          </div>
+          <div className="max-w-4xl space-y-6 font-crimson text-xl leading-8 text-black/66 sm:text-2xl sm:leading-9">
+            {recipe.petesNote.split('\n\n').map((paragraph) => (
+              <p key={paragraph.slice(0, 48)}>{paragraph}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#211d19] px-5 py-20 text-[#f4efe7] sm:px-8 md:px-12 md:py-24 lg:px-16">
+        <div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-3xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#d78959]">More from the fire</p>
+            <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">{recipe.ctaText}</h2>
+          </div>
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <Link href="/join" className="inline-flex min-h-12 items-center justify-center bg-[#a64225] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+              Join the Founding Table
+            </Link>
+            <Link href="/journal" className="inline-flex min-h-12 items-center justify-center border border-white/25 px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+              Back to the Journal
+            </Link>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
