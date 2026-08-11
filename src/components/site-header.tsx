@@ -45,10 +45,10 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex" aria-label="Primary navigation">
-          <Link href={isHome ? '#gather' : '/#gather'} className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
+          <Link href="/gather" className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
             Gather
           </Link>
-          <Link href={isHome ? '#journal' : '/#journal'} className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
+          <Link href="/journal" className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
             Journal
           </Link>
           <Link href="/about" className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
@@ -87,10 +87,10 @@ export function SiteHeader() {
           className="absolute inset-x-0 top-[72px] border-b border-black/10 bg-[#f4efe7] px-5 py-8 text-[#211d19] shadow-[0_20px_50px_rgba(0,0,0,.12)] sm:px-8 md:hidden"
         >
           <nav className="mx-auto flex max-w-7xl flex-col" aria-label="Mobile navigation">
-            <Link href={isHome ? '#gather' : '/#gather'} className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
+            <Link href="/gather" className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
               Gather
             </Link>
-            <Link href={isHome ? '#journal' : '/#journal'} className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
+            <Link href="/journal" className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
               Journal
             </Link>
             <Link href="/about" className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
