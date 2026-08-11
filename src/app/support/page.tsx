@@ -27,20 +27,18 @@ export default function SupportPage(){
         body: JSON.stringify({
           productId: `support-${amount}`,
           quantity: 1,
-          customerEmail: customerEmail,
-          customerName: customerName,
-          customAmount: amount,
-          customDescription: description,
+          customerEmail,
+          customerName,
         }),
       });
 
       const data = await response.json();
-      
+
       if (data.url) {
         window.location.href = data.url;
       } else {
         console.error('Support payment failed:', data.error);
-        alert('Payment failed. Please try again.');
+        alert(data.error || 'Payment failed. Please try again.');
       }
     } catch (error) {
       console.error('Support payment error:', error);
@@ -67,7 +65,7 @@ export default function SupportPage(){
           </div>
           <div className="flex-shrink-0">
             {!isFormOpen ? (
-              <Button 
+              <Button
                 className="btn-ember rounded-full px-6"
                 onClick={() => setShowForm(title)}
                 disabled={isProcessing}
@@ -128,7 +126,7 @@ export default function SupportPage(){
           This work is built on stories, sips, firelight, and real support.
         </p>
       </div>
-      
+
       <div className="space-y-4 text-black/80 leading-relaxed mb-12">
         <p>
           If you&apos;ve ever read something here that made you pause, breathe, or feel a little less alone, thank you. That means we met.
@@ -142,33 +140,32 @@ export default function SupportPage(){
         <h2 className="text-2xl font-serif font-medium text-center mb-8 text-charcoal">
           Ways to Support
         </h2>
-        
+
         <div className="space-y-4">
-          <Tier 
-            title="Buy Me a Coffee" 
-            price="$5 – One-Time" 
-            note="A small gesture that helps keep the fire burning. Supports one community gathering."
+          <Tier
+            title="Buy Me a Coffee"
+            price="$5 – One-Time"
+            note="A small gesture that helps keep the fire burning."
             buttonText="Give $5"
             amount={5}
           />
-          <Tier 
-            title="Buy Me a Glass of Wine" 
-            price="$7/month – Recurring" 
-            note="Monthly support for the community. Enables weekly essays, event planning, and keeps the conversation flowing."
-            buttonText="Give Monthly"
+          <Tier
+            title="Buy Me a Glass of Wine"
+            price="$7 – One-Time"
+            note="A simple one-time contribution toward the writing, gatherings, and work behind Wine With Pete."
+            buttonText="Give $7"
             amount={7}
           />
-          <Tier 
-            title="Support the Vision" 
-            price="$50 – One-Time" 
-            note="For those who believe in building something lasting. Helps fund larger events, partnerships, and community growth."
+          <Tier
+            title="Support the Vision"
+            price="$50 – One-Time"
+            note="For those who believe in building something lasting. Helps fund larger events, projects, and community growth."
             buttonText="Give $50"
             amount={50}
           />
         </div>
       </div>
 
-      {/* Other Ways to Support */}
       <div className="bg-cream rounded-2xl p-8 text-center">
         <h3 className="text-xl font-serif font-medium mb-4 text-charcoal">
           Other Ways to Support

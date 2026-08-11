@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "lint:commerce": "eslint src/lib/commerce src/app/api/checkout/route.ts src/app/api/webhooks/stripe/route.ts src/app/api/send-download/route.ts src/app/api/products/route.ts src/app/store/success/page.tsx src/app/support/page.tsx",
+    "typecheck": "tsc --noEmit",
+    "typecheck:commerce": "tsc -p tsconfig.commerce.json --noEmit"
   },
   "dependencies": {
     "@radix-ui/react-navigation-menu": "^1.2.14",

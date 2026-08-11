@@ -1,359 +1,197 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-import Stripe from 'stripe';
 import { logger } from '@/lib/logger';
-import { createClient } from '@/lib/supabase/server';
-import { CreateCheckoutSessionRequest } from '@/lib/types';
+import { getOfferById } from '@/lib/commerce';
+import type { Offer } from '@/lib/commerce';
 import { checkoutSchema, validateEmail, validateName } from '@/lib/validations';
 import { checkoutRateLimit } from '@/lib/rate-limit';
-import { SHIPPING_COST, SHIPPING_COST_CENTS, SHIPPING_ALLOWED_COUNTRIES, SHIPPING_DELIVERY_MIN_DAYS, SHIPPING_DELIVERY_MAX_DAYS } from '@/lib/constants';
+
+function getCancelUrl(origin: string, offer: Offer): string {
+  const path = offer.pagePath || (offer.kind === 'physical' ? '/store' : '/recipes');
+  const separator = path.includes('?') ? '&' : '?';
+  return `${origin}${path}${separator}cancelled=true`;
+}
+
+function getFulfillmentType(offer: Offer): string {
+  if (offer.commerce.type === 'stripe') {
+    return offer.commerce.fulfillment.type;
+  }
+
+  if (offer.kind === 'digital') return 'digital_download';
+  return 'none';
+}
 
 export async function POST(request: NextRequest) {
   try {
-    // Check environment variables
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
     const requiredEnvVars = {
-      SUPABASE_URL: supabaseUrl,
-      SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+      SUPABASE_URL: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     };
 
     const missingVars = Object.entries(requiredEnvVars)
-      .filter(([key, value]) => !value)
+      .filter(([, value]) => !value)
       .map(([key]) => key);
 
     if (missingVars.length > 0) {
-      logger.error('Missing environment variables:', missingVars);
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
+      logger.error('Missing checkout environment variables:', missingVars);
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
 
-    // Check rate limit
     const rateLimitResult = checkoutRateLimit(request);
     if (!rateLimitResult.success) {
       return NextResponse.json(
-        { 
+        {
           error: 'Too many checkout attempts. Please try again later.',
-          retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)
+          retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000),
         },
-        { 
+        {
           status: 429,
           headers: {
             'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString(),
             'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
             'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
-          }
+          },
         }
       );
     }
 
     const body = await request.json();
-    logger.debug('Checkout request body received:', body);
-    
-    // Validate input with Zod
     const validationResult = checkoutSchema.safeParse(body);
+
     if (!validationResult.success) {
-      logger.error('Validation errors:', validationResult.error.errors);
       return NextResponse.json(
-        { 
-          error: 'Validation failed', 
-          details: validationResult.error?.errors?.map(e => `${e.path.join('.')}: ${e.message}`) || ['Unknown validation error']
+        {
+          error: 'Validation failed',
+          details: validationResult.error.issues.map(
+            (issue) => `${issue.path.join('.')}: ${issue.message}`
+          ),
         },
         { status: 400 }
       );
     }
 
-    const { productId, quantity, customerEmail, customerName, customAmount, customDescription, printfulVariantId } = validationResult.data;
+    const {
+      productId,
+      quantity,
+      customerEmail,
+      customerName,
+      customAmount,
+    } = validationResult.data;
 
-    // Sanitize inputs
     const sanitizedEmail = validateEmail(customerEmail);
     const sanitizedName = validateName(customerName);
+    const offer = await getOfferById(productId);
 
-    // Handle support payments (custom amounts)
-    if (productId.startsWith('support-') && customAmount) {
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: customDescription || 'Support Wine With Pete',
-                description: 'Thank you for supporting the community!',
-              },
-              unit_amount: Math.round(customAmount * 100), // Convert to cents
-            },
-            quantity: 1,
-          },
-        ],
-        mode: 'payment',
-        success_url: `${request.nextUrl.origin}/store/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${request.nextUrl.origin}/support?cancelled=true`,
-        customer_email: sanitizedEmail,
-        metadata: {
-          productId: productId,
-          productName: customDescription || 'Support Payment',
-          customerName: sanitizedName,
-          isSupportPayment: 'true',
-        },
-      });
-
-      return NextResponse.json({ 
-        sessionId: session.id,
-        url: session.url 
-      });
-    }
-
-    // Fetch product from Supabase
-    const supabase = createClient(); // Uses service role key, bypasses RLS
-    const { data: product, error: productError } = await supabase
-      .from('products')
-      .select('*')
-      .eq('id', productId)
-      .eq('is_active', true)
-      .single();
-
-    if (productError || !product) {
-      logger.error('Product lookup error:', productError);
+    if (!offer || offer.availability.status !== 'active') {
       return NextResponse.json(
-        { error: 'Product not found or unavailable' },
+        { error: 'Offer not found or unavailable' },
         { status: 404 }
       );
     }
 
-    logger.debug('Product found:', { id: product.id, name: product.name, price: product.price });
-
-    // Validate variant if provided
-    if (printfulVariantId) {
-      const syncData = product.printful_sync_data;
-      if (syncData?.variants) {
-        const variantExists = syncData.variants.some(
-          (v: any) => String(v.id) === String(printfulVariantId)
-        );
-        if (!variantExists) {
-          logger.error('Invalid variant selected:', { productId, printfulVariantId, availableVariants: syncData.variants.map((v: any) => v.id) });
-          return NextResponse.json(
-            { error: 'Invalid variant selected for this product' },
-            { status: 400 }
-          );
-        }
-      }
+    // Physical fulfillment is intentionally paused while Wine With Pete moves
+    // away from the custom Printful pipeline. This guard must remain in place
+    // until an external physical-commerce provider is explicitly wired in.
+    if (offer.kind === 'physical') {
+      return NextResponse.json(
+        {
+          error: 'Physical checkout is temporarily unavailable while the store is being refreshed.',
+          code: 'PHYSICAL_CHECKOUT_PAUSED',
+          href: offer.pagePath || '/store',
+        },
+        { status: 409 }
+      );
     }
 
-    // Use variant price if provided and different from product price
-    let finalPrice = product.price;
-    if (printfulVariantId && customAmount && customAmount > 0) {
-      // Variant has different price, use it
-      finalPrice = customAmount;
-      logger.debug('Using variant price:', { variantId: printfulVariantId, price: finalPrice });
+    if (offer.commerce.type === 'external_checkout') {
+      return NextResponse.json({
+        url: offer.commerce.href,
+        external: true,
+      });
     }
 
-    // Handle free products with optional tips
-    if (finalPrice === 0) {
-      // For free products, allow custom amount (tip)
-      const tipAmount = customAmount || 0;
-      
-      logger.debug('Creating Stripe session for free product with tip:', tipAmount);
-      logger.debug('Stripe secret key available:', !!process.env.STRIPE_SECRET_KEY);
-      
-      try {
-        const session = await stripe.checkout.sessions.create({
-          payment_method_types: ['card'],
-          line_items: [
-            {
-              price_data: {
-                currency: 'usd',
-                product_data: {
-                  name: product.name,
-                  description: product.description || undefined,
-                },
-                unit_amount: 0, // Free product
-              },
-              quantity: 1,
-            },
-            // Add tip if provided
-            ...(tipAmount > 0 ? [{
-              price_data: {
-                currency: 'usd',
-                product_data: {
-                  name: 'Tip for Wine With Pete',
-                  description: 'Thank you for supporting the community!',
-                },
-                unit_amount: Math.round(tipAmount * 100),
-              },
-              quantity: 1,
-            }] : []),
-          ],
-          mode: 'payment',
-          success_url: `${request.nextUrl.origin}/store/success?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${request.nextUrl.origin}/recipes?cancelled=true`,
-          customer_email: sanitizedEmail,
-          // Enable shipping for physical free products
-          ...(product.product_type === 'physical' && {
-            shipping_address_collection: {
-              allowed_countries: SHIPPING_ALLOWED_COUNTRIES,
-            },
-            shipping_options: [
-              {
-                shipping_rate_data: {
-                  type: 'fixed_amount',
-                  fixed_amount: {
-                    amount: SHIPPING_COST_CENTS,
-                    currency: 'usd',
-                  },
-                  display_name: 'Standard Shipping',
-                  delivery_estimate: {
-                    minimum: {
-                      unit: 'business_day',
-                      value: SHIPPING_DELIVERY_MIN_DAYS,
-                    },
-                    maximum: {
-                      unit: 'business_day',
-                      value: SHIPPING_DELIVERY_MAX_DAYS,
-                    },
-                  },
-                },
-              },
-            ],
-          }),
-          metadata: {
-            productId: product.id,
-            productName: product.name,
-            customerName: sanitizedName,
-            isFreeProduct: 'true',
-            tipAmount: tipAmount.toString(),
-            ...(product.product_type === 'physical' && { shippingCost: SHIPPING_COST.toString() }),
-          },
-        });
-        
-        logger.info('Stripe session created successfully:', session.id);
-        
-        return NextResponse.json({ 
-          sessionId: session.id,
-          url: session.url 
-        });
-      } catch (stripeError) {
-        logger.error('Stripe error:', stripeError);
-        if (stripeError instanceof Stripe.errors.StripeError) {
-          logger.error('Stripe error details:', {
-            message: stripeError.message,
-            type: stripeError.type,
-            code: stripeError.code,
-            decline_code: 'decline_code' in stripeError ? stripeError.decline_code : undefined
-          });
-        } else {
-          logger.error('Stripe error details:', {
-            message: stripeError instanceof Error ? stripeError.message : 'Unknown error',
-          });
-        }
-        throw stripeError;
-      }
+    if (offer.commerce.type === 'inquiry' || offer.commerce.type === 'signup') {
+      return NextResponse.json(
+        {
+          error: 'This offer does not use direct checkout.',
+          href: offer.commerce.href,
+        },
+        { status: 400 }
+      );
     }
 
-    // Regular paid products
-    // Format product image URL for Stripe (needs full URL)
-    const productImages: string[] = [];
-    if (product.image_path) {
-      if (product.image_path.startsWith('http')) {
-        // Direct URL from Printful
-        productImages.push(product.image_path);
-      } else {
-        // Supabase storage path - convert to full URL
-        const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-        if (supabaseUrl) {
-          productImages.push(`${supabaseUrl}/storage/v1/object/public/product-images/${product.image_path}`);
-        }
-      }
+    if (offer.commerce.type === 'stripe' && offer.commerce.mode !== 'payment') {
+      return NextResponse.json(
+        { error: 'This checkout mode is not available yet.' },
+        { status: 501 }
+      );
     }
 
-    logger.debug('Creating Stripe checkout session:', {
-      productId: product.id,
-      productName: product.name,
-      printfulVariantId: printfulVariantId,
-      quantity: quantity,
-      finalPrice: finalPrice,
-      hasVariant: !!printfulVariantId,
-      variantValidated: printfulVariantId ? 'yes' : 'no'
-    });
+    if (!offer.price) {
+      return NextResponse.json(
+        { error: 'This offer does not have a checkout price.' },
+        { status: 400 }
+      );
+    }
+
+    const checkoutQuantity = offer.kind === 'digital' || offer.kind === 'support' ? 1 : quantity;
+
+    // Paid offers always use the server-owned Offer price. The browser can no
+    // longer override paid product or support pricing with customAmount.
+    let amountCents = offer.price.amountCents;
+
+    // Preserve the existing optional-tip behavior only for genuinely free
+    // digital products. Tips are never allowed to alter a paid offer's price.
+    if (offer.kind === 'digital' && amountCents === 0 && customAmount) {
+      amountCents = Math.round(customAmount * 100);
+    }
+
+    const productImages = (offer.images || [])
+      .map((image) => image.url)
+      .filter((url) => url.startsWith('https://'))
+      .slice(0, 8);
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: offer.price.currency,
             product_data: {
-              name: product.name,
-              description: product.description || undefined,
+              name: offer.title,
+              description: offer.description || undefined,
               images: productImages.length > 0 ? productImages : undefined,
             },
-            unit_amount: Math.round(finalPrice * 100), // Convert to cents (uses variant price if selected)
+            unit_amount: amountCents,
           },
-          quantity,
+          quantity: checkoutQuantity,
         },
       ],
       mode: 'payment',
       success_url: `${request.nextUrl.origin}/store/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${request.nextUrl.origin}/recipes?cancelled=true`,
-      customer_email: customerEmail,
-      // Enable shipping for physical products
-      ...(product.product_type === 'physical' && {
-        shipping_address_collection: {
-          allowed_countries: SHIPPING_ALLOWED_COUNTRIES,
-        },
-        shipping_options: [
-          {
-            shipping_rate_data: {
-              type: 'fixed_amount',
-              fixed_amount: {
-                amount: SHIPPING_COST_CENTS,
-                currency: 'usd',
-              },
-              display_name: 'Standard Shipping',
-              delivery_estimate: {
-                minimum: {
-                  unit: 'business_day',
-                  value: SHIPPING_DELIVERY_MIN_DAYS,
-                },
-                maximum: {
-                  unit: 'business_day',
-                  value: SHIPPING_DELIVERY_MAX_DAYS,
-                },
-              },
-            },
-          },
-        ],
-      }),
+      cancel_url: getCancelUrl(request.nextUrl.origin, offer),
+      customer_email: sanitizedEmail,
       metadata: {
-        productId: product.id,
-        productName: product.name,
-        customerName: customerName || '',
-        quantity: quantity.toString(),
-        printfulVariantId: printfulVariantId || '',
-        variantPrice: finalPrice.toString(),
-        ...(product.product_type === 'physical' && { shippingCost: SHIPPING_COST.toString() }),
+        offerId: offer.id,
+        productId: offer.source?.type === 'legacy_product' ? offer.id : '',
+        offerKind: offer.kind,
+        productName: offer.title,
+        customerName: sanitizedName,
+        quantity: checkoutQuantity.toString(),
+        fulfillmentType: getFulfillmentType(offer),
+        isSupportPayment: offer.kind === 'support' ? 'true' : 'false',
       },
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       sessionId: session.id,
-      url: session.url 
+      url: session.url,
     });
-
   } catch (error) {
     logger.error('Checkout error:', error);
-    logger.error('Error details:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : undefined
-    });
     return NextResponse.json(
-      { 
-        error: 'Failed to create checkout session',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
+      { error: 'Failed to create checkout session' },
       { status: 500 }
     );
   }
