@@ -42,7 +42,7 @@ function legacyProductsToOffers(products: Product[]): Offer[] {
  * Read-only compatibility layer for the migration period.
  *
  * Static first-party offers and legacy product rows are returned through one
- * provider-agnostic domain. No customer-facing route consumes this service yet.
+ * provider-agnostic domain. Provider-specific legacy fields are not selected.
  */
 export async function getOffers(options: GetOffersOptions = {}): Promise<Offer[]> {
   const supabase = createClient();
@@ -59,9 +59,10 @@ export async function getOffers(options: GetOffersOptions = {}): Promise<Offer[]
   const { data, error } = await query;
   if (error) throw error;
 
+  const legacyProducts = (data || []) as unknown as Product[];
   const offers = [
     ...getStaticOffers(),
-    ...legacyProductsToOffers((data || []) as Product[]),
+    ...legacyProductsToOffers(legacyProducts),
   ];
 
   if (!options.kinds || options.kinds.length === 0) {
@@ -86,5 +87,7 @@ export async function getOfferById(id: string): Promise<Offer | null> {
   if (error) throw error;
   if (!data) return null;
 
-  return legacyProductToOffer(data as Product, { resolveStoredImageUrl });
+  return legacyProductToOffer(data as unknown as Product, {
+    resolveStoredImageUrl,
+  });
 }
