@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "noEmit": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "src/lib/commerce/**/*.ts",
+    "src/app/api/checkout/route.ts",
+    "src/app/api/webhooks/stripe/route.ts",
+    "src/app/api/send-download/route.ts",
+    "src/app/api/products/route.ts",
+    "src/app/store/success/page.tsx",
+    "src/app/support/page.tsx"
+  ],
+  "exclude": ["node_modules"]
+}
