@@ -13,22 +13,28 @@ const tables = [
     title: 'Knife & Fire',
     place: 'Virginia Beach',
     date: 'April 11, 2026',
+    status: 'Archive note',
     copy:
       'An early Wine With Pete pilot built around live fire: clams, skewers, steak, cobbler, and an evening designed to move with the fire rather than fight it.',
+    href: null,
   },
   {
     title: 'Château Giscours Vertical',
     place: 'Virginia Beach',
     date: 'May 23, 2026',
+    status: 'Read the table note',
     copy:
       'Four vintages of Château Giscours around one table, with a menu designed to give the wines room to change over the course of the evening.',
+    href: '/tables/chateau-giscours-vertical',
   },
   {
     title: 'The Seoul Bowl Table',
     place: 'Virginia Beach',
     date: 'June 27, 2026',
+    status: 'Read the table note',
     copy:
-      'A build-your-own Korean barbecue table centered on shared bowls, sauces, texture, and the simple pleasure of everyone reaching into the middle.',
+      'A build-your-own Korean barbecue table centered on shared bowls, four sauces, texture, and the simple pleasure of everyone reaching into the middle.',
+    href: '/tables/seoul-bowl-table',
   },
 ];
 
@@ -51,19 +57,43 @@ export default function TablesPage() {
 
       <section className="px-5 py-10 sm:px-8 md:px-12 md:py-16 lg:px-16">
         <div className="mx-auto max-w-7xl border-t border-black/15">
-          {tables.map((table, index) => (
-            <article key={table.title} className="grid gap-7 border-b border-black/15 py-12 md:grid-cols-[150px_1fr_.8fr] md:gap-12 md:py-16">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">Table {String(index + 1).padStart(2, '0')}</p>
-                <p className="mt-3 text-sm leading-6 text-black/48">{table.date}</p>
-              </div>
-              <div>
-                <h2 className="font-serif text-4xl leading-[1.04] tracking-[-0.02em] sm:text-5xl">{table.title}</h2>
-                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-black/46">{table.place}</p>
-              </div>
-              <p className="max-w-xl text-base leading-7 text-black/62 md:pt-1">{table.copy}</p>
-            </article>
-          ))}
+          {tables.map((table, index) => {
+            const content = (
+              <>
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">Table {String(index + 1).padStart(2, '0')}</p>
+                  <p className="mt-3 text-sm leading-6 text-black/48">{table.date}</p>
+                </div>
+                <div>
+                  <h2 className="font-serif text-4xl leading-[1.04] tracking-[-0.02em] sm:text-5xl">{table.title}</h2>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-black/46">{table.place}</p>
+                </div>
+                <div className="max-w-xl md:pt-1">
+                  <p className="text-base leading-7 text-black/62">{table.copy}</p>
+                  <p className={`mt-5 text-[10px] font-semibold uppercase tracking-[0.2em] ${table.href ? 'text-[#9c3d24]' : 'text-black/38'}`}>
+                    {table.status}{table.href ? ' →' : ''}
+                  </p>
+                </div>
+              </>
+            );
+
+            return table.href ? (
+              <Link
+                key={table.title}
+                href={table.href}
+                data-analytics-event="table_open"
+                data-analytics-category="journal"
+                data-analytics-label={table.title}
+                className="group grid gap-7 border-b border-black/15 py-12 transition-colors hover:bg-black/[0.025] md:grid-cols-[150px_1fr_.8fr] md:gap-12 md:px-3 md:py-16"
+              >
+                {content}
+              </Link>
+            ) : (
+              <article key={table.title} className="grid gap-7 border-b border-black/15 py-12 md:grid-cols-[150px_1fr_.8fr] md:gap-12 md:py-16">
+                {content}
+              </article>
+            );
+          })}
         </div>
       </section>
 
@@ -74,10 +104,10 @@ export default function TablesPage() {
           </div>
           <div className="max-w-3xl">
             <p className="font-serif text-3xl leading-[1.12] sm:text-4xl">
-              The photographs and full table notes are being edited into richer individual stories.
+              Two table notes are live. The photographic archive will deepen them over time.
             </p>
             <p className="mt-6 max-w-2xl text-base leading-7 text-black/58">
-              As the archive grows, each table can hold its menu, photographs, wine, recipes, reflections, and the details worth remembering. The point is to document the life of Wine With Pete rather than manufacture content around it.
+              Each table can eventually hold its menu, photographs, wine, recipes, reflections, and the details worth remembering. Knife & Fire stays in the record while its original photography is being tracked down; it does not need to delay the archive around it.
             </p>
           </div>
         </div>
