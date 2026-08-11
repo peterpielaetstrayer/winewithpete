@@ -8,6 +8,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@/components/google-analytics';
 import { SiteStructuredData } from '@/components/structured-data';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { AnalyticsBridge } from '@/components/analytics-bridge';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -85,6 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.variable} ${playfair.variable} ${crimsonText.variable} min-h-screen flex flex-col font-sans`}>
         <ErrorBoundary>
           <SiteStructuredData />
+          <AnalyticsBridge />
           <SiteHeader />
           <main className="flex-1">{children}</main>
           <SiteFooter />
