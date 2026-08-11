@@ -19,12 +19,10 @@ declare global {
 }
 
 export const trackEvent = (event: AnalyticsEvent) => {
-  // Log to console in development
   if (process.env.NODE_ENV === 'development') {
     console.log('Analytics Event:', event);
   }
-  
-  // Send to Google Analytics 4
+
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('event', event.action, {
       event_category: event.category,
@@ -34,60 +32,63 @@ export const trackEvent = (event: AnalyticsEvent) => {
   }
 };
 
-// Common events for Wine With Pete
 export const analyticsEvents = {
-  // Store events
   productViewed: (productName: string) => trackEvent({
     action: 'view_item',
     category: 'store',
     label: productName,
   }),
-  
+
   checkoutStarted: (productName: string, price: number) => trackEvent({
     action: 'begin_checkout',
     category: 'store',
     label: productName,
     value: price,
   }),
-  
+
   purchaseCompleted: (productName: string, price: number) => trackEvent({
     action: 'purchase',
     category: 'store',
     label: productName,
     value: price,
   }),
-  
-  // Event events
+
   eventViewed: (eventTitle: string) => trackEvent({
     action: 'view_item',
     category: 'events',
     label: eventTitle,
   }),
-  
+
   rsvpSubmitted: (eventTitle: string) => trackEvent({
     action: 'rsvp',
     category: 'events',
     label: eventTitle,
   }),
-  
-  // Newsletter events
+
+  communityInterestSubmitted: (interestType: string) => trackEvent({
+    action: 'community_interest',
+    category: 'gather',
+    label: interestType,
+    value: 1,
+  }),
+
   newsletterSignup: () => trackEvent({
     action: 'sign_up',
-    category: 'newsletter',
+    category: 'founding_table',
+    label: 'founding_table',
+    value: 1,
   }),
-  
-  // Navigation events
+
   pageView: (pageName: string) => trackEvent({
     action: 'page_view',
     category: 'navigation',
     label: pageName,
   }),
 
-  // Essay events
   essayClicked: (essayTitle: string, essayUrl: string) => trackEvent({
     action: 'click',
     category: 'essays',
-    label: essayTitle,
+    label: `${essayTitle} | ${essayUrl}`,
     value: 1,
   }),
 
@@ -97,7 +98,6 @@ export const analyticsEvents = {
     label: essayTitle,
   }),
 
-  // Baseline Method events
   baselineMethodQuickstartViewed: () => trackEvent({
     action: 'view_item',
     category: 'baseline_method',
@@ -124,7 +124,6 @@ export const analyticsEvents = {
     value: 1,
   }),
 
-  // Start page button clicks
   startPageButtonClicked: (buttonLabel: string) => trackEvent({
     action: 'click',
     category: 'start_page',

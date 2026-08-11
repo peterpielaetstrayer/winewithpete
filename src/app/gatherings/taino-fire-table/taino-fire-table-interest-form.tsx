@@ -3,33 +3,19 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-
 type InterestOption = {
   value: string;
   label: string;
 };
 
 const interestOptions: InterestOption[] = [
-  {
-    value: 'future_updates',
-    label: 'Keep me posted about future dinners and recipes.',
-  },
-  {
-    value: 'seat_open',
-    label: 'I’d like to be considered for an invitation if seats open.',
-  },
-  {
-    value: 'host_or_collaborate',
-    label: 'I may want to host or collaborate on a future table.',
-  },
+  { value: 'future_updates', label: 'Keep me posted as the table develops.' },
+  { value: 'seat_open', label: 'Consider me if invitations or seats open.' },
+  { value: 'host_or_collaborate', label: 'I may want to host or collaborate on a future table.' },
 ];
 
 export function TainoFireTableInterestForm() {
   const searchParams = useSearchParams();
-
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [location, setLocation] = useState('');
@@ -50,18 +36,16 @@ export function TainoFireTableInterestForm() {
 
   const toggleInterestType = (value: string) => {
     setSelectedInterestTypes((current) =>
-      current.includes(value)
-        ? current.filter((entry) => entry !== value)
-        : [...current, value]
+      current.includes(value) ? current.filter((entry) => entry !== value) : [...current, value]
     );
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setError(null);
 
     if (selectedInterestTypes.length === 0) {
-      setError('Choose at least one way you’d like to be included.');
+      setError('Choose at least one way you would like to be included.');
       return;
     }
 
@@ -70,9 +54,7 @@ export function TainoFireTableInterestForm() {
     try {
       const response = await fetch('/api/gatherings/interest', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
           email,
@@ -85,7 +67,6 @@ export function TainoFireTableInterestForm() {
           utm,
         }),
       });
-
       const data = await response.json();
 
       if (!response.ok) {
@@ -109,126 +90,93 @@ export function TainoFireTableInterestForm() {
 
   if (isSubmitted) {
     return (
-      <div className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border text-center">
-        <div className="w-16 h-16 mx-auto mb-5 bg-ember/10 rounded-full flex items-center justify-center">
-          <svg className="w-8 h-8 text-ember" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-        <h3 className="text-2xl font-serif font-medium mb-3 text-charcoal">Thank you</h3>
-        <p className="text-black/70 leading-relaxed max-w-xl mx-auto">
-          Thank you — you&apos;re on the list. I&apos;ll send future dinner notes, recipes, and
-          invitations as this table develops.
+      <div className="border-y border-black/15 py-10">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">You&apos;re on the list</p>
+        <h3 className="mt-4 font-serif text-3xl leading-[1.08]">We&apos;ll keep you close to the table.</h3>
+        <p className="mt-4 max-w-xl text-base leading-7 text-black/58">
+          Future dinner notes, recipes, invitation updates, and other developments can find you here as the concept takes shape.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border">
-      <h2 className="text-2xl md:text-3xl font-serif font-medium text-charcoal mb-4">
-        Join the Founding Table
-      </h2>
-      <p className="text-black/70 leading-relaxed mb-8">
-        Get future recipes, dinner notes, and first notice about private Wine With Pete tables.
-      </p>
+    <form onSubmit={handleSubmit} className="border-y border-black/15 py-8">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">Interest list</p>
+      <h3 className="mt-4 font-serif text-3xl leading-[1.08] sm:text-4xl">Raise your hand for this table.</h3>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label htmlFor="taino-name" className="block text-sm font-medium mb-2 text-charcoal">
-            Name
-          </label>
-          <Input
-            id="taino-name"
+      <div className="mt-8 grid gap-5 sm:grid-cols-2">
+        <label className="block">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/50">Name</span>
+          <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Your name"
+            onChange={(event) => setName(event.target.value)}
             required
-            className="focus-ring"
+            className="mt-2 min-h-12 w-full border border-black/20 bg-transparent px-4 outline-none focus:border-[#9c3d24]"
           />
-        </div>
-
-        <div>
-          <label htmlFor="taino-email" className="block text-sm font-medium mb-2 text-charcoal">
-            Email
-          </label>
-          <Input
-            id="taino-email"
+        </label>
+        <label className="block">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/50">Email</span>
+          <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com"
+            onChange={(event) => setEmail(event.target.value)}
             required
-            className="focus-ring"
+            className="mt-2 min-h-12 w-full border border-black/20 bg-transparent px-4 outline-none focus:border-[#9c3d24]"
           />
+        </label>
+      </div>
+
+      <label className="mt-5 block">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/50">Location <span className="font-normal normal-case tracking-normal text-black/35">optional</span></span>
+        <input
+          type="text"
+          value={location}
+          onChange={(event) => setLocation(event.target.value)}
+          placeholder="City, State"
+          className="mt-2 min-h-12 w-full border border-black/20 bg-transparent px-4 outline-none placeholder:text-black/30 focus:border-[#9c3d24]"
+        />
+      </label>
+
+      <fieldset className="mt-6">
+        <legend className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/50">How would you like to be included?</legend>
+        <div className="mt-4 space-y-3">
+          {interestOptions.map((option) => (
+            <label key={option.value} className="flex cursor-pointer items-start gap-3 text-sm leading-6 text-black/65">
+              <input
+                type="checkbox"
+                checked={selectedInterestTypes.includes(option.value)}
+                onChange={() => toggleInterestType(option.value)}
+                className="mt-1 accent-[#9c3d24]"
+              />
+              {option.label}
+            </label>
+          ))}
         </div>
+      </fieldset>
 
-        <div>
-          <label htmlFor="taino-location" className="block text-sm font-medium mb-2 text-charcoal">
-            Location (optional)
-          </label>
-          <Input
-            id="taino-location"
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="City, State"
-            className="focus-ring"
-          />
-        </div>
+      <label className="mt-6 block">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/50">A note <span className="font-normal normal-case tracking-normal text-black/35">optional</span></span>
+        <textarea
+          value={note}
+          onChange={(event) => setNote(event.target.value)}
+          placeholder="Why this table interests you, a hosting idea, dietary context, or anything else worth knowing."
+          rows={4}
+          className="mt-2 w-full border border-black/20 bg-transparent p-4 outline-none placeholder:text-black/30 focus:border-[#9c3d24]"
+        />
+      </label>
 
-        <div>
-          <p className="block text-sm font-medium mb-3 text-charcoal">
-            How would you like to be included?
-          </p>
-          <div className="space-y-3">
-            {interestOptions.map((option) => (
-              <label key={option.value} className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={selectedInterestTypes.includes(option.value)}
-                  onChange={() => toggleInterestType(option.value)}
-                  className="mt-1 h-4 w-4 rounded border-black/20 text-ember focus:ring-ember"
-                />
-                <span className="text-black/80 leading-relaxed">{option.label}</span>
-              </label>
-            ))}
-          </div>
-        </div>
+      {error && <p className="mt-5 text-sm text-[#9c3d24]" role="alert">{error}</p>}
 
-        <div>
-          <label htmlFor="taino-note" className="block text-sm font-medium mb-2 text-charcoal">
-            Optional note
-          </label>
-          <Textarea
-            id="taino-note"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Guest count, location, hosting idea, dietary notes, or why this table interests you."
-            className="focus-ring min-h-28"
-          />
-        </div>
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
-            {error}
-          </div>
-        )}
-
-        <Button
-          type="submit"
-          disabled={isSubmitting || !name || !email}
-          className="btn-ember w-full py-4 rounded-full text-lg font-medium"
-        >
-          {isSubmitting ? 'Joining...' : 'Join the Interest List'}
-        </Button>
-
-        <p className="text-sm text-black/60 leading-relaxed text-center">
-          Joining the interest list does not guarantee a seat. It simply lets me know you would
-          like to hear more as this table develops.
-        </p>
-      </form>
-    </div>
+      <button
+        type="submit"
+        disabled={isSubmitting || !name || !email}
+        className="mt-7 min-h-12 bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {isSubmitting ? 'Sending…' : 'Join the interest list'}
+      </button>
+      <p className="mt-4 max-w-xl text-xs leading-5 text-black/42">Interest does not guarantee a seat; it tells us you want to hear more as the table develops.</p>
+    </form>
   );
 }

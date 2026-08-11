@@ -1,12 +1,12 @@
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-cream flex items-center justify-center">
-      <div className="text-center">
-        <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-          <div className="animate-spin w-8 h-8 border-2 border-ember border-t-transparent rounded-full"></div>
+    <main className="flex min-h-[62vh] items-center bg-[#f4efe7] px-5 py-20 text-[#211d19] sm:px-8 md:px-12 lg:px-16">
+      <div className="mx-auto w-full max-w-5xl border-y border-black/15 py-16 text-center">
+        <div className="mx-auto h-px w-28 overflow-hidden bg-black/10">
+          <div className="h-full w-1/2 animate-pulse bg-[#9c3d24]" />
         </div>
-        <p className="text-lg text-black/70">Loading...</p>
+        <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.24em] text-black/42">Setting the table</p>
       </div>
-    </div>
+    </main>
   );
 }

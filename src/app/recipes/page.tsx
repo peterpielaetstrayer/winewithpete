@@ -1,69 +1,65 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { useState, useEffect } from 'react';
-import { Product } from '@/lib/types';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
 import { getFeaturedRecipes } from '@/data/recipes';
+import { analyticsEvents } from '@/lib/analytics';
+import type { Product } from '@/lib/types';
 
 const featuredRecipes = getFeaturedRecipes();
 
 export default function RecipesPage() {
-  const [loading, setLoading] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
-  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+  const [loading, setLoading] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerName, setCustomerName] = useState('');
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/products?category=digital');
+        const data = await response.json();
+        setProducts(data.data || []);
+      } catch (error) {
+        console.error('Failed to fetch digital products:', error);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+
     fetchProducts();
   }, []);
 
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch('/api/products?category=digital');
-      const data = await response.json();
-      setProducts(data.data || []);
-    } catch (error) {
-      console.error('Failed to fetch products:', error);
-      // Don't set products to empty - let placeholder show
-    } finally {
-      setProductsLoading(false);
-    }
+  const closeCheckout = () => {
+    setSelectedProduct(null);
+    setCustomerEmail('');
+    setCustomerName('');
   };
 
-  const handleCheckoutClick = (product: Product) => {
-    setSelectedProduct(product);
-    setShowCheckoutForm(true);
-  };
-
-  const handleCheckoutSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCheckoutSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     if (!selectedProduct) return;
 
     setLoading(selectedProduct.id);
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           productId: selectedProduct.id,
           quantity: 1,
-          customerEmail: customerEmail,
-          customerName: customerName,
+          customerEmail,
+          customerName,
         }),
       });
-
       const data = await response.json();
-      
+
       if (data.url) {
+        analyticsEvents.checkoutStarted(selectedProduct.name, selectedProduct.price);
         window.location.href = data.url;
       } else {
         console.error('Checkout failed:', data.error);
@@ -77,407 +73,189 @@ export default function RecipesPage() {
     }
   };
 
-  const closeCheckoutForm = () => {
-    setShowCheckoutForm(false);
-    setSelectedProduct(null);
-    setCustomerEmail('');
-    setCustomerName('');
+  const productImageUrl = (product: Product) => {
+    if (!product.image_path) return null;
+    if (product.image_path.startsWith('http')) return product.image_path;
+    return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${product.image_path}`;
   };
 
-  // Placeholder products for when store is empty
-  const placeholderProducts = [
-    {
-      id: 'placeholder-1',
-      name: 'Fire Ritual Recipe Bundle',
-      description: 'Essential recipes for your first gathering. Pre-prep friendly, fire-tested, and designed for community.',
-      price: 0,
-      product_type: 'bundle' as const,
-      is_active: true,
-      image_path: null,
-      file_path: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-    {
-      id: 'placeholder-2',
-      name: 'Conversation Starters Guide',
-      description: 'Questions and prompts for deeper dialogue. Designed to spark meaningful conversations around the fire.',
-      price: 0,
-      product_type: 'guide' as const,
-      is_active: true,
-      image_path: null,
-      file_path: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-    {
-      id: 'placeholder-3',
-      name: 'Hosting Handbook',
-      description: 'How to create meaningful gatherings in your community. Practical guidance for hosting your own events.',
-      price: 0,
-      product_type: 'guide' as const,
-      is_active: true,
-      image_path: null,
-      file_path: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-  ];
-
-  const displayProducts = products.length > 0 ? products : placeholderProducts;
-  const showPlaceholderMessage = products.length === 0 && !productsLoading;
-
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16">
-      {/* Cross-link to Store */}
-      <div className="text-center mb-6">
-        <Link 
-          href="/store" 
-          className="inline-flex items-center gap-2 text-ember hover:text-ember-light transition-colors text-sm font-medium"
-        >
-          Looking for physical merch? <span className="underline">Shop Store</span> →
-        </Link>
-      </div>
-
-      {/* Hero Section */}
-      <div className="text-center mb-16">
-        <h1 className="text-display animate-fade-in">Recipes & Guides</h1>
-        <p className="mt-4 text-black/80 animate-fade-in max-w-2xl mx-auto">
-          Digital resources for fire cooking and building community around honest conversation.
-        </p>
-      </div>
-
-      {/* Featured Recipes */}
-      {featuredRecipes.length > 0 && (
-        <section className="mb-16">
-          <h2 className="text-section text-center mb-4 text-charcoal">Featured Recipes</h2>
-          <p className="text-center text-black/60 mb-10 max-w-xl mx-auto">
-            Field recipes from the fire — built for summer tables and hands-on gathering.
+    <main className="bg-[#f4efe7] text-[#211d19]">
+      <section className="border-b border-black/10 px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_.9fr] lg:items-end lg:gap-20">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Journal · Recipes & Guides</p>
+            <h1 className="mt-5 max-w-[10ch] font-serif text-5xl font-medium leading-[.98] tracking-[-0.035em] sm:text-6xl md:text-7xl">
+              Things worth making and passing on.
+            </h1>
+          </div>
+          <p className="max-w-xl font-crimson text-2xl leading-9 text-black/68 sm:text-[1.55rem] sm:leading-10 lg:justify-self-end">
+            Field recipes, practical guides, and designed resources that come out of real tables, fires, and experiments.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredRecipes.map((recipe) => (
-              <Link
-                key={recipe.slug}
-                href={`/recipes/${recipe.slug}`}
-                className="group card-enhanced animate-scale-in block"
-              >
-                <div
-                  className="aspect-[4/5] relative overflow-hidden rounded-t-2xl bg-gradient-to-br from-ember/10 via-cream to-ember/5 flex items-end p-6"
-                  style={{
-                    backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(91,35,32,0.04) 1px, rgba(91,35,32,0.04) 2px)`,
-                  }}
-                >
-                  <div className="relative z-10">
-                    <p className="text-xs font-medium uppercase tracking-widest text-ember/80 mb-2">
-                      Field Recipe
-                    </p>
-                    <h3 className="text-2xl font-serif font-medium text-charcoal group-hover:text-ember transition-colors">
-                      {recipe.title}
-                    </h3>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <p className="text-black/70 leading-relaxed mb-4 line-clamp-3">{recipe.subtitle}</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <Badge variant="outline" className="text-ember border-ember text-xs">
-                      {recipe.meta.format}
-                    </Badge>
-                    <Badge variant="outline" className="text-black/60 border-black/20 text-xs">
-                      {recipe.meta.occasion}
-                    </Badge>
-                  </div>
-                  <span className="text-sm text-ember font-medium group-hover:text-ember-light transition-colors">
-                    Read recipe →
-                  </span>
-                </div>
-              </Link>
-            ))}
+        </div>
+      </section>
+
+      {featuredRecipes.length > 0 && (
+        <section className="px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-12 lg:grid-cols-[.68fr_1.32fr] lg:gap-20">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Field Recipes</p>
+                <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">Built to be cooked, not admired from a distance.</h2>
+              </div>
+
+              <div className="border-y border-black/15">
+                {featuredRecipes.map((recipe, index) => (
+                  <Link
+                    key={recipe.slug}
+                    href={`/recipes/${recipe.slug}`}
+                    className="group grid gap-5 border-b border-black/10 py-8 last:border-b-0 sm:grid-cols-[70px_1fr] sm:gap-7"
+                  >
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9c3d24]">{String(index + 1).padStart(2, '0')}</p>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/42">{recipe.meta.occasion}</p>
+                      <h3 className="mt-2 font-serif text-3xl leading-[1.08] transition-colors group-hover:text-[#9c3d24] sm:text-4xl">{recipe.title}</h3>
+                      <p className="mt-4 max-w-2xl text-base leading-7 text-black/58">{recipe.subtitle}</p>
+                      <span className="mt-5 inline-block text-xs font-semibold uppercase tracking-[0.16em] text-[#9c3d24]">Cook the recipe →</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
       )}
 
-      {/* Recipe Bundles & Guides */}
-      <section className="mb-8">
-        <div className="border-t border-ember/10 pt-12 mb-10">
-          <h2 className="text-section text-center mb-4 text-charcoal">Recipe Bundles &amp; Guides</h2>
-          <p className="text-center text-black/60 max-w-xl mx-auto">
-            Digital bundles and hosting guides — available for purchase when live.
-          </p>
-        </div>
-
-      {showPlaceholderMessage && (
-        <div className="bg-cream rounded-2xl p-8 mb-12 text-center">
-          <h3 className="text-xl font-serif font-medium mb-4 text-charcoal">
-            Bundles Coming Soon
-          </h3>
-          <p className="text-black/70 leading-relaxed mb-6 max-w-2xl mx-auto">
-            We&apos;re curating our first collection of fire-friendly recipe bundles and guides.
-            Stay connected to be notified when they&apos;re available.
-          </p>
-          <Link href="/join">
-            <Button className="btn-ember px-8 py-4 rounded-full text-lg font-medium">
-              Stay Connected for Updates
-            </Button>
-          </Link>
-        </div>
-      )}
-
-      {/* Products Grid */}
-      {productsLoading ? (
-        <div className="text-center py-12">
-          <p className="text-black/60">Loading products...</p>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            {displayProducts.map((product) => (
-              <div 
-                key={product.id} 
-                className="card-enhanced animate-scale-in cursor-pointer hover:shadow-lg transition-shadow"
-                onClick={() => !showPlaceholderMessage && handleCheckoutClick(product)}
-              >
-                {/* Product Image */}
-                <div className="aspect-square relative overflow-hidden rounded-t-2xl">
-                  {product.image_path ? (
-                    <Image
-                      src={
-                        product.image_path.startsWith('http') 
-                          ? product.image_path // Direct URL from Printful
-                          : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${product.image_path}` // Supabase storage
-                      }
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover"
-                      unoptimized={product.image_path.startsWith('http')} // Unoptimized for Printful URLs to avoid domain issues
-                      onError={(e) => {
-                        console.error('Image failed to load:', product.image_path);
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <div className="text-center text-gray-500">
-                        <div className="w-16 h-16 mx-auto mb-2 bg-gray-200 rounded-full flex items-center justify-center">
-                          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                          </svg>
-                        </div>
-                        <p className="text-sm">No Image</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Product Info */}
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-serif font-medium">{product.name}</h3>
-                    {showPlaceholderMessage && (
-                      <Badge variant="outline" className="text-ember border-ember">
-                        Coming Soon
-                      </Badge>
-                    )}
-                    {!showPlaceholderMessage && (
-                      <Badge variant="outline" className="text-ember border-ember">
-                        {product.product_type.replace('_', ' ')}
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  {product.description && product.description !== product.name && (
-                    <p className="text-black/70 mb-4 line-clamp-3">{product.description}</p>
-                  )}
-
-                  <div className="flex items-center justify-between">
-                    <div className="text-2xl font-semibold">
-                      {product.price === 0 ? 'Free' : `$${product.price}`}
-                    </div>
-                    
-                    {showPlaceholderMessage ? (
-                      <Link href="/join" onClick={(e) => e.stopPropagation()}>
-                        <Button className="btn-ember focus-ring">
-                          Get Notified
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCheckoutClick(product);
-                        }}
-                        disabled={loading === product.id}
-                        className="btn-ember focus-ring"
-                      >
-                        {loading === product.id ? 'Processing...' : 'Get It'}
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Checkout Modal */}
-          {showCheckoutForm && selectedProduct && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
-              <div className="bg-white rounded-2xl w-full max-w-lg relative animate-scale-in max-h-[90vh] overflow-y-auto">
-                {/* Close button */}
-                <button
-                  onClick={closeCheckoutForm}
-                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10 bg-white rounded-full p-1 shadow-sm"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-
-                {/* Product Image */}
-                {selectedProduct.image_path && (
-                  <div className="w-full h-48 md:h-64 relative overflow-hidden rounded-t-2xl">
-                    <Image
-                      src={
-                        selectedProduct.image_path.startsWith('http') 
-                          ? selectedProduct.image_path
-                          : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${selectedProduct.image_path}`
-                      }
-                      alt={selectedProduct.name}
-                      fill
-                      className="object-cover"
-                      unoptimized={selectedProduct.image_path.startsWith('http')}
-                    />
-                  </div>
-                )}
-
-                {/* Form */}
-                <form onSubmit={handleCheckoutSubmit} className="space-y-6 p-8">
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h2 className="text-2xl font-serif font-medium">Complete Your Purchase</h2>
-                      <Badge variant="outline" className="text-ember border-ember">
-                        {selectedProduct.product_type.replace('_', ' ')}
-                      </Badge>
-                    </div>
-                    <h3 className="text-xl font-medium text-charcoal mb-2">{selectedProduct.name}</h3>
-                    {selectedProduct.description && (
-                      <p className="text-black/70 leading-relaxed mb-4">{selectedProduct.description}</p>
-                    )}
-                    <p className="text-2xl font-semibold text-ember">
-                      {selectedProduct.price === 0 ? 'Free' : `$${selectedProduct.price.toFixed(2)}`}
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium mb-2">
-                        Email Address *
-                      </label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={customerEmail}
-                        onChange={(e) => setCustomerEmail(e.target.value)}
-                        placeholder="your@email.com"
-                        required
-                        className="focus-ring"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium mb-2">
-                        Full Name *
-                      </label>
-                      <Input
-                        id="name"
-                        type="text"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                        placeholder="Your Name"
-                        required
-                        className="focus-ring"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={closeCheckoutForm}
-                      className="flex-1"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      disabled={loading === selectedProduct.id || !customerEmail || !customerName}
-                      className="btn-ember flex-1"
-                    >
-                      {loading === selectedProduct.id ? 'Processing...' : 'Continue to Payment'}
-                    </Button>
-                  </div>
-                </form>
-              </div>
+      <section className="border-y border-black/10 bg-[#eee4d7] px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-12 lg:grid-cols-[.7fr_1.3fr] lg:gap-20">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Guides</p>
+              <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">Deeper objects from the same world.</h2>
+              <p className="mt-6 max-w-xl text-base leading-7 text-black/58">
+                Some ideas need more room than a recipe page. Guides can hold the full process, variations, visual instruction, and the details worth keeping.
+              </p>
             </div>
-          )}
-        </>
-      )}
+
+            <div>
+              {productsLoading ? (
+                <div className="border-y border-black/15 py-10 text-sm text-black/45">Checking the guide shelf…</div>
+              ) : products.length > 0 ? (
+                <div className="border-y border-black/15">
+                  {products.map((product) => {
+                    const imageUrl = productImageUrl(product);
+                    return (
+                      <article key={product.id} className="grid gap-6 border-b border-black/10 py-8 last:border-b-0 sm:grid-cols-[160px_1fr_auto] sm:items-center">
+                        <div className="relative aspect-[4/3] overflow-hidden bg-black/5">
+                          {imageUrl ? (
+                            <Image
+                              src={imageUrl}
+                              alt={product.name}
+                              fill
+                              sizes="160px"
+                              className="object-cover"
+                              unoptimized={imageUrl.startsWith('http')}
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center px-4 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-black/32">Wine With Pete Guide</div>
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-serif text-3xl leading-[1.08]">{product.name}</h3>
+                          {product.description && <p className="mt-3 max-w-xl text-sm leading-6 text-black/56">{product.description}</p>}
+                          <p className="mt-3 text-sm font-medium text-[#9c3d24]">{product.price === 0 ? 'Free' : `$${product.price.toFixed(2)}`}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            analyticsEvents.productViewed(product.name);
+                            setSelectedProduct(product);
+                          }}
+                          className="min-h-11 border border-[#9c3d24] px-5 text-xs font-semibold uppercase tracking-[0.16em] text-[#9c3d24] transition-colors hover:bg-[#9c3d24] hover:text-white"
+                        >
+                          Get it
+                        </button>
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="border-y border-black/15 py-10">
+                  <p className="font-serif text-3xl leading-[1.12]">The guide shelf is still being built.</p>
+                  <p className="mt-4 max-w-2xl text-base leading-7 text-black/58">
+                    New guides will appear here when they are ready to be useful—not simply because the site needs more products.
+                  </p>
+                  <Link href="/join" className="mt-6 inline-block border-b border-[#9c3d24] pb-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#9c3d24]">
+                    Join the Founding Table for new releases →
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* Philosophy Section */}
-      <div className="text-center bg-cream rounded-2xl p-12">
-        <h2 className="text-section mb-6">Why We Build This</h2>
-        <p className="text-black/80 max-w-3xl mx-auto mb-8">
-          Every product here is designed to help you create meaningful connections. 
-          Whether it&apos;s a recipe card for your next fire gathering or a guide to deeper conversations, 
-          these tools are built for real people, real moments, real community.
-        </p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-ember/10 rounded-full flex items-center justify-center">
-              <Image
-                src="/images/icons/icon-fire.png"
-                alt="Fire"
-                width={32}
-                height={32}
-                className="w-8 h-8"
-              />
-            </div>
-            <h3 className="font-medium mb-2">Gather Around Fire</h3>
-            <p className="text-sm text-black/70">Recipes and guides for open-fire cooking</p>
+      <section className="bg-[#211d19] px-5 py-20 text-[#f4efe7] sm:px-8 md:px-12 md:py-24 lg:px-16">
+        <div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-3xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#d78959]">The Journal</p>
+            <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">Recipes are one way the table travels.</h2>
           </div>
-          
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-ember/10 rounded-full flex items-center justify-center">
-              <Image
-                src="/images/icons/icon-connection.png"
-                alt="Connection"
-                width={32}
-                height={32}
-                className="w-8 h-8"
-              />
-            </div>
-            <h3 className="font-medium mb-2">Build Connection</h3>
-            <p className="text-sm text-black/70">Tools for deeper, more honest conversations</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-ember/10 rounded-full flex items-center justify-center">
-              <Image
-                src="/images/icons/icon-community.png"
-                alt="Community"
-                width={32}
-                height={32}
-                className="w-8 h-8"
-              />
-            </div>
-            <h3 className="font-medium mb-2">Grow Community</h3>
-            <p className="text-sm text-black/70">Resources for building lasting relationships</p>
+          <Link href="/journal" className="inline-flex min-h-12 items-center justify-center border border-white/25 px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+            Back to the Journal
+          </Link>
+        </div>
+      </section>
+
+      {selectedProduct && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-label={`Purchase ${selectedProduct.name}`}>
+          <div className="relative w-full max-w-xl bg-[#f4efe7] p-7 text-[#211d19] sm:p-9">
+            <button
+              type="button"
+              onClick={closeCheckout}
+              className="absolute right-5 top-5 text-2xl leading-none text-black/45 hover:text-black"
+              aria-label="Close purchase form"
+            >
+              ×
+            </button>
+
+            <p className="pr-8 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">Digital guide</p>
+            <h2 className="mt-4 pr-8 font-serif text-4xl leading-[1.05]">{selectedProduct.name}</h2>
+            {selectedProduct.description && <p className="mt-4 text-base leading-7 text-black/58">{selectedProduct.description}</p>}
+            <p className="mt-4 text-lg font-medium text-[#9c3d24]">{selectedProduct.price === 0 ? 'Free' : `$${selectedProduct.price.toFixed(2)}`}</p>
+
+            <form onSubmit={handleCheckoutSubmit} className="mt-8 space-y-5 border-t border-black/15 pt-7">
+              <label className="block">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/50">Email</span>
+                <input
+                  type="email"
+                  value={customerEmail}
+                  onChange={(event) => setCustomerEmail(event.target.value)}
+                  required
+                  className="mt-2 min-h-12 w-full border border-black/20 bg-transparent px-4 outline-none focus:border-[#9c3d24]"
+                />
+              </label>
+              <label className="block">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/50">Name</span>
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(event) => setCustomerName(event.target.value)}
+                  required
+                  className="mt-2 min-h-12 w-full border border-black/20 bg-transparent px-4 outline-none focus:border-[#9c3d24]"
+                />
+              </label>
+              <button
+                type="submit"
+                disabled={loading === selectedProduct.id}
+                className="min-h-12 w-full bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loading === selectedProduct.id ? 'Opening checkout…' : selectedProduct.price === 0 ? 'Get the guide' : 'Continue to checkout'}
+              </button>
+            </form>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </main>
   );
 }
-

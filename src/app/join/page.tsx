@@ -1,55 +1,45 @@
 'use client';
-import { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 
-export default function JoinPage(){
+import Link from 'next/link';
+import { useState } from 'react';
+import { analyticsEvents } from '@/lib/analytics';
+
+export default function JoinPage() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setIsSubmitting(true);
     setError(null);
-    
+
     try {
       const response = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
 
       const contentType = response.headers.get('content-type');
-      let result;
-      
-      if (contentType && contentType.includes('application/json')) {
-        result = await response.json();
-      } else {
-        const text = await response.text();
-        console.error('Non-JSON response:', text);
-        throw new Error('Server returned non-JSON response');
-      }
+      const result = contentType?.includes('application/json')
+        ? await response.json()
+        : { error: 'Subscription service returned an unexpected response.' };
 
       if (response.ok) {
         if (result.already_subscribed) {
-          setError('You\'re already on the Founding Table! Check your email for our latest updates.');
+          setError("You're already at the Founding Table. Keep an eye on your inbox for the next note.");
           setEmail('');
         } else {
+          analyticsEvents.newsletterSignup();
           setIsSubmitted(true);
-          setError(null);
         }
       } else {
-        const errorMsg = result.error || result.details || 'Failed to subscribe';
-        setError(errorMsg);
+        setError(result.error || result.details || 'Failed to subscribe. Please try again.');
       }
-    } catch (error) {
-      console.error('Newsletter subscription error:', error);
+    } catch (subscriptionError) {
+      console.error('Newsletter subscription error:', subscriptionError);
       setError('Failed to subscribe. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -58,198 +48,127 @@ export default function JoinPage(){
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
-        <div className="mx-auto max-w-2xl px-4 text-center">
-          <div className="bg-white rounded-2xl p-12 shadow-sm border">
-            <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-              <Image src="/images/icons/icon-connection.png" alt="Welcome" width={48} height={48} />
-            </div>
-            <h1 className="text-3xl font-serif font-medium mb-4 text-charcoal">Welcome to the Founding Table</h1>
-            <p className="text-lg text-black/70 mb-6">
-              You&apos;re on the list. Check your email for a welcome note—and we&apos;ll reach out
-              when pilot dinners and invitations open up.
-            </p>
-            <div className="space-y-4">
-              <a 
-                href="https://winewithpete.substack.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="btn-ember px-8 py-4 rounded-full text-lg font-medium inline-block"
-              >
-                Read Latest Essays
-              </a>
-              <div className="text-sm text-black/60">
-                <p>While you wait, explore essays on Substack.</p>
-              </div>
-            </div>
+      <main className="flex min-h-[72vh] items-center bg-[#f4efe7] px-5 py-20 text-[#211d19] sm:px-8 md:px-12 lg:px-16">
+        <div className="mx-auto w-full max-w-4xl border-y border-black/15 py-16 text-center md:py-24">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Founding Table</p>
+          <h1 className="mx-auto mt-6 max-w-[12ch] font-serif text-5xl leading-[1.02] tracking-[-0.03em] sm:text-6xl">
+            There&apos;s a chair for you.
+          </h1>
+          <p className="mx-auto mt-7 max-w-2xl font-crimson text-2xl leading-9 text-black/65">
+            You&apos;re on the list. The next note, invitation, recipe, or experiment will find you there.
+          </p>
+          <div className="mt-10 flex flex-col items-center justify-center gap-5 sm:flex-row">
+            <Link href="/journal" data-analytics-event="journal_enter" data-analytics-category="navigation" data-analytics-label="founding_table_success" className="inline-flex min-h-12 items-center justify-center bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+              Enter the Journal
+            </Link>
+            <Link href="/gather" data-analytics-event="gather_enter" data-analytics-category="navigation" data-analytics-label="founding_table_success" className="border-b border-black/40 pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-black/70">
+              Explore Gather →
+            </Link>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-cream">
-      <div className="bg-white py-16">
-        <div className="mx-auto max-w-4xl px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-serif font-medium text-charcoal mb-6">
-            Join the Founding Table
-          </h1>
-          <p className="text-xl text-black/70 leading-relaxed mb-8 max-w-2xl mx-auto">
-            The list for invite-only pilot dinners, essays, gathering notes, and the community
-            layer behind Wine With Pete. A closer circle than the public site.
+    <main className="bg-[#f4efe7] text-[#211d19]">
+      <section className="border-b border-black/10 px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[1.05fr_.95fr] lg:items-end lg:gap-24">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Founding Table</p>
+            <h1 className="mt-5 max-w-[10ch] font-serif text-5xl font-medium leading-[.98] tracking-[-0.035em] sm:text-6xl md:text-7xl">
+              Pull up a chair.
+            </h1>
+            <p className="mt-7 max-w-2xl font-crimson text-2xl leading-9 text-black/68 sm:text-[1.6rem] sm:leading-10">
+              The closer circle around Wine With Pete—new tables, invitations, field notes, essays, recipes, and things still being built.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="border-y border-black/20 py-8 md:py-10">
+            <label htmlFor="founding-table-email" className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">
+              Your email
+            </label>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+              <input
+                id="founding-table-email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  setError(null);
+                }}
+                required
+                aria-invalid={error ? 'true' : 'false'}
+                aria-describedby={error ? 'founding-table-error' : 'founding-table-note'}
+                className="min-h-12 flex-1 border border-black/25 bg-transparent px-4 text-base outline-none transition-colors placeholder:text-black/35 focus:border-[#9c3d24]"
+              />
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="min-h-12 bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-[#7f301f] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isSubmitting ? 'Joining…' : 'Join the Table'}
+              </button>
+            </div>
+            {error ? (
+              <p id="founding-table-error" className="mt-3 text-sm text-[#9c3d24]" role="alert">{error}</p>
+            ) : (
+              <p id="founding-table-note" className="mt-3 text-xs leading-5 text-black/45">Occasional notes. No spam. Leave whenever you like.</p>
+            )}
+          </form>
+        </div>
+      </section>
+
+      <section className="px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">What might arrive</p>
+            <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">
+              Not another content schedule. Notes worth sending.
+            </h2>
+          </div>
+
+          <div className="border-y border-black/15">
+            {[
+              ['Invitations', 'Early notice when a community table, pilot dinner, collaboration, or other gathering opens.'],
+              ['From the Journal', 'New essays, table stories, recipes, field notes, and films when there is something worth sharing.'],
+              ['Behind the work', 'Menus, experiments, lessons, unfinished ideas, and the process of building Wine With Pete in public.'],
+              ['Early objects', 'Guides, releases, and future Objects From the Table before they are broadly announced.'],
+            ].map(([title, body]) => (
+              <div key={title} className="grid gap-3 border-b border-black/10 py-8 last:border-b-0 sm:grid-cols-[190px_1fr] sm:gap-8">
+                <h3 className="font-serif text-2xl">{title}</h3>
+                <p className="max-w-2xl text-base leading-7 text-black/58">{body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-black/10 bg-[#211d19] px-5 py-20 text-[#f4efe7] sm:px-8 md:px-12 md:py-24 lg:px-16">
+        <div className="mx-auto max-w-5xl text-center">
+          <p className="font-serif text-4xl leading-[1.08] tracking-[-0.025em] sm:text-5xl md:text-6xl">
+            You do not need to understand every part of Wine With Pete to belong at the table.
           </p>
         </div>
-      </div>
+      </section>
 
-      <div className="bg-white py-16">
-        <div className="mx-auto max-w-2xl px-4">
-          <div className="bg-cream rounded-2xl p-8 shadow-sm border">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-serif font-medium mb-4 text-charcoal">
-                Get on the list
-              </h2>
-              <p className="text-black/70 mb-2">
-                Join with your email. You&apos;ll receive a welcome note and your free Fire Ritual recipe card.
-              </p>
-              <p className="text-sm text-black/60">
-                Different from Substack—this is the inside track for gatherings, pilots, and community.
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
-                  <Input 
-                    type="email"
-                    placeholder="your@email.com" 
-                    value={email} 
-                    onChange={e => {
-                      setEmail(e.target.value);
-                      setError(null);
-                    }}
-                    className="flex-1"
-                    required
-                    aria-invalid={error ? 'true' : 'false'}
-                    aria-describedby={error ? 'email-error' : undefined}
-                  />
-                  {error && (
-                    <p id="email-error" className="text-sm text-red-600 mt-2" role="alert">
-                      {error}
-                    </p>
-                  )}
-                </div>
-                <Button 
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="btn-ember px-8 py-4 rounded-full text-lg font-medium"
-                >
-                  {isSubmitting ? 'Joining...' : 'Join the Founding Table'}
-                </Button>
-              </div>
-              <p className="text-sm text-black/60 text-center">
-                We respect your privacy. Unsubscribe anytime. No spam, just thoughtful content.
-              </p>
-            </form>
+      <section className="px-5 py-20 sm:px-8 md:px-12 md:py-24 lg:px-16">
+        <div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-3xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">While you&apos;re here</p>
+            <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">See what the table is becoming.</h2>
+          </div>
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <Link href="/journal" data-analytics-event="journal_enter" data-analytics-category="navigation" data-analytics-label="founding_table_bottom" className="inline-flex min-h-12 items-center justify-center bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+              Read the Journal
+            </Link>
+            <Link href="/gather" data-analytics-event="gather_enter" data-analytics-category="navigation" data-analytics-label="founding_table_bottom" className="inline-flex min-h-12 items-center justify-center border border-black/30 px-6 text-xs font-semibold uppercase tracking-[0.18em] text-[#211d19]">
+              Explore Gather
+            </Link>
           </div>
         </div>
-      </div>
-
-      <div className="py-16">
-        <div className="mx-auto max-w-6xl px-4">
-          <h2 className="text-3xl font-serif font-medium text-center mb-12 text-charcoal">
-            What You&apos;ll Receive
-          </h2>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-            <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
-              <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                <img src="/images/icons/icon-connection.png" alt="" className="w-12 h-12" aria-hidden />
-              </div>
-              <h3 className="text-xl font-medium mb-4 text-charcoal">Pilot Invitations</h3>
-              <p className="text-black/70 leading-relaxed">
-                First access to invite-only pilot dinners and privately hosted gathering experiments.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
-              <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                <img src="/images/icons/icon-writing.png" alt="" className="w-12 h-12" aria-hidden />
-              </div>
-              <h3 className="text-xl font-medium mb-4 text-charcoal">Essays & Notes</h3>
-              <p className="text-black/70 leading-relaxed">
-                Writing on gathering design, connection, and the work behind signature table experiences.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
-              <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                <img src="/images/icons/icon-fire.png" alt="" className="w-12 h-12" aria-hidden />
-              </div>
-              <h3 className="text-xl font-medium mb-4 text-charcoal">Gathering Notes</h3>
-              <p className="text-black/70 leading-relaxed">
-                Recipe cards, hosting insights, and practical notes for privately hosted evenings.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
-              <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                <img src="/images/icons/icon-growth.png" alt="" className="w-12 h-12" aria-hidden />
-              </div>
-              <h3 className="text-xl font-medium mb-4 text-charcoal">Community Layer</h3>
-              <p className="text-black/70 leading-relaxed">
-                Reflections from gatherings, conversations, and the community forming around the work.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="py-16">
-        <div className="mx-auto max-w-4xl px-4">
-          <h2 className="text-3xl font-serif font-medium text-center mb-12 text-charcoal">
-            Founding Table vs. Substack
-          </h2>
-          
-          <div className="grid md:grid-cols-2 gap-12">
-            <div className="bg-white rounded-2xl p-8 shadow-sm border">
-              <h3 className="text-xl font-medium mb-4 text-ember">Founding Table</h3>
-              <ul className="space-y-3 text-black/70">
-                <li>• Invite-only pilot dinner invitations</li>
-                <li>• Gathering notes and hosting insights</li>
-                <li>• Recipe cards for privately hosted evenings</li>
-                <li>• Community reflections and early access</li>
-                <li>• More personal and intimate tone</li>
-              </ul>
-            </div>
-            
-            <div className="bg-white rounded-2xl p-8 shadow-sm border">
-              <h3 className="text-xl font-medium mb-4 text-ember">Substack Essays</h3>
-              <ul className="space-y-3 text-black/70">
-                <li>• Weekly long-form philosophical essays</li>
-                <li>• Deep dives into specific topics</li>
-                <li>• More structured and researched content</li>
-                <li>• Focus on challenging assumptions</li>
-                <li>• Public platform for broader reach</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="text-center mt-12">
-            <p className="text-black/60 mb-4 text-sm">
-              Ready to plan or book a privately hosted gathering?
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
-                <Link href="/plan">Plan a Gathering</Link>
-              </Button>
-              <Button asChild variant="outline" className="border-2 border-ember text-ember hover:bg-ember hover:text-white rounded-full px-6 py-3">
-                <Link href="/signature-table">Book a Signature Table</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

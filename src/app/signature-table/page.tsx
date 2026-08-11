@@ -1,162 +1,154 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Mail } from 'lucide-react';
+
 import { buildInquiryMailto, contactEmail } from '@/lib/inquiry-mailto';
 
 const inquiryMailto = buildInquiryMailto('Signature Table Inquiry');
 
 export const metadata: Metadata = {
-  title: 'Book a Signature Table | Wine With Pete',
+  title: 'Signature Table | Wine With Pete',
   description:
-    'Privately hosted signature table experiences with Pete—in host homes and chosen spaces. Gathering design, hosting, and conversation shaped around your setting.',
+    'A privately hosted Wine With Pete table designed and hosted around your people, place, food, wine, and reason for gathering.',
   alternates: { canonical: '/signature-table' },
   openGraph: {
-    title: 'Book a Signature Table | Wine With Pete',
-    description:
-      'Privately hosted Wine With Pete signature table experiences in host homes and chosen spaces.',
+    title: 'Signature Table | Wine With Pete',
+    description: 'A privately hosted Wine With Pete table designed and hosted around your people and place.',
     url: 'https://winewithpete.me/signature-table',
   },
 };
 
 export default function SignatureTablePage() {
   return (
-    <div className="min-h-screen bg-cream">
-      {/* Hero */}
-      <div className="relative bg-white py-16 md:py-20 overflow-hidden">
-        <div className="mx-auto max-w-4xl px-4 text-center animate-fade-in relative z-10">
-          <h1 className="text-4xl md:text-5xl font-serif font-medium text-charcoal mb-6">
-            Book a Signature Table
-          </h1>
-          <p className="text-xl text-black/70 leading-relaxed max-w-2xl mx-auto mb-4">
-            A privately hosted table experience shaped around your space, your people, and the kind
-            of conversation you want to make possible.
-          </p>
-          <p className="text-lg text-black/60 max-w-2xl mx-auto">
-            Pete designs the flow, food direction, wine arc, atmosphere, and conversation structure
-            around the host setting—prepared and brought together as appropriate for your space.
-          </p>
-        </div>
-      </div>
-
-      {/* Experience */}
-      <div className="py-16">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="aspect-[4/3] rounded-2xl overflow-hidden relative shadow-sm">
-              <Image
-                src="/images/about/about-pete-beach-fire.png.png"
-                alt="Intimate gathering with fire, wine, and conversation"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
+    <main className="bg-[#f4efe7] text-[#211d19]">
+      <section className="border-b border-black/10">
+        <div className="mx-auto grid max-w-[1600px] lg:min-h-[78vh] lg:grid-cols-[.88fr_1.12fr]">
+          <div className="flex items-center px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+            <div className="max-w-2xl">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Signature Table</p>
+              <h1 className="mt-5 max-w-[9ch] font-serif text-5xl font-medium leading-[.98] tracking-[-0.035em] sm:text-6xl md:text-7xl">
+                Pete designs and hosts the table.
+              </h1>
+              <p className="mt-7 max-w-xl font-crimson text-2xl leading-9 text-black/68 sm:text-[1.55rem] sm:leading-10">
+                A privately hosted Wine With Pete evening shaped around your people, your place, and the reason you want everyone there.
+              </p>
+              <a
+                href={inquiryMailto}
+                className="mt-9 inline-flex min-h-12 items-center justify-center gap-3 bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white"
+              >
+                <Mail className="h-4 w-4" aria-hidden="true" />
+                Inquire about a table
+              </a>
             </div>
+          </div>
+
+          <div className="relative min-h-[520px] bg-black lg:min-h-full">
+            <Image
+              src="/images/events/events-community-gathering.png.png"
+              alt="A Wine With Pete gathering around the table"
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 56vw"
+              className="object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.7fr_1.3fr] lg:gap-20">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">What you&apos;re booking</p>
+            <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">Not a menu dropped into a room.</h2>
+          </div>
+          <div className="max-w-4xl">
+            <p className="font-serif text-3xl leading-[1.12] sm:text-4xl">
+              The food is part of the evening. So are the wine, the pacing, the room, the guests, and the conversation.
+            </p>
+            <div className="mt-8 max-w-3xl space-y-5 text-lg leading-8 text-black/62">
+              <p>
+                Signature Tables are small by design—typically six to twelve guests—so the evening can breathe and everyone can still belong to the same conversation.
+              </p>
+              <p>
+                Pete works from the setting outward: who is coming, why you are gathering, what the space can support, what should be cooked or poured, and where the night needs structure versus room to unfold on its own.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-black/10 bg-[#eee4d7] px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
             <div>
-              <h2 className="text-section mb-6 text-charcoal">The Experience</h2>
-              <p className="text-black/70 leading-relaxed mb-4">
-                Signature tables are small by design—typically 6 to 12 guests—so conversation can go
-                deep and the evening can breathe. Pete arrives with a plan shaped for your space,
-                your people, and the tone you want.
-              </p>
-              <p className="text-black/70 leading-relaxed">
-                Expect thoughtful wine direction, food planned around your setting, and salon-style
-                dialogue that doesn&apos;t feel forced. You provide the home or chosen space; Pete
-                brings gathering design, hosting, and facilitation—and helps the evening come
-                together in a way that fits the room.
-              </p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">How the evening takes shape</p>
+              <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">Designed enough to feel intentional. Loose enough to feel alive.</h2>
+            </div>
+            <div className="border-y border-black/15">
+              {[
+                ['01', 'The reason', 'We begin with the people, the occasion, the setting, and what you hope the evening makes possible.'],
+                ['02', 'The table', 'Pete shapes the food direction, wine arc, atmosphere, pacing, and the practical flow of the room.'],
+                ['03', 'The hosting', 'On the night, Pete helps hold the arc of the gathering so you can be present with your own guests.'],
+                ['04', 'The space between', 'The plan creates conditions for conversation without turning dinner into a facilitated workshop.'],
+              ].map(([number, title, body]) => (
+                <div key={number} className="grid gap-4 border-b border-black/10 py-8 last:border-b-0 sm:grid-cols-[70px_170px_1fr] sm:gap-6">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9c3d24]">{number}</p>
+                  <h3 className="font-serif text-2xl">{title}</h3>
+                  <p className="max-w-2xl text-base leading-7 text-black/58">{body}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* What to expect */}
-      <div className="bg-white py-16">
-        <div className="mx-auto max-w-4xl px-4">
-          <h2 className="text-section text-center mb-12 text-charcoal">What to Expect</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: '/images/icons/icon-wine.png',
-                title: 'Menu & Wine Direction',
-                body: 'Food and wine shaped around your guests and setting—a cohesive arc for the evening.',
-              },
-              {
-                icon: '/images/icons/icon-connection.png',
-                title: 'Hosted Conversation',
-                body: 'Pete guides the flow so the night opens up without feeling like a performance.',
-              },
-              {
-                icon: '/images/icons/icon-fire.png',
-                title: 'Your Space, Elevated',
-                body: 'Host homes and chosen spaces become the setting for a one-of-a-kind evening.',
-              },
-            ].map((item) => (
-              <div key={item.title} className="text-center">
-                <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                  <Image src={item.icon} alt="" width={48} height={48} aria-hidden />
-                </div>
-                <h3 className="text-lg font-medium mb-3 text-charcoal">{item.title}</h3>
-                <p className="text-black/70 text-sm leading-relaxed">{item.body}</p>
-              </div>
-            ))}
+      <section className="px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:gap-20">
+          <div className="relative min-h-[480px] overflow-hidden bg-black sm:min-h-[620px]">
+            <Image
+              src="/images/about/about-pete-beach-fire.png.png"
+              alt="Wine With Pete around fire"
+              fill
+              sizes="(max-width: 1024px) 100vw, 52vw"
+              className="object-cover"
+            />
+          </div>
+          <div className="max-w-xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">A good fit</p>
+            <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">When the occasion deserves more than reservations.</h2>
+            <div className="mt-7 space-y-4 text-lg leading-8 text-black/62">
+              <p>Milestone dinners with close friends or family.</p>
+              <p>Founder or leadership tables where the conversation matters as much as the meal.</p>
+              <p>Small groups who want an evening with a real point of view in a home or chosen space.</p>
+            </div>
+            <p className="mt-7 text-sm leading-6 text-black/48">Availability is limited and location-dependent. An inquiry is the first step so we can make sure the table is a good fit.</p>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Ideal for */}
-      <div className="py-16">
-        <div className="mx-auto max-w-3xl px-4">
-          <div className="card-enhanced bg-white rounded-2xl p-8 md:p-12 shadow-sm border">
-            <h2 className="text-2xl font-serif font-medium mb-4 text-charcoal text-center">
-              Ideal For
-            </h2>
-            <ul className="space-y-3 text-black/70 max-w-lg mx-auto">
-              <li>• Milestone dinners with close friends or family</li>
-              <li>• Leadership or founder gatherings that need real conversation</li>
-              <li>• Couples or small groups who want a privately hosted evening with Pete</li>
-              <li>• Hosts with a home or chosen space ready for something memorable</li>
-            </ul>
-            <p className="text-sm text-black/60 text-center mt-6">
-              Availability is limited and location-dependent. Inquiries help us confirm fit before
-              we schedule.
-            </p>
-            <p className="text-sm text-black/50 text-center mt-4 max-w-md mx-auto leading-relaxed">
-              Signature tables are gathering design and hosting for host homes and chosen spaces—a
-              curated evening, not a drop-off menu.
+      <section className="border-t border-black/10 bg-[#211d19] px-5 py-20 text-[#f4efe7] sm:px-8 md:px-12 md:py-24 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_.8fr] lg:items-end lg:gap-20">
+          <div className="max-w-3xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#d78959]">Inquire</p>
+            <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">Tell Pete who is coming and why you want them around the table.</h2>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-white/58">
+              Include your location, approximate guest count, preferred dates, and a few lines about the evening you have in mind.
             </p>
           </div>
-        </div>
-      </div>
-
-      {/* CTA */}
-      <div className="bg-white py-16">
-        <div className="mx-auto max-w-2xl px-4 text-center">
-          <div className="bg-cream rounded-2xl p-10 shadow-sm border">
-            <h2 className="text-2xl font-serif font-medium mb-4 text-charcoal">
-              Inquire about a Signature Table
-            </h2>
-            <p className="text-black/70 mb-8 leading-relaxed">
-              Share your preferred dates, location, guest count, and what you&apos;re hoping the
-              evening becomes. We&apos;ll reply with next steps.
-            </p>
-            <a
-              href={inquiryMailto}
-              className="btn-ember focus-ring inline-flex items-center gap-2 px-8 py-4 rounded-full text-lg font-medium"
-            >
-              <Mail className="w-5 h-5" aria-hidden="true" />
+          <div className="lg:justify-self-end">
+            <a href={inquiryMailto} className="inline-flex min-h-12 items-center justify-center gap-3 bg-[#a64225] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+              <Mail className="h-4 w-4" aria-hidden="true" />
               Email Pete
             </a>
-            <p className="text-sm text-black/50 mt-4">{contactEmail}</p>
+            <p className="mt-3 text-xs text-white/42">{contactEmail}</p>
           </div>
-          <p className="mt-8 text-black/60 text-sm">
-            Prefer to host yourself with a custom plan?{' '}
-            <Link href="/plan" className="text-ember hover:text-ember-light underline">
-              Plan a Gathering
-            </Link>
-          </p>
         </div>
-      </div>
-    </div>
+        <div className="mx-auto mt-12 max-w-7xl border-t border-white/10 pt-6 text-sm text-white/52">
+          Prefer to host the evening yourself?{' '}
+          <Link href="/plan" className="border-b border-white/35 text-white/82">Explore a Gathering Blueprint →</Link>
+        </div>
+      </section>
+    </main>
   );
 }

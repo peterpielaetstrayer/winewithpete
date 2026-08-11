@@ -1,82 +1,58 @@
 'use client';
 
 import Link from 'next/link';
-import { Instagram, Twitter, Mail } from 'lucide-react';
+import { Instagram, Mail } from 'lucide-react';
 
-export function SiteFooter(){
+export function SiteFooter() {
   return (
-    <footer className="border-t border-black/5 bg-white">
-      <div className="mx-auto max-w-6xl px-4 py-12">
-        <div className="grid md:grid-cols-4 gap-8">
-          <div className="md:col-span-2">
-            <h3 className="text-xl font-serif font-semibold mb-4 text-charcoal">Wine With Pete</h3>
-            <p className="text-black/70 leading-relaxed mb-4">
-              Privately hosted gatherings and gathering design—in host homes and chosen spaces,
-              rooted in fire, food, and the slow unfolding of conversation.
+    <footer className="border-t border-black/10 bg-[#211d19] text-[#f4efe7]">
+      <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 md:px-12 md:py-16 lg:px-16">
+        <div className="grid gap-12 md:grid-cols-[1.2fr_.8fr_.8fr]">
+          <div className="max-w-sm">
+            <Link href="/" className="font-serif text-2xl font-semibold tracking-[0.01em]">
+              Wine With Pete
+            </Link>
+            <p className="mt-5 font-crimson text-lg leading-7 text-white/65">
+              Rebuilding the table in an age that keeps teaching us to leave it.
             </p>
-            <p className="text-sm text-black/60">© {new Date().getFullYear()} Wine With Pete</p>
           </div>
-          
+
+          <nav aria-label="Footer navigation" className="space-y-3 text-sm text-white/68">
+            <Link href="/gather" className="block transition-colors hover:text-white">Gather</Link>
+            <Link href="/journal" className="block transition-colors hover:text-white">Journal</Link>
+            <Link href="/tables" className="block transition-colors hover:text-white">Tables</Link>
+            <Link href="/about" className="block transition-colors hover:text-white">About</Link>
+            <Link href="/join" className="block transition-colors hover:text-white">Founding Table</Link>
+          </nav>
+
           <div>
-            <h4 className="font-medium mb-4 text-charcoal">Gatherings</h4>
-            <div className="space-y-2 text-sm">
-              <Link href="/plan" className="block text-black/70 hover:text-ember transition-colors">Plan a Gathering</Link>
-              <Link href="/signature-table" className="block text-black/70 hover:text-ember transition-colors">Signature Table</Link>
-              <Link href="/join" className="block text-black/70 hover:text-ember transition-colors">Founding Table</Link>
-              <Link href="/gatherings" className="block text-black/70 hover:text-ember transition-colors">Community Gatherings</Link>
-              <Link href="/essays" className="block text-black/70 hover:text-ember transition-colors">Essays</Link>
-              <Link href="/about" className="block text-black/70 hover:text-ember transition-colors">About</Link>
-            </div>
-          </div>
-          
-          <div>
-            <h4 className="font-medium mb-4 text-charcoal">More</h4>
-            <div className="space-y-2 text-sm">
-              <Link href="/recipes" className="block text-black/70 hover:text-ember transition-colors">Recipes & Guides</Link>
-              <Link href="/store" className="block text-black/70 hover:text-ember transition-colors">Shop Merch</Link>
-              <Link href="/support" className="block text-black/70 hover:text-ember transition-colors">Support</Link>
-              <a href="mailto:pete@winewithpete.me" className="block text-black/70 hover:text-ember transition-colors">Contact</a>
-            </div>
-          </div>
-        </div>
-        
-        <div className="border-t border-black/5 mt-8 pt-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-black/60 text-center md:text-left">
-              Gathering design · Signature tables · Founding Table
-            </p>
-            <div className="flex items-center gap-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#d78959]">Stay close</p>
+            <div className="mt-5 flex items-center gap-5">
               {process.env.NEXT_PUBLIC_INSTAGRAM_URL && (
                 <a
                   href={process.env.NEXT_PUBLIC_INSTAGRAM_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-black/60 hover:text-ember transition-colors"
                   aria-label="Instagram"
+                  className="text-white/65 transition-colors hover:text-white"
                 >
-                  <Instagram className="w-5 h-5" />
-                </a>
-              )}
-              {process.env.NEXT_PUBLIC_TWITTER_URL && (
-                <a
-                  href={process.env.NEXT_PUBLIC_TWITTER_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-black/60 hover:text-ember transition-colors"
-                  aria-label="Twitter / X"
-                >
-                  <Twitter className="w-5 h-5" />
+                  <Instagram className="h-5 w-5" />
                 </a>
               )}
               <a
                 href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'pete@winewithpete.me'}`}
-                className="text-black/60 hover:text-ember transition-colors"
-                aria-label="Email"
+                aria-label="Email Wine With Pete"
+                className="text-white/65 transition-colors hover:text-white"
               >
-                <Mail className="w-5 h-5" />
+                <Mail className="h-5 w-5" />
               </a>
             </div>
           </div>
+        </div>
+
+        <div className="mt-14 flex flex-col gap-4 border-t border-white/10 pt-6 text-[11px] text-white/42 sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Wine With Pete</p>
+          <p>Food · wine · fire · hospitality · conversation</p>
         </div>
       </div>
     </footer>

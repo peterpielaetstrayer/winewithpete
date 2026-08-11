@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 
 export default function Error({
   error,
@@ -13,34 +11,36 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
     console.error('Application error:', error);
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-cream flex items-center justify-center">
-      <div className="mx-auto max-w-2xl px-4 text-center">
-        <div className="bg-white rounded-2xl p-12 shadow-sm border">
-          <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-            <Image src="/images/icons/icon-fire.png" alt="Error" width={48} height={48} />
-          </div>
-          <h1 className="text-2xl font-serif font-medium mb-4 text-charcoal">Something went wrong</h1>
-          <p className="text-lg text-black/70 mb-8">
-            We encountered an unexpected error. Don&apos;t worry, it&apos;s not your fault.
-          </p>
-          <div className="space-y-4">
-            <Button 
-              onClick={reset}
-              className="btn-ember px-8 py-4 rounded-full text-lg font-medium"
-            >
-              Try Again
-            </Button>
-            <div className="text-sm text-black/60">
-              <p>Or go back to <Link href="/" className="text-ember hover:underline">home</Link></p>
+    <main className="flex min-h-[72vh] items-center bg-[#f4efe7] px-5 py-20 text-[#211d19] sm:px-8 md:px-12 lg:px-16">
+      <div className="mx-auto w-full max-w-5xl border-y border-black/15 py-16 md:py-24">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Something slipped</p>
+        <div className="mt-6 grid gap-10 md:grid-cols-[1.15fr_.85fr] md:items-end md:gap-16">
+          <h1 className="max-w-[10ch] font-serif text-5xl leading-[.98] tracking-[-0.035em] sm:text-6xl">
+            The page hit a snag.
+          </h1>
+          <div className="max-w-lg">
+            <p className="font-crimson text-2xl leading-9 text-black/65">
+              Try the page again. If it keeps happening, the main Wine With Pete paths are still available below.
+            </p>
+            <div className="mt-8 flex flex-col gap-5 sm:flex-row sm:items-center">
+              <button
+                type="button"
+                onClick={reset}
+                className="min-h-12 bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white"
+              >
+                Try again
+              </button>
+              <Link href="/" className="border-b border-black/35 pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-black/65">
+                Return home →
+              </Link>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

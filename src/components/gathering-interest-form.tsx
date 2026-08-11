@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { analyticsEvents } from '@/lib/analytics';
 
 export function GatheringInterestForm() {
   const [email, setEmail] = useState('');
@@ -14,17 +12,15 @@ export function GatheringInterestForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setIsSubmitting(true);
     setError(null);
 
     try {
       const response = await fetch('/api/gatherings/interest', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
           name,
@@ -32,10 +28,10 @@ export function GatheringInterestForm() {
           interestType: interestType || undefined,
         }),
       });
-
       const data = await response.json();
 
       if (response.ok) {
+        analyticsEvents.communityInterestSubmitted(interestType);
         setIsSubmitted(true);
         setEmail('');
         setName('');
@@ -44,9 +40,9 @@ export function GatheringInterestForm() {
       } else {
         setError(data.error || 'Failed to submit. Please try again.');
       }
-    } catch (err) {
+    } catch (submissionError) {
+      console.error('Gathering interest error:', submissionError);
       setError('Failed to submit. Please try again.');
-      console.error('Gathering interest error:', err);
     } finally {
       setIsSubmitting(false);
     }
@@ -54,133 +50,85 @@ export function GatheringInterestForm() {
 
   if (isSubmitted) {
     return (
-      <div className="bg-white rounded-2xl p-8 shadow-sm border">
-        <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 bg-ember/10 rounded-full flex items-center justify-center">
-            <svg className="w-8 h-8 text-ember" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h3 className="text-xl font-serif font-medium mb-2 text-charcoal">Thank You</h3>
-          <p className="text-black/70">
-            We&apos;ll notify you when gatherings are announced in your area.
-          </p>
-        </div>
+      <div className="border-y border-black/15 py-10">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">Interest received</p>
+        <h3 className="mt-4 font-serif text-3xl">We&apos;ll keep your place in mind.</h3>
+        <p className="mt-4 max-w-xl text-base leading-7 text-black/58">
+          When a table is announced near you—or an opportunity fits what you selected—we&apos;ll know where to find you.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl p-8 shadow-sm border">
-      <h3 className="text-2xl font-serif font-medium mb-4 text-charcoal">
-        Let us know you&apos;re interested
-      </h3>
-      <p className="text-black/70 mb-6">
-        We&apos;ll notify you when gatherings are announced in your area. You can also express interest in hosting or collaborating.
-      </p>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium mb-2 text-charcoal">
-            Name *
-          </label>
-          <Input
-            id="name"
+    <form onSubmit={handleSubmit} className="border-y border-black/15 py-8">
+      <div className="grid gap-5 sm:grid-cols-2">
+        <label className="block">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/50">Name</span>
+          <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Your name"
+            onChange={(event) => setName(event.target.value)}
             required
-            className="focus-ring"
+            className="mt-2 min-h-12 w-full border border-black/20 bg-transparent px-4 outline-none focus:border-[#9c3d24]"
           />
-        </div>
+        </label>
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium mb-2 text-charcoal">
-            Email *
-          </label>
-          <Input
-            id="email"
+        <label className="block">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/50">Email</span>
+          <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com"
+            onChange={(event) => setEmail(event.target.value)}
             required
-            className="focus-ring"
+            className="mt-2 min-h-12 w-full border border-black/20 bg-transparent px-4 outline-none focus:border-[#9c3d24]"
           />
-        </div>
+        </label>
+      </div>
 
-        <div>
-          <label htmlFor="location" className="block text-sm font-medium mb-2 text-charcoal">
-            Location (optional)
-          </label>
-          <Input
-            id="location"
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="City, State"
-            className="focus-ring"
-          />
-          <p className="text-sm text-black/60 mt-1">Help us plan gatherings in your area</p>
-        </div>
+      <label className="mt-5 block">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/50">Location <span className="font-normal normal-case tracking-normal text-black/35">optional</span></span>
+        <input
+          type="text"
+          value={location}
+          onChange={(event) => setLocation(event.target.value)}
+          placeholder="City, State"
+          className="mt-2 min-h-12 w-full border border-black/20 bg-transparent px-4 outline-none placeholder:text-black/30 focus:border-[#9c3d24]"
+        />
+      </label>
 
-        <div>
-          <label className="block text-sm font-medium mb-3 text-charcoal">
-            I&apos;m interested in:
-          </label>
-          <div className="space-y-2">
-            <label className="flex items-center gap-3 cursor-pointer">
+      <fieldset className="mt-6">
+        <legend className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/50">I&apos;m interested in</legend>
+        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-6">
+          {[
+            ['attend', 'Attending'],
+            ['host', 'Hosting'],
+            ['collaborate', 'Collaborating'],
+          ].map(([value, label]) => (
+            <label key={value} className="flex cursor-pointer items-center gap-2 text-sm text-black/65">
               <input
                 type="radio"
                 name="interestType"
-                value="attend"
-                checked={interestType === 'attend'}
-                onChange={() => setInterestType('attend')}
-                className="w-4 h-4 text-ember focus:ring-ember"
+                value={value}
+                checked={interestType === value}
+                onChange={() => setInterestType(value as 'attend' | 'host' | 'collaborate')}
+                className="accent-[#9c3d24]"
               />
-              <span className="text-black/80">Attending a gathering</span>
+              {label}
             </label>
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="radio"
-                name="interestType"
-                value="host"
-                checked={interestType === 'host'}
-                onChange={() => setInterestType('host')}
-                className="w-4 h-4 text-ember focus:ring-ember"
-              />
-              <span className="text-black/80">Hosting a gathering</span>
-            </label>
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="radio"
-                name="interestType"
-                value="collaborate"
-                checked={interestType === 'collaborate'}
-                onChange={() => setInterestType('collaborate')}
-                className="w-4 h-4 text-ember focus:ring-ember"
-              />
-              <span className="text-black/80">Collaborating on events</span>
-            </label>
-          </div>
+          ))}
         </div>
+      </fieldset>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
-            {error}
-          </div>
-        )}
+      {error && <p className="mt-5 text-sm text-[#9c3d24]" role="alert">{error}</p>}
 
-        <Button
-          type="submit"
-          disabled={isSubmitting || !email || !name}
-          className="btn-ember w-full py-4 rounded-full text-lg font-medium"
-        >
-          {isSubmitting ? 'Submitting...' : 'Submit Interest'}
-        </Button>
-      </form>
-    </div>
+      <button
+        type="submit"
+        disabled={isSubmitting || !email || !name}
+        className="mt-7 min-h-12 bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {isSubmitting ? 'Sending…' : 'Raise my hand'}
+      </button>
+    </form>
   );
 }
-
