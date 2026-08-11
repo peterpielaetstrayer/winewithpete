@@ -79,6 +79,7 @@ export function legacyProductToOffer(
     title: product.name,
     description: product.description,
     kind,
+    pagePath: destination,
     availability: {
       status: product.is_active ? 'active' : 'archived',
       featured: product.is_featured ?? false,
