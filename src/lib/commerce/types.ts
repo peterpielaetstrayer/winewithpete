@@ -63,6 +63,8 @@ export interface Offer {
   title: string;
   description?: string | null;
   kind: OfferKind;
+  /** Canonical Wine With Pete page where the offer is presented. */
+  pagePath?: string;
   availability: OfferAvailability;
   price?: Money | null;
   images?: OfferImage[];
