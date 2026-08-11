@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { getFeaturedRecipes } from '@/data/recipes';
+import { analyticsEvents } from '@/lib/analytics';
 import type { Product } from '@/lib/types';
 
 const featuredRecipes = getFeaturedRecipes();
@@ -58,6 +59,7 @@ export default function RecipesPage() {
       const data = await response.json();
 
       if (data.url) {
+        analyticsEvents.checkoutStarted(selectedProduct.name, selectedProduct.price);
         window.location.href = data.url;
       } else {
         console.error('Checkout failed:', data.error);
@@ -165,7 +167,10 @@ export default function RecipesPage() {
                         </div>
                         <button
                           type="button"
-                          onClick={() => setSelectedProduct(product)}
+                          onClick={() => {
+                            analyticsEvents.productViewed(product.name);
+                            setSelectedProduct(product);
+                          }}
                           className="min-h-11 border border-[#9c3d24] px-5 text-xs font-semibold uppercase tracking-[0.16em] text-[#9c3d24] transition-colors hover:bg-[#9c3d24] hover:text-white"
                         >
                           Get it
