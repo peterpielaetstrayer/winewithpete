@@ -20,7 +20,7 @@ const journalItems = [
     eyebrow: 'Table',
     title: 'From the Table',
     copy: 'A growing record of the meals, fires, menus, and conversations behind Wine With Pete.',
-    href: '/gatherings',
+    href: '/tables',
     image: '/images/events/events-community-gathering.png.png',
   },
 ];
@@ -105,7 +105,7 @@ export default function Home() {
               <h2 className="font-serif text-4xl font-medium leading-[1.08] tracking-[-0.025em] sm:text-5xl">
                 A growing record of the meals, fires, and conversations that make up Wine With Pete.
               </h2>
-              <Link href="/gatherings" className="mt-8 inline-block border-b border-[#9c3d24] pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#9c3d24]">
+              <Link href="/tables" className="mt-8 inline-block border-b border-[#9c3d24] pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#9c3d24]">
                 Explore the tables →
               </Link>
             </div>
@@ -235,7 +235,7 @@ export default function Home() {
               <h2 className="font-serif text-4xl font-medium leading-[1.07] tracking-[-0.025em] sm:text-5xl">
                 Food, wine, fire, places, people — and what happens when we gather around them.
               </h2>
-              <Link href="/essays" className="mt-8 inline-block border-b border-[#9c3d24] pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#9c3d24]">
+              <Link href="/journal" className="mt-8 inline-block border-b border-[#9c3d24] pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#9c3d24]">
                 Enter the Journal →
               </Link>
             </div>
