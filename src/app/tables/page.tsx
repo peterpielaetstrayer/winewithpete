@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Tables | Wine With Pete',
   description:
-    'A growing archive of Wine With Pete gatherings: the menus, places, ideas, and people that make up the work around the table.',
+    'A growing archive of Wine With Pete tables, formats, experiments, menus, places, and people.',
   alternates: { canonical: '/tables' },
 };
 
@@ -13,6 +13,7 @@ const tables = [
     title: 'Knife & Fire',
     place: 'Virginia Beach',
     date: 'April 11, 2026',
+    format: null,
     status: 'Archive note',
     copy:
       'An early Wine With Pete pilot built around live fire: clams, skewers, steak, cobbler, and an evening designed to move with the fire rather than fight it.',
@@ -22,6 +23,7 @@ const tables = [
     title: 'Château Giscours Vertical',
     place: 'Virginia Beach',
     date: 'May 23, 2026',
+    format: 'Red Wine Exploration Board No. 01',
     status: 'Read the table note',
     copy:
       'Four vintages of Château Giscours around one table, with a menu designed to give the wines room to change over the course of the evening.',
@@ -31,6 +33,7 @@ const tables = [
     title: 'The Seoul Bowl Table',
     place: 'Virginia Beach',
     date: 'June 27, 2026',
+    format: null,
     status: 'Read the table note',
     copy:
       'A build-your-own Korean barbecue table centered on shared bowls, four sauces, texture, and the simple pleasure of everyone reaching into the middle.',
@@ -49,7 +52,7 @@ export default function TablesPage() {
               A record of the tables that made the work real.
             </h1>
             <p className="max-w-xl font-crimson text-2xl leading-9 text-black/68 sm:text-[1.6rem] sm:leading-10">
-              Not a portfolio of perfect dinners. A growing memory of menus, fires, experiments, places, people, and what each evening taught us.
+              Not a portfolio of perfect dinners. A growing memory of menus, fires, experiments, formats, places, people, and what each evening taught us.
             </p>
           </div>
         </div>
@@ -65,6 +68,11 @@ export default function TablesPage() {
                   <p className="mt-3 text-sm leading-6 text-black/48">{table.date}</p>
                 </div>
                 <div>
+                  {table.format && (
+                    <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9c3d24]">
+                      Format · {table.format}
+                    </p>
+                  )}
                   <h2 className="font-serif text-4xl leading-[1.04] tracking-[-0.02em] sm:text-5xl">{table.title}</h2>
                   <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-black/46">{table.place}</p>
                 </div>
@@ -104,10 +112,10 @@ export default function TablesPage() {
           </div>
           <div className="max-w-3xl">
             <p className="font-serif text-3xl leading-[1.12] sm:text-4xl">
-              Two table notes are live. The photographic archive will deepen them over time.
+              Some tables remain singular. Others reveal formats worth repeating.
             </p>
             <p className="mt-6 max-w-2xl text-base leading-7 text-black/58">
-              Each table can eventually hold its menu, photographs, wine, recipes, reflections, and the details worth remembering. Knife & Fire stays in the record while its original photography is being tracked down; it does not need to delay the archive around it.
+              Each record can eventually hold its menu, photographs, wine, recipes, reflections, and the details worth remembering. When an evening produces a repeatable Wine With Pete format, that lineage can live here too. Knife & Fire stays in the record while its original photography is being tracked down; it does not need to delay the archive around it.
             </p>
           </div>
         </div>
