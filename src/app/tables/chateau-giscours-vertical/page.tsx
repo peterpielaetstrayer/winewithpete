@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Château Giscours Vertical | Wine With Pete',
   description:
-    'Four vintages of Château Giscours around one table: a Wine With Pete table note on wine, pacing, food, and shared attention.',
+    'The first Red Wine Exploration Board: four vintages of Château Giscours around one table, with food, shared observation, and conversation.',
   alternates: { canonical: '/tables/chateau-giscours-vertical' },
 };
 
@@ -26,7 +26,9 @@ export default function GiscoursTablePage() {
           <Link href="/tables" className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9c3d24]">
             ← Table Archive
           </Link>
-          <p className="mt-12 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">May 23, 2026 · Table Note</p>
+          <p className="mt-12 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">
+            May 23, 2026 · Red Wine Exploration Board No. 01
+          </p>
           <h1 className="mt-5 max-w-[12ch] font-serif text-5xl font-medium leading-[.98] tracking-[-0.035em] sm:text-6xl md:text-7xl">
             Château Giscours Vertical
           </h1>
@@ -42,6 +44,9 @@ export default function GiscoursTablePage() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">The idea</p>
           </div>
           <div className="max-w-2xl space-y-6 font-crimson text-xl leading-8 text-black/72">
+            <p>
+              This evening became the first prototype for what Wine With Pete now calls the Red Wine Exploration Board: a repeatable gathering format built around comparative tasting, shared observation, food, and conversation.
+            </p>
             <p>
               A vertical tasting can become technical very quickly. The point of this table was different: let four vintages of the same wine become a shared object of attention, then let the evening unfold around them.
             </p>
@@ -77,10 +82,10 @@ export default function GiscoursTablePage() {
           </div>
           <div className="max-w-2xl">
             <p className="font-serif text-3xl leading-[1.16] sm:text-4xl">
-              The wine worked best when it stopped being the subject of the evening and became part of the table's rhythm.
+              The wine worked best when it stopped being the subject of the evening and became part of the table&apos;s rhythm.
             </p>
             <p className="mt-7 text-base leading-7 text-black/60">
-              The archive will eventually hold the full photo sequence and printed tasting material from this evening. For now, this note preserves the structure that mattered: one producer, four years, food with restraint, and enough time to notice the differences together.
+              That became the lesson worth repeating. The Exploration Board can provide enough structure to help people notice together without turning the table into a class. The archive will eventually hold the full photo sequence and printed tasting material from this evening; for now, this note preserves the first version of the format.
             </p>
           </div>
         </div>
