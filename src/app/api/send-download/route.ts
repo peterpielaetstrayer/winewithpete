@@ -1,48 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fulfillDigitalOrder } from '@/lib/commerce/digital-fulfillment';
-import { orderIdSchema } from '@/lib/validations';
 
 /**
- * Transitional manual-resend endpoint.
+ * Legacy manual resend endpoint is intentionally disabled.
  *
- * Stripe fulfillment now calls the digital fulfillment service directly. This
- * route remains only for compatibility/manual recovery and never returns
- * signed download URLs to the caller.
+ * The previous implementation accepted arbitrary order IDs from anonymous
+ * callers and used the service-role client to send download emails.
+ * Digital fulfillment remains available to the verified Stripe webhook.
+ * A future administrative resend flow must authenticate and authorize the
+ * operator, check payment status, and rate-limit requests.
  */
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const validation = orderIdSchema.safeParse(body);
-
-    if (!validation.success) {
-      return NextResponse.json(
-        { error: 'Valid order ID is required' },
-        { status: 400 }
-      );
-    }
-
-    const result = await fulfillDigitalOrder(validation.data.orderId);
-
-    if (!result.delivered) {
-      const status = result.reason === 'Order not found' ? 404 : 422;
-      return NextResponse.json(
-        {
-          error: result.reason || 'Digital delivery did not complete',
-          downloadCount: result.downloadCount,
-        },
-        { status }
-      );
-    }
-
-    return NextResponse.json({
-      message: 'Digital delivery email sent successfully',
-      downloadCount: result.downloadCount,
-    });
-  } catch (error) {
-    console.error('Digital delivery error:', error);
-    return NextResponse.json(
-      { error: 'Failed to deliver digital purchase' },
-      { status: 500 }
-    );
-  }
+export async function POST(_request: NextRequest) {
+  return NextResponse.json(
+    { error: 'Manual download resend is unavailable' },
+    { status: 403 }
+  );
 }
