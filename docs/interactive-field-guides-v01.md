@@ -42,6 +42,27 @@ Use the existing site's Playfair + Crimson + Inter and core colors (#f4efe7, #21
 - Gluten-free tortilla variant is experimental; einkorn is **not** gluten-free.
 - Optional wine suggestions must never crowd out the actual meal or nonalcoholic alternatives.
 
+## Validation record · 2026-10-24
+
+**Verified on branch only; not a production release.**
+
+- [x] TypeScript compilation for the new field-guide route and imported helpers (isolated).
+- [x] ESLint on the new field-guide route.
+- [x] Automated serving tests for 3, 6, 9, and 12 burritos, including fractions.
+- [x] Full Next.js CI build with harmless test-only Supabase placeholders.
+- [x] Vercel feature-branch deployment in READY state.
+- [x] Patched branch dependencies to Next.js 15.5.28, React/React DOM 19.1.10, and Sharp 0.35.5, with matching lockfile.
+- [x] npm production audit at critical threshold: **zero critical advisories**.
+- [ ] Remaining production advisories: **five high and two moderate**, requiring triage/remediation before release.
+- [ ] Existing application-wide TypeScript baseline: **38 errors outside the new guide**. The production Next config presently ignores build-time TypeScript errors.
+- [ ] Existing application-wide ESLint errors. The production Next config presently ignores build-time lint errors.
+- [ ] Browser interaction QA (real mobile viewports, reload, clipboard denied, local storage denied, assistive technology).
+- [ ] Real recipe kitchen test and authentic photography.
+- [ ] Permission / source-ownership / membership-access approval.
+- [ ] Explicit permission to merge and release.
+
+**Caution:** Build success does not mean the whole application passes its typecheck, lint, or security audit at a high-severity threshold. No production checkout, database, membership, authentication or email changes were made.
+
 ## Validation before merge or release
 
 - [ ] Typecheck: npm run typecheck.
