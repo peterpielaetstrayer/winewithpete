@@ -52,9 +52,14 @@ export default function JournalPage() {
             <h1 className="max-w-[11ch] font-serif text-5xl font-medium leading-[.98] tracking-[-0.035em] sm:text-6xl md:text-7xl">
               A record of the world around the table.
             </h1>
-            <p className="max-w-xl font-crimson text-2xl leading-9 text-black/68 sm:text-[1.6rem] sm:leading-10">
-              Food, wine, fire, places, people, and the ideas that surface when we pay attention to how we gather.
-            </p>
+            <div className="max-w-xl">
+              <p className="font-crimson text-2xl leading-9 text-black/68 sm:text-[1.6rem] sm:leading-10">
+                Food, wine, fire, places, people, and the ideas that surface when we pay attention to how we gather.
+              </p>
+              <Link href="/explore" className="mt-7 inline-flex min-h-11 items-center border-b border-[#9c3d24] text-xs font-semibold uppercase tracking-[.16em] text-[#9c3d24]">
+                Find something to cook, taste or share →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
