@@ -126,6 +126,26 @@ export default function RecipesPage() {
         </section>
       )}
 
+      <section className="border-y border-black/10 bg-[#e8dfd3] px-5 py-14 sm:px-8 md:px-12 md:py-20 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_.7fr] lg:items-end">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">A new kind of field guide · Kitchen-test preview</p>
+            <h2 className="mt-5 max-w-[15ch] font-serif text-4xl leading-[1.05] tracking-[-0.025em] sm:text-5xl">The Better Taco Night.</h2>
+            <p className="mt-6 max-w-2xl font-crimson text-2xl leading-9 text-black/65">
+              An interactive, practical guide to making a familiar bean-and-cheese burrito, and making a little more of the meal around it.
+            </p>
+          </div>
+          <div className="lg:justify-self-end">
+            <p className="mb-6 max-w-sm text-sm leading-7 text-black/60">
+              Shop the ingredients. Cook one step at a time. Taste thoughtfully. Keep a note from your table. This first edition is an untested recipe prototype, not a finished publication.
+            </p>
+            <Link href="/guides/better-taco-night" className="inline-flex min-h-12 items-center justify-center bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-[#7d301e]">
+              Explore the field guide →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section className="border-y border-black/10 bg-[#eee4d7] px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-[.7fr_1.3fr] lg:gap-20">
