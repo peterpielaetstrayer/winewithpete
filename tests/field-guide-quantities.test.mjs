@@ -27,6 +27,14 @@ test('fractional cups scale accurately and pluralize appropriately', () => {
   assert.equal(ingredientText(cheese, 12), '1 ½ cups finely shredded cheddar');
 });
 
+test('white onion scales from a third cup to a sixth without decimals', () => {
+  const onion = { id: 'onion', name: 'minced white onion', unit: 'cup', quantity: .333 };
+  assert.equal(ingredientText(onion, 3), '⅙ cup minced white onion');
+  assert.equal(ingredientText(onion, 6), '⅓ cup minced white onion');
+  assert.equal(ingredientText(onion, 9), '½ cup minced white onion');
+  assert.equal(ingredientText(onion, 12), '⅔ cup minced white onion');
+});
+
 test('season-to-taste ingredients retain their instruction', () => {
   assert.equal(ingredientText({ id: 'salt', name: 'salt to taste' }, 12), 'salt to taste');
 });
