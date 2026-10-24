@@ -19,13 +19,13 @@ const panels: { id: Panel; label: string }[] = [
 const groups: IngredientGroup[] = [
   { name: 'For the silky beans', items: [
     { id: 'beans', name: 'low-sodium pinto beans, drained and rinsed', quantity: 2, unit: '15-oz cans' },
-    { id: 'liquid', name: 'water or unsalted stock', quantity: .75, unit: 'cup', note: 'Start here; use up to 1 cup for a looser texture' },
+    { id: 'liquid', name: 'water or unsalted stock', quantity: .75, unit: 'cup', note: 'Add more liquid a little at a time if the beans are too thick' },
     { id: 'oil', name: 'avocado oil', quantity: 2, unit: 'tsp' },
     { id: 'onionpowder', name: 'onion powder', quantity: .5, unit: 'tsp' },
     { id: 'garlicpowder', name: 'garlic powder', quantity: .5, unit: 'tsp' },
     { id: 'beancumin', name: 'ground cumin', quantity: .25, unit: 'tsp' },
     { id: 'beanchili', name: 'mild chili powder', quantity: .25, unit: 'tsp' },
-    { id: 'acid', name: 'lime juice or mild vinegar', quantity: 1, unit: 'tsp', note: 'Up to 2 tsp; adjust at the end' },
+    { id: 'acid', name: 'lime juice or mild vinegar', quantity: 1, unit: 'tsp', note: 'Taste and adjust the acidity gradually at the end' },
     { id: 'salt', name: 'salt', note: 'To taste' },
   ]},
   { name: 'For the mild red sauce', items: [
@@ -48,7 +48,7 @@ const groups: IngredientGroup[] = [
 
 const steps = [
   { eyebrow: '01 / Start with the beans', title: 'Warm them gently.', time: '10–12 min',
-    instruction: 'Put the rinsed beans in a saucepan with ¾ cup water or stock, the oil, and all the bean spices. Simmer gently for 10–12 minutes, stirring occasionally.',
+    instruction: 'Put the rinsed beans in a saucepan with the measured water or stock, the oil, and all the bean spices. Simmer gently for 10–12 minutes, stirring occasionally.',
     cue: 'The liquid should be hot and the beans should be easy to mash. Do not let the pan cook dry.' },
   { eyebrow: '02 / Find the texture', title: 'Make the beans silky.', time: '2 min',
     instruction: 'Use an immersion blender until completely smooth. Add liquid a little at a time until the beans are loose and spreadable. Finish with lime juice or mild vinegar and salt to taste.',
@@ -188,7 +188,7 @@ export default function BetterTacoNight() {
             <aside className="bg-[#eae0d3] p-7 sm:p-9">
               <p className={eyebrow}>The brief</p>
               <div className="mt-6 grid grid-cols-2 gap-6 border-b border-black/15 pb-7">
-                <div><p className="font-serif text-3xl">6</p><p className="mt-1 text-xs text-black/60">Burritos</p></div>
+                <div><p className="font-serif text-3xl">{servings}</p><p className="mt-1 text-xs text-black/60">Burritos</p></div>
                 <div><p className="font-serif text-3xl">~35</p><p className="mt-1 text-xs text-black/60">Minutes</p></div>
               </div>
               <p className={eyebrow + ' mt-8'}>What we are rebuilding</p>
