@@ -135,7 +135,10 @@ export default function BetterTacoNight() {
               <h2 className="mt-5 max-w-[14ch] font-serif text-4xl leading-[1.1] sm:text-6xl">Sometimes the simplest food stays with you.</h2>
               <p className="mt-7 max-w-2xl font-crimson text-2xl leading-9 text-black/70">A bean burrito is hardly a grand culinary achievement. And yet: when the beans are smooth, the sauce tastes just right, and the tortilla is warm, it scratches an itch that much fancier food can miss.</p>
               <p className="mt-5 max-w-2xl text-base leading-8 text-black/65">This first Wine With Pete field guide starts with that pleasure. We are testing an at-home version with more control over our ingredients, without pretending we have already perfected it.</p>
-              <button type="button" onClick={() => changePanel('ingredients')} className={primary + ' mt-8'}>Start with the ingredients <ArrowRight size={16}/></button>
+              <div className="mt-8 flex flex-wrap items-center gap-4">
+                <button type="button" onClick={() => changePanel('ingredients')} className={primary}>Start with the ingredients <ArrowRight size={16}/></button>
+                <Link href={`/guides/better-taco-night/print?servings=${servings}`} className={secondary}>Printable recipe <BookOpen size={16}/></Link>
+              </div>
             </div>
             <aside className="bg-[#eae0d3] p-7 sm:p-9">
               <p className={eyebrow}>The brief</p>
@@ -166,6 +169,7 @@ export default function BetterTacoNight() {
               </div>
               <p className="mt-4 text-xs text-black/55">{completed} of {totalItems} ingredients checked</p>
               <button type="button" onClick={copyList} className={primary + ' mt-5 w-full'}><ClipboardList size={16}/> Copy shopping list</button>
+              <Link href={`/guides/better-taco-night/print?servings=${servings}`} className={secondary + ' mt-3 w-full'}>Open printable recipe <BookOpen size={16}/></Link>
               {notice && <p role="status" className="mt-3 text-sm text-[#9c3d24]">{notice}</p>}
             </div>
             <div className="divide-y divide-black/15 border-t border-black/15">
