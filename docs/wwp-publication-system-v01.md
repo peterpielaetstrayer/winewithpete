@@ -38,7 +38,7 @@ No new database or general-purpose CMS is necessary until two different content 
 | --- | --- | --- | --- |
 | The Better Taco Night | Untested WWP kitchen prototype with draft PDF and interactive route | Recipe card and tested photo sequence | Active prototype |
 | Maine at Golden Hour | Source PDF located in owner's connected Drive: recipe / shopping guide, staged prep across kitchens | Optional stepwise prep timeline and shopping checklist | Source verified; permission/content review before publication |
-| Château Giscours Vertical | Existing Table Archive route in web application | Vintage comparison / tasting mat only if source notes and rights support | Evaluate |
+| Château Giscours Vertical | Public Table Archive story documents the 2015–2018 four-vintage experience | Optional local-only tasting board plus blank print worksheet, using only public archive facts and user-authored observations | Review prototype built; no private PDFs released |
 | Seoul Bowl Table | Existing Table Archive route in web application | Recipe(s) or hosting timeline if reusable | Evaluate |
 | Cabana Dinner | Mentioned in prior project planning; source not yet verified | Original PDF and editorial recap | Locate source; parked |
 | Morning Ritual Menu | Mentioned in prior project planning; original source not yet verified here | Digital essay, practical ritual steps if useful | Locate source; parked |
@@ -81,6 +81,16 @@ If not, use a normal well-designed web story or printable PDF.
 **Admin action:** Audit the library and mark each source as verified, unverified or permission review needed.
 
 Not part of v0.1: Accounts, arbitrary user uploads, community galleries, calorie ranking claims, automated PDF generation, universal recipe import, algorithmic wine recommendations, subscriptions or payments.
+
+## Verified prototype evidence · October 24, 2026
+
+- Shared Taco Night recipe source renders both the interactive kitchen flow and an adjustable-batch print edition. The test recipe is not yet validated in a kitchen.
+- Giscours table story remains editorial; users can choose to open a four-vintage note-taking and comparison board. A separate blank worksheet is available to print. Neither page includes private PDFs, guest data, or invented tasting results.
+- Automated UI checks: **18 / 18 Playwright journeys passed** on mobile-sized and desktop Chromium viewports in GitHub Actions run 40129315317. These exercise navigation, responsive width, scaling, persistence, clipboard fallback, local-only tasting notes, noindex metadata and print-specific UI. They do not replace physical device or full accessibility verification.
+- Isolated TypeScript, ESLint, quantity regression and Next.js CI build passed for new experiences.
+- Dependency audit: no critical production findings, **one high (transitive PostCSS/Next) and one moderate** remain. Review upgrading from Next 15 to Next 16 in a separate compatibility/security effort.
+- Full application TypeScript and lint debt remains outside these pages, including approximately 38 TypeScript errors in older administrative/API code. Existing Next configuration currently skips build-time app-wide type/lint validation.
+- Do not merge, publish, email member files or enable gated access until these release blockers and editorial permissions are reviewed.
 
 ## Release quality gate
 
