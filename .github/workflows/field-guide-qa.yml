@@ -75,6 +75,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-only-placeholder
           SUPABASE_SERVICE_ROLE_KEY: ci-only-placeholder
+          STRIPE_SECRET_KEY: sk_test_ci_only_placeholder
         run: npm run build
 
       - name: Install Chromium test browser
