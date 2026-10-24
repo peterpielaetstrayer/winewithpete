@@ -42,6 +42,9 @@ jobs:
       - name: Lint the new field guide independently
         run: npx eslint src/app/guides/better-taco-night
 
+      - name: Regression test all four recipe batch sizes
+        run: node --experimental-strip-types --test tests/field-guide-quantities.test.mjs
+
       - name: Verify security audit and summarize remaining advisories
         continue-on-error: true
         run: npm audit --omit=dev --audit-level=critical
