@@ -7,7 +7,12 @@
   "include": [
     "next-env.d.ts",
     "src/app/guides/better-taco-night/**/*.ts",
-    "src/app/guides/better-taco-night/**/*.tsx"
+    "src/app/guides/better-taco-night/**/*.tsx",
+    "src/app/tables/chateau-giscours-vertical/board/**/*.ts",
+    "src/app/tables/chateau-giscours-vertical/board/**/*.tsx",
+    "src/data/guides/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
