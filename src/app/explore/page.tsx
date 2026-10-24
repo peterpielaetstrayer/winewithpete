@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { ArrowRight, ArrowUpRight, BookOpen, Check, ChefHat, Compass, FileText, Search, SlidersHorizontal, Sparkles, Users, Wine, X } from 'lucide-react';
 
-import { experiences, type Experience, type Format, type Intent } from '@/data/explore/experiences';
+import { experiences, type Experience } from '@/data/explore/experiences';
 import { PAGE_SIZE, queryExperiences, visiblePage, type CatalogIntent, type CatalogFormat, type CatalogOrder } from '@/lib/explore/catalog';
 
 const intentions: { value: CatalogIntent; label: string; description: string; icon: typeof Compass }[] = [
@@ -15,13 +15,6 @@ const intentions: { value: CatalogIntent; label: string; description: string; ic
   { value: 'gather', label: 'Gather', description: 'Bring people together', icon: Users },
   { value: 'read', label: 'Stories', description: 'A seat at another table', icon: BookOpen },
 ];
-
-const formatLabels: Record<Format, string> = {
-  recipe: 'Field recipe',
-  interactive: 'Interactive guide',
-  print: 'Printable edition',
-  story: 'Table story',
-};
 
 const coverThemes: Record<string, { background: string; foreground: string; label: string; monogram: string }> = {
   'better-taco-night': { background: '#853d2f', foreground: '#f8e3cc', label: 'CRAVINGS, REBUILT', monogram: '01' },
