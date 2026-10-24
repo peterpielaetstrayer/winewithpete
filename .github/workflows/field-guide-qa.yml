@@ -36,6 +36,9 @@ jobs:
       - name: Apply reviewed October security patch versions
         run: npm install --save-exact next@15.5.28 react@19.1.10 react-dom@19.1.10 sharp@0.35.5
 
+      - name: Apply nonbreaking transitive security fixes
+        run: npm audit fix --omit=dev
+
       - name: Typecheck the new field guide independently
         run: npx tsc -p tsconfig.field-guides.json --noEmit
 
