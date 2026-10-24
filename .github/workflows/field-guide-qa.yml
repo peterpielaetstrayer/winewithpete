@@ -42,11 +42,11 @@ jobs:
       - name: Install pinned browser-test dependency
         run: npm install --save-dev --save-exact @playwright/test@1.64.1
 
-      - name: Typecheck the new field guide independently
+      - name: Typecheck the new guide and table companion independently
         run: npx tsc -p tsconfig.field-guides.json --noEmit
 
-      - name: Lint the new field guide independently
-        run: npx eslint src/app/guides/better-taco-night
+      - name: Lint the new guide and table companion independently
+        run: npx eslint src/app/guides/better-taco-night src/app/tables/chateau-giscours-vertical/board src/data/guides
 
       - name: Regression test all four recipe batch sizes
         run: node --experimental-strip-types --test tests/field-guide-quantities.test.mjs
@@ -82,7 +82,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run mobile and desktop journey tests
-        run: npx playwright test e2e/field-guide.spec.ts
+        run: npx playwright test e2e/field-guide.spec.ts e2e/giscours-board.spec.ts
 
       - name: Keep diagnostics if browser tests fail
         if: failure()
