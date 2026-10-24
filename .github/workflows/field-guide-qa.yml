@@ -46,10 +46,13 @@ jobs:
         run: npx tsc -p tsconfig.field-guides.json --noEmit
 
       - name: Lint the new guide and table companion independently
-        run: npx eslint src/app/guides/better-taco-night src/app/tables/chateau-giscours-vertical/board src/data/guides
+        run: npx eslint src/app/guides/better-taco-night src/app/tables/chateau-giscours-vertical/board src/data/guides src/app/explore src/data/explore src/lib/explore src/components/site-header.tsx
 
       - name: Regression test all four recipe batch sizes
         run: node --experimental-strip-types --test tests/field-guide-quantities.test.mjs
+
+      - name: Validate catalog search, filters and simulated scale
+        run: node --experimental-strip-types --test tests/explore-catalog.test.mjs
 
       - name: Verify security audit and summarize remaining advisories
         continue-on-error: true
@@ -82,7 +85,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run mobile and desktop journey tests
-        run: npx playwright test e2e/field-guide.spec.ts e2e/giscours-board.spec.ts
+        run: npx playwright test e2e/field-guide.spec.ts e2e/giscours-board.spec.ts e2e/explore.spec.ts
 
       - name: Keep diagnostics if browser tests fail
         if: failure()
