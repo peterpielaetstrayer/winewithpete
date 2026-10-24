@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, BookOpen, Check, ClipboardList, Coffee, Heart, Minus, Plus, Wine } from 'lucide-react';
+import { ingredientText, type GuideIngredient } from '@/lib/guides/quantity';
 
 type Panel = 'story' | 'ingredients' | 'cook' | 'taste' | 'table';
-type Ingredient = { id: string; name: string; quantity?: number; unit?: string; note?: string };
-type IngredientGroup = { name: string; items: Ingredient[] };
+type IngredientGroup = { name: string; items: GuideIngredient[] };
 
 const panels: { id: Panel; label: string }[] = [
   { id: 'story', label: 'Start' },
@@ -63,22 +63,6 @@ const steps = [
     instruction: 'Place seam-side down and rest under a clean towel for about a minute, or briefly cover in a warm pan. Serve immediately, with extra warm sauce on the side.',
     cue: 'Before changing anything, taste the classic build. It gives us a clear baseline for the next kitchen test.' },
 ];
-
-function amount(value: number): string {
-  const whole = Math.floor(value + 0.0001);
-  const frac = value - whole;
-  const parts = [{ n: .125, s: '⅛' }, { n: .25, s: '¼' }, { n: .333, s: '⅓' }, { n: .375, s: '⅜' }, { n: .5, s: '½' }, { n: .625, s: '⅝' }, { n: .667, s: '⅔' }, { n: .75, s: '¾' }, { n: .875, s: '⅞' }];
-  const hit = parts.find((p) => Math.abs(frac - p.n) < .013);
-  if (hit) return (whole ? whole + ' ' : '') + hit.s;
-  return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(2)));
-}
-
-function ingredientText(item: Ingredient, servings: number): string {
-  const quantity = item.quantity === undefined ? '' : amount(item.quantity * servings / 6) + ' ';
-  const unitName = item.unit === '15-oz cans' && item.quantity !== undefined && item.quantity * servings / 6 === 1 ? '15-oz can' : item.unit;
-  const unit = unitName ? unitName + ' ' : '';
-  return quantity + unit + item.name;
-}
 
 export default function BetterTacoNight() {
   const [panel, setPanel] = useState<Panel>('story');
