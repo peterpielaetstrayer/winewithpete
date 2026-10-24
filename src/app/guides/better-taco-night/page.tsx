@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ArrowRight, BookOpen, Check, ChefHat, ClipboardList, Coffee, Heart, Minus, Plus, Wine } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, Check, ClipboardList, Coffee, Heart, Minus, Plus, Wine } from 'lucide-react';
 
 type Panel = 'story' | 'ingredients' | 'cook' | 'taste' | 'table';
 type Ingredient = { id: string; name: string; quantity?: number; unit?: string; note?: string };
@@ -181,7 +181,7 @@ export default function BetterTacoNight() {
               <ol className="mt-4 space-y-4">
                 {['Ultra-smooth pinto beans', 'Mild, tangy red sauce', 'Finely shredded cheddar', 'A warm, soft tortilla', 'A whisper of white onion'].map((s, i) => <li key={s} className="flex gap-4 border-b border-black/10 pb-3 text-sm"><span className="font-serif text-[#9c3d24]">{String(i + 1).padStart(2, '0')}</span>{s}</li>)}
               </ol>
-              <p className="mt-8 border-l-2 border-[#9c3d24] pl-4 font-crimson text-xl italic leading-7 text-black/70">The test isn't whether it tastes expensive. It's whether you want another.</p>
+              <p className="mt-8 border-l-2 border-[#9c3d24] pl-4 font-crimson text-xl italic leading-7 text-black/70">The test isn&apos;t whether it tastes expensive. It&apos;s whether you want another.</p>
             </aside>
           </div>}
 
@@ -247,7 +247,7 @@ export default function BetterTacoNight() {
             <div>
               <p className={eyebrow}>04 · Taste & Pair</p>
               <h2 className="mt-5 font-serif text-4xl leading-tight sm:text-5xl">What is worth changing? What is worth keeping?</h2>
-              <p className="mt-6 max-w-xl text-base leading-8 text-black/65">The point of this first batch is to discover whether we've captured the original craving. Taste the classic version before adding extras.</p>
+              <p className="mt-6 max-w-xl text-base leading-8 text-black/65">The point of this first batch is to discover whether we&apos;ve captured the original craving. Taste the classic version before adding extras.</p>
               <div className="mt-8 border-y border-black/15 py-7">
                 <h3 className="font-serif text-2xl">How close did we get?</h3>
                 <p className="mt-2 text-sm text-black/55">Your own assessment, from one to five. Not a published taste-test result.</p>
@@ -279,8 +279,8 @@ export default function BetterTacoNight() {
           {panel === 'table' && <div className="grid gap-12 lg:grid-cols-[1fr_.9fr]">
             <div>
               <p className={eyebrow}>05 · Gather & Remember</p>
-              <h2 className="mt-5 font-serif text-4xl leading-tight sm:text-6xl">The recipe ends. The evening doesn't have to.</h2>
-              <p className="mt-7 max-w-2xl font-crimson text-2xl leading-9 text-black/70">Maybe it's just a weeknight burrito. Maybe you make six, ask someone over, and find that the best part of dinner has nothing to do with the beans.</p>
+              <h2 className="mt-5 font-serif text-4xl leading-tight sm:text-6xl">The recipe ends. The evening doesn&apos;t have to.</h2>
+              <p className="mt-7 max-w-2xl font-crimson text-2xl leading-9 text-black/70">Maybe it&apos;s just a weeknight burrito. Maybe you make six, ask someone over, and find that the best part of dinner has nothing to do with the beans.</p>
               <div className="mt-8 border-l-2 border-[#9c3d24] pl-5"><p className={eyebrow}>A small invitation</p><p className="mt-3 font-serif text-2xl">Who would you make an extra place for?</p></div>
             </div>
             <div className="bg-[#eae0d3] p-7 sm:p-9">
