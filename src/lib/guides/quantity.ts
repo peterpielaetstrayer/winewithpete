@@ -5,7 +5,7 @@ export function formatAmount(value: number): string {
   const whole = Math.floor(value + 0.0001);
   const fraction = value - whole;
   const parts = [
-    { n: .125, s: '⅛' }, { n: .25, s: '¼' }, { n: 1 / 3, s: '⅓' },
+    { n: .125, s: '⅛' }, { n: 1 / 6, s: '⅙' }, { n: .25, s: '¼' }, { n: 1 / 3, s: '⅓' },
     { n: .375, s: '⅜' }, { n: .5, s: '½' }, { n: .625, s: '⅝' },
     { n: 2 / 3, s: '⅔' }, { n: .75, s: '¾' }, { n: .875, s: '⅞' },
   ];
