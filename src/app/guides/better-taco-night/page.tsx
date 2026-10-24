@@ -75,7 +75,8 @@ function amount(value: number): string {
 
 function ingredientText(item: Ingredient, servings: number): string {
   const quantity = item.quantity === undefined ? '' : amount(item.quantity * servings / 6) + ' ';
-  const unit = item.unit ? item.unit + ' ' : '';
+  const unitName = item.unit === '15-oz cans' && item.quantity !== undefined && item.quantity * servings / 6 === 1 ? '15-oz can' : item.unit;
+  const unit = unitName ? unitName + ' ' : '';
   return quantity + unit + item.name;
 }
 
@@ -88,17 +89,46 @@ export default function BetterTacoNight() {
   const [note, setNote] = useState('');
   const [saved, setSaved] = useState(false);
   const [notice, setNotice] = useState('');
+  const [progressLoaded, setProgressLoaded] = useState(false);
   const totalItems = useMemo(() => groups.reduce((n, g) => n + g.items.length, 0), []);
   const completed = checked.length;
 
   useEffect(() => {
     try {
-      const old = window.localStorage.getItem('wwp-field-guide-taco-note-v1');
-      if (old) setNote(old);
+      const oldNote = window.localStorage.getItem('wwp-field-guide-taco-note-v1');
+      if (oldNote) setNote(oldNote);
+      const raw = window.localStorage.getItem('wwp-field-guide-taco-progress-v1');
+      if (raw) {
+        const previous: unknown = JSON.parse(raw);
+        if (previous && typeof previous === 'object') {
+          const data = previous as { servings?: unknown; checked?: unknown; step?: unknown };
+          if (typeof data.servings === 'number' && [3, 6, 9, 12].includes(data.servings)) {
+            setServings(data.servings);
+          }
+          if (Array.isArray(data.checked)) {
+            const validIds = new Set(groups.flatMap(group => group.items.map(item => item.id)));
+            setChecked(data.checked.filter((id): id is string => typeof id === 'string' && validIds.has(id)));
+          }
+          if (typeof data.step === 'number' && Number.isInteger(data.step) && data.step >= 0 && data.step < steps.length) {
+            setStep(data.step);
+          }
+        }
+      }
     } catch {
-      // Storage may be unavailable in private browsing.
+      // Browsers may disable storage. The guide is still usable without it.
+    } finally {
+      setProgressLoaded(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!progressLoaded) return;
+    try {
+      window.localStorage.setItem('wwp-field-guide-taco-progress-v1', JSON.stringify({ servings, checked, step }));
+    } catch {
+      // Persistence is optional; never block cooking because of storage.
+    }
+  }, [progressLoaded, servings, checked, step]);
 
   function changePanel(next: Panel) {
     setPanel(next);
