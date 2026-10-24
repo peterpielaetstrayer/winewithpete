@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import './print.css';
 
 import { groups, steps, supportedBatches, guideStatus } from '@/data/guides/better-taco-night';
 import { ingredientText } from '@/lib/guides/quantity';
