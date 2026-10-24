@@ -194,8 +194,8 @@ export default function BetterTacoNight() {
             <p className={eyebrow}>03 · The kitchen</p>
             <h2 className="mt-5 font-serif text-4xl sm:text-5xl">Cook with attention.</h2>
             <p className="mt-3 text-sm text-black/60">One step at a time. No scrolling through a wall of instructions.</p>
-            <div aria-label={'Step ' + (step + 1) + ' of ' + steps.length} className="mt-9 flex gap-1.5">
-              {steps.map((_, i) => <button key={i} type="button" aria-label={'Go to step ' + (i + 1)} aria-current={i === step ? 'step' : undefined} onClick={() => setStep(i)} className={'h-2 min-w-0 flex-1 rounded-sm ' + (i <= step ? 'bg-[#9c3d24]' : 'bg-black/15')}/>)}
+            <div role="group" aria-label="Cooking steps" className="mt-9 grid grid-cols-5 gap-2">
+              {steps.map((_, i) => <button key={i} type="button" aria-label={'Go to step ' + (i + 1)} aria-current={i === step ? 'step' : undefined} onClick={() => setStep(i)} className={'min-h-11 border text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9c3d24] ' + (i === step ? 'border-[#9c3d24] bg-[#9c3d24] text-white' : i < step ? 'border-[#9c3d24] bg-[#f0ddd1] text-[#9c3d24]' : 'border-black/20 text-black/60 hover:border-black/55')}>{i + 1}</button>)}
             </div>
             <article className="mt-8 border border-black/15 bg-[#f8f4ed] p-7 sm:p-12" aria-live="polite">
               <div className="flex flex-wrap items-center justify-between gap-3"><p className={eyebrow}>{steps[step].eyebrow}</p><p className="text-xs text-black/45">{steps[step].time}</p></div>
