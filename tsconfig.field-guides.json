@@ -10,7 +10,11 @@
     "src/app/guides/better-taco-night/**/*.tsx",
     "src/app/tables/chateau-giscours-vertical/board/**/*.ts",
     "src/app/tables/chateau-giscours-vertical/board/**/*.tsx",
-    "src/data/guides/**/*.ts"
+    "src/data/guides/**/*.ts",
+    "src/app/explore/**/*.ts",
+    "src/app/explore/**/*.tsx",
+    "src/data/explore/**/*.ts",
+    "src/lib/explore/**/*.ts"
   ],
   "exclude": [
     "node_modules"
