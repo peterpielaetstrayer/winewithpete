@@ -57,6 +57,23 @@ export default function GiscoursTablePage() {
         </div>
       </section>
 
+      <section className="border-t border-black/10 px-5 py-12 sm:px-8 md:px-12 lg:px-16">
+        <div className="mx-auto grid max-w-5xl gap-7 lg:grid-cols-[.7fr_1.3fr] lg:gap-20">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">A companion to the story</p>
+          </div>
+          <div>
+            <h2 className="font-serif text-3xl leading-tight sm:text-4xl">Make room for your own observations.</h2>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-black/60">
+              This table began with four vintages and the pleasure of noticing together. The story stands on its own, but a practical tasting board can help you explore the same idea at your own table. Notes stay in your browser, and a blank printable worksheet is available.
+            </p>
+            <Link href="/tables/chateau-giscours-vertical/board" className="mt-7 inline-flex min-h-12 items-center border-b border-[#9c3d24] text-xs font-semibold uppercase tracking-[0.17em] text-[#9c3d24]">
+              Open the optional Exploration Board →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section className="border-y border-black/10 bg-[#eee4d7] px-5 py-16 sm:px-8 md:px-12 md:py-20 lg:px-16">
         <div className="mx-auto max-w-5xl">
           <div className="grid gap-12 md:grid-cols-[.7fr_1.3fr] md:gap-20">

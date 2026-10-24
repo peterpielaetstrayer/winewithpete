@@ -1,0 +1,87 @@
+name: Explore and Field Guide Quality
+
+on:
+  push:
+    branches:
+      - feature/interactive-field-guides-v01
+
+permissions:
+  contents: read
+
+concurrency:
+  group: field-guide-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    if: github.ref == 'refs/heads/feature/interactive-field-guides-v01'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install existing locked dependencies
+        run: npm ci
+
+      - name: Confirm manifest and lockfile remain untouched
+        run: git diff --exit-code -- package.json package-lock.json
+
+      - name: Typecheck the new guide and table companion independently
+        run: npx tsc -p tsconfig.field-guides.json --noEmit
+
+      - name: Lint the new guide and table companion independently
+        run: npx eslint src/app/guides/better-taco-night src/app/tables/chateau-giscours-vertical/board src/data/guides src/app/explore src/data/explore src/lib/explore src/components/site-header.tsx
+
+      - name: Regression test all four recipe batch sizes
+        run: node --experimental-strip-types --test tests/field-guide-quantities.test.mjs
+
+      - name: Validate catalog search, filters and simulated scale
+        run: node --experimental-strip-types --test tests/explore-catalog.test.mjs
+
+      - name: Audit critical production advisories without changing dependencies
+        run: npm audit --omit=dev --audit-level=critical
+
+      - name: Build entire application using nonproduction test configuration
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-only-placeholder
+          SUPABASE_SERVICE_ROLE_KEY: ci-only-placeholder
+          STRIPE_SECRET_KEY: sk_test_ci_only_placeholder
+        run: npm run build
+
+      - name: Install Chromium test browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run mobile and desktop journey tests
+        run: npx playwright test e2e/field-guide.spec.ts e2e/giscours-board.spec.ts e2e/explore.spec.ts
+
+      - name: Keep diagnostics if browser tests fail
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: field-guide-browser-diagnostics
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+
+      - name: Record existing application-wide TypeScript debt (non-gating)
+        continue-on-error: true
+        run: npm run typecheck
+
+      - name: Record existing application-wide lint debt (non-gating)
+        continue-on-error: true
+        run: npm run lint
+
+      - name: Confirm QA did not modify dependency files
+        run: git diff --exit-code -- package.json package-lock.json

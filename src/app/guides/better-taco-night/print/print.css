@@ -1,0 +1,26 @@
+@media print {
+  @page { margin: 13mm; size: auto; }
+  body:has(#wwp-print-guide) {
+    background: #fff !important;
+    color: #181818 !important;
+  }
+  body:has(#wwp-print-guide) > header,
+  body:has(#wwp-print-guide) > footer,
+  body:has(#wwp-print-guide) .wwp-print-controls {
+    display: none !important;
+  }
+  #wwp-print-guide {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    background: white !important;
+    color: black !important;
+    font-size: 11pt;
+  }
+  #wwp-print-guide .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
+  #wwp-print-guide h1, #wwp-print-guide h2, #wwp-print-guide h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+}
