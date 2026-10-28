@@ -1,0 +1,54 @@
+name: Explore photo v0.3 review QA
+on:
+  push:
+    branches:
+      - work/explore-photographic-v03
+  pull_request:
+    branches:
+      - feature/interactive-field-guides-v01
+
+permissions:
+  contents: read
+
+concurrency:
+  group: explore-photo-v03-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEXT_PUBLIC_WWP_EXPLORE_PHOTOS: "false"
+      NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-only-placeholder
+      SUPABASE_SERVICE_ROLE_KEY: ci-only-placeholder
+      STRIPE_SECRET_KEY: sk_test_ci_only_placeholder
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install pinned dependencies
+        run: npm ci
+      - name: Gate critical production advisories
+        run: npm audit --omit=dev --audit-level=critical
+      - name: Typecheck featured app slices
+        run: npx tsc -p tsconfig.field-guides.json --noEmit
+      - name: Lint Explore changes
+        run: npx eslint src/app/explore src/components/explore src/data/explore src/lib/explore
+      - name: Test catalog and kitchen quantities
+        run: |
+          node --experimental-strip-types --test tests/explore-catalog.test.mjs
+          node --experimental-strip-types --test tests/field-guide-quantities.test.mjs
+      - name: Build safe preview without private photos
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Test interactive journeys on mobile and desktop
+        run: npx playwright test e2e/explore.spec.ts
+      - name: Verify no dependency edits
+        run: git diff --exit-code -- package.json package-lock.json

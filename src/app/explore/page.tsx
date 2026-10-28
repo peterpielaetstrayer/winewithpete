@@ -1,12 +1,12 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { ArrowRight, ArrowUpRight, BookOpen, Check, ChefHat, Compass, FileText, Search, SlidersHorizontal, Sparkles, Users, Wine, X } from 'lucide-react';
 
 import { experiences, type Experience } from '@/data/explore/experiences';
 import { PAGE_SIZE, queryExperiences, visiblePage, type CatalogIntent, type CatalogFormat, type CatalogOrder } from '@/lib/explore/catalog';
+import { EditorialPhoto, ExploreEditorial, EXPLORE_PHOTOS_ENABLED } from '@/components/explore/explore-editorial';
 
 const intentions: { value: CatalogIntent; label: string; description: string; icon: typeof Compass }[] = [
   { value: 'all', label: 'Everything', description: 'Browse the collection', icon: Compass },
@@ -25,6 +25,7 @@ const coverThemes: Record<string, { background: string; foreground: string; labe
 
 function ExperienceCard({ experience }: { experience: Experience }) {
   const cover = coverThemes[experience.id] ?? coverThemes['chipotle-lime-fire-wings'];
+  const hasVerifiedCover = EXPLORE_PHOTOS_ENABLED && experience.id === 'seoul-bowl-table';
   const primary = experience.links.find(link => link.href === experience.primaryHref)!;
   const others = experience.links.filter(link => link.href !== experience.primaryHref);
 
@@ -32,6 +33,8 @@ function ExperienceCard({ experience }: { experience: Experience }) {
     <article data-experience-id={experience.id} className="group flex h-full min-w-0 flex-col overflow-hidden border border-black/15 bg-[#faf7f1]">
       <Link href={experience.primaryHref} aria-label={'Open ' + experience.title} className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9c3d24]">
         <div className="relative flex aspect-[16/9] min-h-[180px] flex-col justify-between overflow-hidden p-6 sm:p-7" style={{ backgroundColor: cover.background, color: cover.foreground }}>
+          {hasVerifiedCover && <EditorialPhoto photo="hero-seoul-bowl" alt="Shared dishes laid out for the Seoul Bowl Table" sizes="(max-width: 639px) 100vw, 50vw" />}
+          {hasVerifiedCover && <span className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-black/35" aria-hidden="true"/>}
           <p className="relative z-10 text-[10px] font-semibold uppercase tracking-[.27em]">{cover.label}</p>
           <span aria-hidden className="absolute -right-6 -top-20 select-none font-serif text-[clamp(9rem,20vw,15rem)] font-medium leading-none opacity-[.14]">{cover.monogram}</span>
           <div className="relative z-10 flex items-end justify-between">
@@ -79,26 +82,31 @@ export default function ExplorePage() {
   const hasFilters = term.length > 0 || intent !== 'all' || format !== 'all' || order !== 'curated';
 
   function selectIntent(value: CatalogIntent) { setIntent(value); setPages(1); }
+  function selectEditorialIntent(value: CatalogIntent) { selectIntent(value); document.getElementById('explore-collection')?.scrollIntoView({ behavior: 'smooth' }); }
   function selectFormat(value: CatalogFormat) { setFormat(value); setPages(1); }
   function selectOrder(value: CatalogOrder) { setOrder(value); setPages(1); }
   function clearFilters() { setTerm(''); setIntent('all'); setFormat('all'); setOrder('curated'); setPages(1); }
 
   return (
-    <main className="bg-[#f4efe7] text-[#211d19]">
-      <section className="relative isolate overflow-hidden bg-[#211d19] text-[#f4efe7]">
-        <div className="absolute inset-y-0 right-0 -z-20 w-full md:w-[57%]">
-          <Image src="/images/hero/hero-campfire.png.png" alt="" fill priority sizes="(max-width: 768px) 100vw, 55vw" className="object-cover opacity-35 md:opacity-70"/>
+    <main data-explore-design="photographic-v03" data-photo-mode={EXPLORE_PHOTOS_ENABLED ? 'private-assets' : 'public-safe-fallbacks'} className="bg-[#f4efe7] text-[#211d19]">
+      <section className="relative isolate min-h-[560px] overflow-hidden bg-[#211d19] text-[#f4efe7] md:min-h-[690px]">
+        <div className="absolute inset-0 -z-20">
+          {EXPLORE_PHOTOS_ENABLED
+            ? <EditorialPhoto photo="hero-seoul-bowl" alt="A shared meal from the Seoul Bowl Table" priority sizes="(max-width: 768px) 100vw, 60vw" position="object-[65%_45%]"/>
+            : <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-br from-[#241a16] via-[#644232] to-[#9e7055]"/>}
         </div>
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,#211d19_0%,rgba(33,29,25,.94)_42%,rgba(33,29,25,.46)_100%)]"/>
-        <div className="mx-auto max-w-7xl px-5 pb-16 pt-16 sm:px-8 md:px-12 md:pb-24 md:pt-24 lg:px-16">
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(21,16,13,.94)_0%,rgba(21,16,13,.75)_45%,rgba(21,16,13,.22)_100%)]"/>
+        <div className="mx-auto max-w-7xl px-5 pb-16 pt-20 sm:px-8 md:px-12 md:pb-24 md:pt-32 lg:px-16">
           <p className="text-[11px] font-semibold uppercase tracking-[.25em] text-[#e6aa82]">Wine With Pete · Explore</p>
-          <h1 className="mt-7 max-w-[12ch] font-serif text-5xl leading-[1.02] tracking-[-.035em] sm:text-6xl lg:text-7xl">A good evening starts somewhere.</h1>
+          <h1 className="mt-7 max-w-[12ch] font-serif text-[clamp(3.8rem,7.4vw,8rem)] leading-[.94] tracking-[-.06em]">A good evening starts somewhere.</h1>
           <p className="mt-7 max-w-xl font-crimson text-2xl leading-9 text-white/80">Find a recipe to make, a wine to explore, a table to gather around, or a story worth spending time with.</p>
           <a href="#explore-collection" className="mt-9 inline-flex min-h-12 items-center gap-3 border-b border-[#e6aa82] text-xs font-semibold uppercase tracking-[.15em] text-[#f5d0b3] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e6aa82]">
             Find your starting point <ArrowRight size={16}/>
           </a>
         </div>
       </section>
+
+      <ExploreEditorial onSelectIntent={selectEditorialIntent} />
 
       <section id="explore-collection" className="scroll-mt-8 px-5 py-12 sm:px-8 md:px-12 md:py-20 lg:px-16">
         <div className="mx-auto max-w-7xl">

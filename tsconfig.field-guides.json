@@ -13,6 +13,7 @@
     "src/data/guides/**/*.ts",
     "src/app/explore/**/*.ts",
     "src/app/explore/**/*.tsx",
+    "src/components/explore/**/*.tsx",
     "src/data/explore/**/*.ts",
     "src/lib/explore/**/*.ts"
   ],
