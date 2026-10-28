@@ -102,7 +102,7 @@ export function ExploreEditorial({ onSelectIntent }: { onSelectIntent: (intent: 
 
       <section className="grid min-w-0 bg-[#30221d] text-[#f6e9de] md:grid-cols-[1.05fr_1fr]">
         <div className="relative isolate min-h-[330px] overflow-hidden md:min-h-[535px]">
-          <EditorialPhoto photo="work-service" alt="A sequence of small plates being prepared for service"
+          <EditorialPhoto photo="ingredients" alt="Aromatic ingredients and herbs prepared before cooking"
             sizes="(max-width: 767px) 100vw, 55vw" position="object-[center_45%]" />
         </div>
         <div className="flex flex-col justify-center px-7 py-14 sm:px-12 md:px-14 md:py-20 lg:px-20">

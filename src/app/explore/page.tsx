@@ -90,12 +90,12 @@ export default function ExplorePage() {
   return (
     <main data-explore-design="photographic-v03" data-photo-mode={EXPLORE_PHOTOS_ENABLED ? 'private-assets' : 'public-safe-fallbacks'} className="bg-[#f4efe7] text-[#211d19]">
       <section className="relative isolate min-h-[560px] overflow-hidden bg-[#211d19] text-[#f4efe7] md:min-h-[690px]">
-        <div className="absolute inset-y-0 right-0 -z-20 w-full md:w-[57%]">
+        <div className="absolute inset-0 -z-20">
           {EXPLORE_PHOTOS_ENABLED
             ? <EditorialPhoto photo="hero-seoul-bowl" alt="A shared meal from the Seoul Bowl Table" priority sizes="(max-width: 768px) 100vw, 60vw" position="object-[65%_45%]"/>
             : <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-br from-[#241a16] via-[#644232] to-[#9e7055]"/>}
         </div>
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,#211d19_0%,rgba(33,29,25,.94)_42%,rgba(33,29,25,.46)_100%)]"/>
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(21,16,13,.94)_0%,rgba(21,16,13,.75)_45%,rgba(21,16,13,.22)_100%)]"/>
         <div className="mx-auto max-w-7xl px-5 pb-16 pt-20 sm:px-8 md:px-12 md:pb-24 md:pt-32 lg:px-16">
           <p className="text-[11px] font-semibold uppercase tracking-[.25em] text-[#e6aa82]">Wine With Pete · Explore</p>
           <h1 className="mt-7 max-w-[12ch] font-serif text-[clamp(3.8rem,7.4vw,8rem)] leading-[.94] tracking-[-.06em]">A good evening starts somewhere.</h1>
