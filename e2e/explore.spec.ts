@@ -53,3 +53,26 @@ test('Explore is reachable from the navigation without removing Journal', async 
   await expect(page).toHaveURL(/\/explore$/);
   await expect(page.getByRole('heading', { name: 'A good evening starts somewhere.' })).toBeVisible();
 });
+
+test('photographic v0.3 keeps public-safe image fallback and editorial wayfinding', async ({ page }) => {
+  const missingImages: string[] = [];
+  page.on('request', req => {
+    if (req.url().includes('/images/explore-v03/')) missingImages.push(req.url());
+  });
+  await page.goto('/explore');
+  await expect(page.locator('[data-explore-design="photographic-v03"]')).toHaveAttribute('data-photo-mode', 'public-safe-fallbacks');
+  await expect(page.getByRole('heading', { name: /Food is part of it/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Before the first guest arrives.' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Explore Taste' })).toBeVisible();
+  expect(missingImages).toEqual([]);
+});
+
+test('photographic lane filters the original catalog without duplicates', async ({ page }) => {
+  await page.goto('/explore');
+  await page.getByRole('button', { name: 'Explore Taste' }).click();
+  await expect(page.getByRole('heading', { name: '1 experience' })).toBeVisible();
+  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(1);
+  await expect(page.locator('[data-experience-id="giscours-vertical"]')).toHaveCount(1);
+  await page.getByRole('button', { name: 'Everything' }).click();
+  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(4);
+});
