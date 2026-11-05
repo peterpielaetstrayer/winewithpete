@@ -82,7 +82,7 @@ function campaignFixture({ allowlist = 'admin-id', user = { id: 'admin-id' }, su
   return {
     calls,
     POST: loadRealHandler('src/app/api/campaigns/send/route.ts', services,
-      { WWP_CAMPAIGN_ADMIN_USER_IDS: allowlist })
+      { WWP_ADMIN_USER_IDS: allowlist })
   };
 }
 

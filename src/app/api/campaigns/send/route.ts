@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase/server';
  */
 async function requireCampaignAdmin(request: NextRequest): Promise<boolean> {
   const allowedIds = new Set(
-    (process.env.WWP_CAMPAIGN_ADMIN_USER_IDS || '')
+    (process.env.WWP_ADMIN_USER_IDS || '')
       .split(',')
       .map((id) => id.trim())
       .filter(Boolean)

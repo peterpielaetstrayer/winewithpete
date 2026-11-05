@@ -51,7 +51,7 @@ test('Stripe webhook verifies signature and payment before fulfillment', () => {
 test('bulk campaign email requires a verified allowlisted identity', () => {
   const api = source('src/app/api/campaigns/send/route.ts');
   const admin = source('src/app/admin/page.tsx');
-  assert.match(api, /WWP_CAMPAIGN_ADMIN_USER_IDS/);
+  assert.match(api, /WWP_ADMIN_USER_IDS/);
   assert.match(api, /auth\.getUser\(token\)/);
   assert.match(api, /allowedIds\.has\(user\.id\)/);
   assert.match(api, /status:\s*403\b/);
@@ -60,4 +60,29 @@ test('bulk campaign email requires a verified allowlisted identity', () => {
   assert.ok(api.indexOf('await requireCampaignAdmin(request)') < api.indexOf('Promise.allSettled('));
   assert.match(api, /Tag-targeted campaigns are unavailable/);
   assert.match(admin, /Authorization: `Bearer \$\{session\.access_token\}`/);
+});
+
+test('privileged API surfaces require server-authorized administrators', () => {
+  const gate = source('src/lib/admin-auth.ts');
+  assert.match(gate, /WWP_ADMIN_USER_IDS/);
+  assert.match(gate, /auth\.getUser\(token\)/);
+  assert.match(gate, /allowedIds\.has\(user\.id\)/);
+  for (const name of ['admin/products','admin/orders','admin/essays','printful/catalog','printful/sync']) {
+    const api = source('src/app/api/' + name + '/route.ts');
+    assert.match(api, /import \{ verifyAdmin \} from '@\/lib\/admin-auth'/);
+    assert.match(api, /await verifyAdmin\(request\)/);
+    assert.match(api, /status:\s*403\b/);
+    if (name === 'printful/sync') assert.ok(api.indexOf('await verifyAdmin(request)') < api.indexOf('await request.json()'));
+    if (name === 'printful/catalog') assert.ok(api.indexOf('await verifyAdmin(request)') < api.indexOf('const apiKey ='));
+  }
+});
+
+test('new direct digital Stripe checkout is paused before session creation', () => {
+  const checkout = source('src/app/api/checkout/route.ts');
+  const holdAt = checkout.indexOf("code: 'DIGITAL_CHECKOUT_PAUSED'");
+  const stripeAt = checkout.indexOf('stripe.checkout.sessions.create(');
+  assert.ok(holdAt >= 0 && holdAt < stripeAt);
+  assert.match(checkout, /offer\.kind === 'digital'/);
+  assert.match(checkout, /offer\.commerce\.type === 'stripe'/);
+  assert.match(checkout, /getFulfillmentType\(offer\) === 'digital_download'/);
 });

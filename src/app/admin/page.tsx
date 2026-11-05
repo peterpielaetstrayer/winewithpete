@@ -730,7 +730,12 @@ export default function AdminPage() {
                 setSyncResult(null);
                 setPrintfulError(null);
                 try {
-                  const response = await fetch('/api/printful/catalog');
+                  const { supabase } = await import('@/lib/supabase/client');
+                  const { data: { session } } = await supabase.auth.getSession();
+                  if (!session?.access_token) throw new Error('Admin session expired');
+                  const response = await fetch('/api/printful/catalog', {
+                    headers: { Authorization: `Bearer ${session.access_token}` },
+                  });
                   const data = await response.json();
                   if (data.success) {
                     setPrintfulProducts(data.data || []);
@@ -840,9 +845,15 @@ export default function AdminPage() {
                       );
                       
                       try {
+                        const { supabase } = await import('@/lib/supabase/client');
+                        const { data: { session } } = await supabase.auth.getSession();
+                        if (!session?.access_token) throw new Error('Admin session expired');
                         const response = await fetch('/api/printful/sync', {
                           method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
+                          headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${session.access_token}`,
+                          },
                           body: JSON.stringify({ products: selectedProducts }),
                         });
                         

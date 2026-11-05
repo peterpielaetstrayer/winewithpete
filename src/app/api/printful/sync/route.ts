@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { verifyAdmin } from '@/lib/admin-auth';
 import { createClient } from '@/lib/supabase/server';
 import { extractPriceFromVariant } from '@/lib/printful-utils';
 import type { PrintfulVariant, PrintfulSyncProduct, PrintfulSyncData } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
+  if (!(await verifyAdmin(request))) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
   try {
     const body = await request.json();
     const { products } = body;
