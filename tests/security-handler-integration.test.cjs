@@ -39,7 +39,7 @@ function loadRealHandler(relativePath, services, env = {}) {
     console: { log() {}, info() {}, warn() {}, error() {} }
   };
   vm.runInNewContext(compiled, context, { filename: relativePath, timeout: 1000 });
-  assert.equal(typeof mod.exports.POST === 'function', 'Expected real POST handler');
+  assert.equal(typeof mod.exports.POST, 'function', 'Expected real POST handler');
   return mod.exports.POST;
 }
 
