@@ -39,14 +39,26 @@ jobs:
       - name: Install reviewed lockfile
         run: npm ci
 
+      - name: Assert resolved production PostCSS version
+        run: |
+          node -e "const p=require('postcss/package.json'); if (p.version !== '8.5.31') process.exit(1); console.log('PostCSS version: '+p.version)"
+          test ! -e node_modules/next/node_modules/postcss/package.json
+
       - name: Audit production dependencies at high threshold
         id: audit
         continue-on-error: true
         run: npm audit --omit=dev --audit-level=high
 
-      - name: Build actual Next application
+      - name: Build actual Next application with inert CI configuration
         id: build
         continue-on-error: true
+        env:
+          # Never use real credentials: the build must not access live services.
+          NEXT_PUBLIC_SUPABASE_URL: https://example.invalid
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-not-real
+          SUPABASE_URL: https://example.invalid
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-not-real
+          STRIPE_SECRET_KEY: sk_test_ci_placeholder_not_real
         run: npm run build
 
       - name: Fail release review if audit or build failed
