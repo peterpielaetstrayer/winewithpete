@@ -547,9 +547,18 @@ export default function AdminPage() {
                 setCampaignResult(null);
 
                 try {
+                  const { supabase } = await import('@/lib/supabase/client');
+                  const { data: { session } } = await supabase.auth.getSession();
+                  if (!session?.access_token) {
+                    throw new Error('Your admin session has expired. Please sign in again.');
+                  }
+
                   const response = await fetch('/api/campaigns/send', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                      'Content-Type': 'application/json',
+                      Authorization: `Bearer ${session.access_token}`,
+                    },
                     body: JSON.stringify({
                       subject: campaignSubject,
                       html: campaignHtml,

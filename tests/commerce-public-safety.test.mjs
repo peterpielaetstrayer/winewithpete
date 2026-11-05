@@ -47,3 +47,17 @@ test('Stripe webhook verifies signature and payment before fulfillment', () => {
   const fulfill = code.indexOf('await fulfillDigitalOrder(');
   assert.ok(verify >= 0 && paid > verify && fulfill > paid);
 });
+
+test('bulk campaign email requires a verified allowlisted identity', () => {
+  const api = source('src/app/api/campaigns/send/route.ts');
+  const admin = source('src/app/admin/page.tsx');
+  assert.match(api, /WWP_CAMPAIGN_ADMIN_USER_IDS/);
+  assert.match(api, /auth\.getUser\(token\)/);
+  assert.match(api, /allowedIds\.has\(user\.id\)/);
+  assert.match(api, /status:\s*403\b/);
+  assert.ok(api.indexOf('await requireCampaignAdmin(request)') >= 0);
+  assert.ok(api.indexOf('await requireCampaignAdmin(request)') < api.indexOf("from('newsletter_subscribers')"));
+  assert.ok(api.indexOf('await requireCampaignAdmin(request)') < api.indexOf('Promise.allSettled('));
+  assert.match(api, /Tag-targeted campaigns are unavailable/);
+  assert.match(admin, /Authorization: `Bearer \$\{session\.access_token\}`/);
+});

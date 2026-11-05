@@ -27,3 +27,13 @@ Status: Draft PR #8 only; no production release authorization.
 3. Run protected runtime checks for unauthenticated resend, public catalog, paid/completed orders, Stripe signature rejection, missing files and duplicate webhook deliveries.
 4. Select/test an idempotency and email-retry mechanism before enabling paid download fulfillment at scale.
 5. Review secure deployment sequence and request Peter's explicit approval for merge/public release. No release is authorized by this document.
+
+## November 5 follow-on: campaign send authentication gap
+
+Source inspection found `POST /api/campaigns/send` accepted arbitrary campaign content, queried newsletter subscribers and sent Resend emails **without verifying the HTTP caller**. The admin UI's client-side login does not protect the API. No live POST was made, and external exploitability or past misuse was **not** established by source inspection alone.
+
+This draft PR now requires a verified Supabase Bearer token **and** an explicit server-only `WWP_CAMPAIGN_ADMIN_USER_IDS` allowlist before any subscriber read or email send. Missing allowlist defaults to HTTP 403. The admin UI supplies its current bearer token; the API rejects unsupported tag targeting, caps each campaign at 100 recipients, validates content sizes and counts null-returning email failures correctly. A new dependency-free source contract test checks the authorization ordering.
+
+**Critical release dependency:** `WWP_CAMPAIGN_ADMIN_USER_IDS` is not known to be configured. The API will intentionally refuse campaigns until Peter authorizes the specific admin ID(s) and configures the server-only environment through a secure admin channel. An incorrect allowlist could block an existing admin workflow; preserve a rollback route. Do not expose user IDs in public code or paste secrets into discussion. Review the exact endpoint access controls and actual runtime authentication with a nonproduction test account before release.
+
+No live email campaign was sent; no Vercel settings were changed; no production route was disabled. PR remains draft and unmerged.
