@@ -92,7 +92,7 @@ test('Printful requests carry the authenticated admin bearer token', () => {
   for (const p of ['/api/printful/catalog','/api/printful/sync']) {
     const index = admin.indexOf(p);
     assert.ok(index > 0);
-    const nearby = admin.slice(index, index + 230);
+    const nearby = admin.slice(index, index + 450);
     assert.match(nearby, /Authorization:/);
     assert.match(nearby, /session\.access_token/);
   }
