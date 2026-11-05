@@ -27,3 +27,13 @@ Only Peter can approve changes to the production branch, production deployment, 
 
 ## Iteration after first integrated CI
 The first integrated build and local 403-denial HTTP smoke tests succeeded. Full scoped security/admin checks surfaced legacy type and HTML entity issues in the existing admin/Printful UI (not the new campaign authorization logic): 15 TypeScript errors and 5 lint errors. This candidate now normalizes optional Printful and Supabase user fields and escapes existing UI text, while preserving the same API/auth paths. These are additional legacy UI changes beyond the original security patch and require regression review. They were applied to the draft branch only. The whole-app TypeScript/lint baseline and provider-backed authorization/payment tests are still separate release gates.
+
+## November 5 — hermetic actual-handler integration suite
+
+Connected Supabase projects were checked read-only; none is unmistakably an isolated Wine With Pete staging/test project. **Do not use unrelated project-launch-lab, Moments Together, or other projects as WWP test databases.** No known separate Stripe test account/credentials available through this work session.
+
+The independent Node 20 `node:test` suite `tests/security-handler-integration.test.cjs` transpiles **the actual application TypeScript handlers** using the project's locked TypeScript compiler and executes them in a VM where every dependency is explicitly mocked. No real network APIs, credentials, subscriber records, charges or outbound email are used. Tests cover unauthorized and authorized synthetic campaign routes, failed email-count handling, order-completion and missing-file fulfillment, Stripe signature/payment guards, and webhook replay.
+
+**Known fail-open business behavior demonstrated intentionally:** replaying a synthetically signed `checkout.session.completed` handler against an already present order and item still invokes `fulfillDigitalOrder` twice. This test PASS means **the duplicate risk is reproduced**, NOT that idempotency is satisfied. Release of paid digital fulfillment still needs an atomic persisted event/order claim and safe email retry design, tested against a dedicated staging database.
+
+These tests are more substantive than source-contract checks but do not substitute for a real nonproduction Stripe/Supabase integration test. Existing protected build and local 403 HTTP checks remain intact.

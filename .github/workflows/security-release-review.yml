@@ -30,6 +30,11 @@ jobs:
           cache: npm
       - name: Install exact lockfile
         run: npm ci
+      - name: Test hermetic actual handler integrations
+        id: integration
+        continue-on-error: true
+        run: node --test tests/security-handler-integration.test.cjs
+
       - name: Assert reviewed PostCSS resolution
         run: |
           node -e "const p=require('postcss/package.json'); if(p.version !== '8.5.31') process.exit(1); console.log('PostCSS '+p.version)"
@@ -87,13 +92,15 @@ jobs:
       - name: Enforce release review gates
         if: always()
         env:
+          INTEGRATION: ${{ steps.integration.outcome }}
           AUDIT: ${{ steps.audit.outcome }}
           TYPES: ${{ steps.typecheck.outcome }}
           LINT: ${{ steps.lint.outcome }}
           BUILD: ${{ steps.build.outcome }}
           SMOKE: ${{ steps.smoke.outcome }}
         run: |
-          echo "Audit=$AUDIT Typecheck=$TYPES Lint=$LINT Build=$BUILD HTTP=$SMOKE"
+          echo "Handlers=$INTEGRATION Audit=$AUDIT Typecheck=$TYPES Lint=$LINT Build=$BUILD HTTP=$SMOKE"
+          test "$INTEGRATION" = "success"
           test "$AUDIT" = "success"
           test "$TYPES" = "success"
           test "$LINT" = "success"
