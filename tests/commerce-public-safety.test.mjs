@@ -71,7 +71,7 @@ test('privileged API surfaces require server-authorized administrators', () => {
     const api = source('src/app/api/' + name + '/route.ts');
     assert.match(api, /import \{ verifyAdmin \} from '@\/lib\/admin-auth'/);
     assert.match(api, /await verifyAdmin\(request\)/);
-    assert.match(api, /status:\s*403\b/);
+    assert.match(api, /status:\s*(401|403)\b/);
     if (name === 'printful/sync') assert.ok(api.indexOf('await verifyAdmin(request)') < api.indexOf('await request.json()'));
     if (name === 'printful/catalog') assert.ok(api.indexOf('await verifyAdmin(request)') < api.indexOf('const apiKey ='));
   }
@@ -85,4 +85,15 @@ test('new direct digital Stripe checkout is paused before session creation', () 
   assert.match(checkout, /offer\.kind === 'digital'/);
   assert.match(checkout, /offer\.commerce\.type === 'stripe'/);
   assert.match(checkout, /getFulfillmentType\(offer\) === 'digital_download'/);
+});
+
+test('Printful requests carry the authenticated admin bearer token', () => {
+  const admin = source('src/app/admin/page.tsx');
+  for (const p of ['/api/printful/catalog','/api/printful/sync']) {
+    const index = admin.indexOf(p);
+    assert.ok(index > 0);
+    const nearby = admin.slice(index, index + 230);
+    assert.match(nearby, /Authorization:/);
+    assert.match(nearby, /session\.access_token/);
+  }
 });

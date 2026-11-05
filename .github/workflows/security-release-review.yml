@@ -50,7 +50,7 @@ jobs:
       - name: Lint campaign API and admin UI
         id: lint
         continue-on-error: true
-        run: npx eslint src/app/api/campaigns/send/route.ts src/app/admin/page.tsx
+        run: npx eslint src/lib/admin-auth.ts src/app/api/campaigns/send/route.ts src/app/api/admin src/app/api/printful src/app/admin/page.tsx
       - name: Build actual Next application with inert CI configuration
         id: build
         continue-on-error: true

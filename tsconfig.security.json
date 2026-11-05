@@ -6,6 +6,12 @@
   },
   "include": [
     "next-env.d.ts",
+    "src/lib/admin-auth.ts",
+    "src/app/api/admin/products/route.ts",
+    "src/app/api/admin/orders/route.ts",
+    "src/app/api/admin/essays/route.ts",
+    "src/app/api/printful/catalog/route.ts",
+    "src/app/api/printful/sync/route.ts",
     "src/app/api/campaigns/send/route.ts",
     "src/app/admin/page.tsx",
     "src/app/api/send-download/route.ts",

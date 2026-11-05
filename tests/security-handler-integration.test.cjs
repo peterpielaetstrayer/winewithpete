@@ -52,6 +52,104 @@ function request(body, headers = {}) {
   };
 }
 
+
+function makeAdminGate({ allowlist = 'admin-id', user = { id: 'admin-id' }, error = null } = {}) {
+  const calls={clients:0,identity:[]};
+  const service={'@/lib/supabase/server':{createClient:()=>{
+    calls.clients++;
+    return {auth:{getUser:async (token)=>{
+      calls.identity.push(token);return {data:{user},error};
+    }}};
+  }}};
+  const source=fs.readFileSync(path.join(root,'src/lib/admin-auth.ts'),'utf8');
+  const compiled=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS,esModuleInterop:true}}).outputText;
+  const mod={exports:{}};
+  vm.runInNewContext(compiled,{
+    module:mod,exports:mod.exports,process:{env:Object.freeze({WWP_ADMIN_USER_IDS:allowlist})},
+    require(id){assert.ok(Object.hasOwn(service,id),'Unexpected import '+id);return service[id];}
+  },{timeout:1000});
+  return {calls,verify:mod.exports.verifyAdmin};
+}
+
+test('admin allowlist: absent configuration or bearer denies without calling Supabase',async()=>{
+  const a=makeAdminGate({allowlist:''});
+  assert.equal(await a.verify(request({},{authorization:'Bearer fake'})),false);
+  assert.equal(a.calls.clients,0);
+  const b=makeAdminGate();
+  assert.equal(await b.verify(request({})),false);
+  assert.equal(b.calls.clients,0);
+});
+
+test('admin allowlist: verified identity permits only explicitly authorized IDs',async()=>{
+  const good=makeAdminGate();
+  assert.equal(await good.verify(request({},{authorization:'Bearer fake'})),true);
+  assert.equal(good.calls.identity.length,1);
+  const bad=makeAdminGate({user:{id:'unlisted-user'}});
+  assert.equal(await bad.verify(request({},{authorization:'Bearer fake'})),false);
+  const invalid=makeAdminGate({user:null,error:{message:'invalid JWT'}});
+  assert.equal(await invalid.verify(request({},{authorization:'Bearer fake'})),false);
+});
+
+test('Printful routes reject anonymous requests before touching products or providers',async()=>{
+  let queried=0;
+  const services={
+    'next/server':next,
+    '@/lib/admin-auth':{verifyAdmin:async()=>false},
+    '@/lib/supabase/server':{createClient:()=>{queried++;throw Error('Unexpected DB call');}},
+    '@/lib/printful-utils':{extractPriceFromVariant:()=>0}
+  };
+  const source=fs.readFileSync(path.join(root,'src/app/api/printful/catalog/route.ts'),'utf8');
+  const compiled=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,esModuleInterop:true}}).outputText;
+  const mod={exports:{}};
+  vm.runInNewContext(compiled,{module:mod,exports:mod.exports,
+    process:{env:Object.freeze({})},console:{log(){},error(){}},
+    require(id){assert.ok(Object.hasOwn(services,id));return services[id];}
+  },{timeout:1000});
+  assert.equal((await mod.exports.GET(request({}))).status,403);
+  const sync=loadRealHandler('src/app/api/printful/sync/route.ts',services);
+  assert.equal((await sync(request({products:[{id:'dummy'}]}))).status,403);
+  assert.equal(queried,0);
+});
+
+test('new digital checkout is paused before Stripe; synthetic support payment is unaffected',async()=>{
+  let stripeCalls=0,currentKind='digital';
+  const offer=()=>({
+    id:'synthetic-offer',kind:currentKind,
+    availability:{status:'active'},
+    commerce:{type:'stripe',mode:'payment',fulfillment:{type:currentKind==='digital'?'digital_download':'none'}},
+    price:{amountCents:500,currency:'usd'},
+    title:'Synthetic',description:'Safe fixture',images:[],source:{type:'legacy_product'},pagePath:'/recipes'
+  });
+  const services={
+    'next/server':next,
+    '@/lib/stripe':{stripe:{checkout:{sessions:{create:async()=>{
+      stripeCalls++;return {id:'cs_synthetic',url:'https://example.invalid/checkout'};
+    }}}}},
+    '@/lib/logger':{logger:{error(){}}},
+    '@/lib/commerce':{getOfferById:async()=>offer()},
+    '@/lib/validations':{
+      checkoutSchema:{safeParse:()=>({success:true,data:{
+        productId:'synthetic-offer',quantity:1,customerEmail:'fake@example.invalid',customerName:'Synthetic'
+      }})},validateEmail:(s)=>s,validateName:(s)=>s
+    },
+    '@/lib/rate-limit':{checkoutRateLimit:()=>({success:true})}
+  };
+  const post=loadRealHandler('src/app/api/checkout/route.ts',services,{
+    STRIPE_SECRET_KEY:'sk_test_not_real',
+    SUPABASE_URL:'https://example.invalid',
+    SUPABASE_SERVICE_ROLE_KEY:'fake-not-real'
+  });
+  const req=request({});req.nextUrl={origin:'https://example.invalid'};
+  const paused=await post(req);
+  assert.equal(paused.status,409);
+  assert.equal(paused.body.code,'DIGITAL_CHECKOUT_PAUSED');
+  assert.equal(stripeCalls,0);
+  currentKind='support';
+  const supported=await post(req);
+  assert.equal(supported.status,200);
+  assert.equal(stripeCalls,1);
+});
+
 function campaignFixture({ allowlist = 'admin-id', user = { id: 'admin-id' }, subscribers = [], emailResults = [], authError = null } = {}) {
   const calls = { clients: 0, users: [], tables: [], mails: [] };
   const supabase = {
