@@ -24,3 +24,6 @@ This branch starts from the exact current `main` commit `156d4e59751272fcfb11d86
 
 ## Release decision
 Only Peter can approve changes to the production branch, production deployment, customer mailing, private image publication, spending or configuration of live services. Creating this candidate does not imply that approval.
+
+## Iteration after first integrated CI
+The first integrated build and local 403-denial HTTP smoke tests succeeded. Full scoped security/admin checks surfaced legacy type and HTML entity issues in the existing admin/Printful UI (not the new campaign authorization logic): 15 TypeScript errors and 5 lint errors. This candidate now normalizes optional Printful and Supabase user fields and escapes existing UI text, while preserving the same API/auth paths. These are additional legacy UI changes beyond the original security patch and require regression review. They were applied to the draft branch only. The whole-app TypeScript/lint baseline and provider-backed authorization/payment tests are still separate release gates.
