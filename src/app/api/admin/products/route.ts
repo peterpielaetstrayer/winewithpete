@@ -60,7 +60,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Validation failed', 
-          details: validationResult.error.errors.map(e => e.message)
+          details: validationResult.error.issues.map(e => e.message)
         },
         { status: 400 }
       );

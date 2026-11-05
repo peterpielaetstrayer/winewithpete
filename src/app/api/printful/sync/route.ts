@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
           }
           
           // Some variants have mockup_url directly
-          if (variant.mockup_url && !allImages.includes(variant.mockup_url)) {
+          if (typeof variant.mockup_url === 'string' && !allImages.includes(variant.mockup_url)) {
             allImages.push(variant.mockup_url);
           }
         });
@@ -173,14 +173,14 @@ export async function POST(request: NextRequest) {
             hasMockupUrl: !!variant.mockup_url,
             hasFiles: Array.isArray(variant.files),
             filesCount: Array.isArray(variant.files) ? variant.files.length : 0,
-            filesTypes: Array.isArray(variant.files) ? variant.files.map((f: any) => f.type) : []
+            filesTypes: Array.isArray(variant.files) ? variant.files.map((f) => f.type) : []
           });
           
           // First, try to get variant-level images (these are usually the best)
           if (variant.preview_image && !variantImgs.includes(variant.preview_image)) {
             variantImgs.push(variant.preview_image);
           }
-          if (variant.mockup_url && !variantImgs.includes(variant.mockup_url)) {
+          if (typeof variant.mockup_url === 'string' && !variantImgs.includes(variant.mockup_url)) {
             variantImgs.push(variant.mockup_url);
           }
           
