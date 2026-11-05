@@ -37,3 +37,23 @@ jobs:
 
       - name: Lint commerce changes
         run: npm run lint:commerce
+
+  public-commerce-security:
+    name: Public commerce security contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository (read-only)
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Test public commerce source contracts
+        run: node --test tests/commerce-public-safety.test.mjs

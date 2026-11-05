@@ -39,6 +39,10 @@ export async function fulfillDigitalOrder(
     };
   }
 
+  if (order.status !== 'completed') {
+    return { delivered: false, downloadCount: 0, reason: 'Order is not completed' };
+  }
+
   const downloadLinks: Array<{
     productName: string;
     downloadUrl: string;
@@ -46,7 +50,9 @@ export async function fulfillDigitalOrder(
 
   for (const item of order.order_items || []) {
     const product = item.products;
-    if (!product?.file_path) continue;
+    if (!product?.file_path) {
+      return { delivered: false, downloadCount: 0, reason: 'Missing digital file for order item' };
+    }
 
     const { data: signedUrl, error: signedUrlError } = await supabase.storage
       .from('digital-products')
@@ -58,7 +64,7 @@ export async function fulfillDigitalOrder(
         productId: product.id,
         error: signedUrlError,
       });
-      continue;
+      return { delivered: false, downloadCount: 0, reason: 'Failed to prepare all digital downloads' };
     }
 
     downloadLinks.push({
