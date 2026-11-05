@@ -33,3 +33,13 @@ The earlier Explore feature branch had **zero critical** advisories, but **one h
 4. Verify on the exact later production commit after separately granted approval.
 
 **Release authority:** Peter. This file is a preparation and review record only.
+
+## Fresh review — November 5, 2026
+
+The current production branch still fails `npm audit --omit=dev --audit-level=critical`: an independently observed GitHub Actions run on Nov 5 reported **8 production advisories: 1 critical, 6 high and 1 moderate**, so non-security homepage PR #13 is blocked. This is **the production baseline**, not a finding against this draft PR #11.
+
+PR #11's original Oct 24 CI passed `npm ci`, critical audit, commerce typecheck, and commerce lint. That earlier success does not establish current compatibility with newly disclosed advisories or a full application build.
+
+A **read-only** `Security Release Review` workflow has been added to this draft branch. It runs the current live npm advisory database at a stronger **high** severity threshold and executes `npm run build` on the same lockfile. Both checks report separately even if one fails, and the job fails overall unless both pass. No Vercel deployment or production release is authorized. Because `next.config.ts` presently ignores application-wide TypeScript/lint failures during `next build`, a successful build by itself is insufficient for full QA.
+
+**Interpretation / next gate:** inspect fresh workflow logs, note exact advisory IDs and affected package versions, choose the least-disruptive supported patch set consistent with actual advisories, and rerun. Do not blindly use `npm audit fix --force` or assume moving to a new Next.js major is required. Retain review of security/deployment PR #10 stacking and independent commerce-hardening PR #8. Any approved release will need a fresh integrated commit, signed-off regression tests, and explicit owner approval.

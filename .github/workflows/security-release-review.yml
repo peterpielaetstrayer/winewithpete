@@ -1,0 +1,61 @@
+name: Security Release Review
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'next.config.ts'
+      - '.github/workflows/security-release-review.yml'
+      - 'docs/security-patch-review-2026-10-24.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-and-build:
+    name: Current advisory audit and Next build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Read-only checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install reviewed lockfile
+        run: npm ci
+
+      - name: Audit production dependencies at high threshold
+        id: audit
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Build actual Next application
+        id: build
+        continue-on-error: true
+        run: npm run build
+
+      - name: Fail release review if audit or build failed
+        if: always()
+        env:
+          AUDIT_RESULT: ${{ steps.audit.outcome }}
+          BUILD_RESULT: ${{ steps.build.outcome }}
+        run: |
+          echo "Production dependency audit: $AUDIT_RESULT"
+          echo "Next application build: $BUILD_RESULT"
+          test "$AUDIT_RESULT" = "success"
+          test "$BUILD_RESULT" = "success"
