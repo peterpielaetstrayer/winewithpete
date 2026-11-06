@@ -71,7 +71,7 @@ jobs:
           SUPABASE_URL: https://example.invalid
           SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-not-real
           STRIPE_SECRET_KEY: sk_test_ci_placeholder_not_real
-          WWP_CAMPAIGN_ADMIN_USER_IDS: ''
+          WWP_ADMIN_USER_IDS: ''
         run: |
           set -euo pipefail
           npm run start -- --port 3107 > /tmp/wwp-release-http.log 2>&1 &
@@ -88,7 +88,17 @@ jobs:
           grep -q 'Forbidden' /tmp/wwp-campaign-response.json
           status=$(curl --max-time 5 --silent -o /tmp/wwp-download-response.json -w '%{http_code}' -H 'Content-Type: application/json' -d '{"orderId":"invalid"}' http://127.0.0.1:3107/api/send-download)
           test "$status" = "403"
-          echo "Unauthenticated campaign and resend requests denied (no mail or credentials)."
+          # Inert placeholder configuration: fail before any Supabase or Printful access.
+          for path in /api/admin/products /api/admin/orders /api/admin/essays /api/printful/catalog; do
+            status=$(curl --max-time 5 --silent -o /tmp/wwp-protected-response.json -w '%{http_code}' "http://127.0.0.1:3107$path")
+            case "$status" in
+              401|403) ;;
+              *) echo "Expected protected GET denial for $path but got $status"; exit 1;;
+            esac
+          done
+          status=$(curl --max-time 5 --silent -o /tmp/wwp-printful-write-response.json -w '%{http_code}' -H 'Content-Type: application/json' -d '{"products":[{"id":"synthetic"}]}' http://127.0.0.1:3107/api/printful/sync)
+          test "$status" = "403"
+          echo "Admin, Printful, campaign, and resend routes deny unauthenticated requests (no writes, mail, or credentials)."
       - name: Enforce release review gates
         if: always()
         env:
