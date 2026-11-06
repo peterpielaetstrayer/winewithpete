@@ -1,35 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { verifyAdmin } from '@/lib/admin-auth';
 import { productUpdateSchema } from '@/lib/validations';
 import { logAdminAction, AdminActions } from '@/lib/admin-logger';
-
-// Helper function to verify admin authentication
-async function verifyAdmin(request: NextRequest) {
-  const supabase = createClient();
-  
-  // Get the authorization header
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return { error: 'No authorization token', user: null };
-  }
-  
-  const token = authHeader.split(' ')[1];
-  
-  // Verify the token and get user
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-  
-  if (error || !user) {
-    return { error: 'Invalid token', user: null };
-  }
-  
-  return { error: null, user };
-}
 
 export async function GET(request: NextRequest) {
   try {
     // Verify admin authentication
-    const { error: authError, user } = await verifyAdmin(request);
-    if (authError) {
+    if (!(await verifyAdmin(request))) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -67,8 +45,7 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     // Verify admin authentication
-    const { error: authError, user } = await verifyAdmin(request);
-    if (authError) {
+    if (!(await verifyAdmin(request))) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -83,7 +60,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Validation failed', 
-          details: validationResult.error.errors.map(e => e.message)
+          details: validationResult.error.issues.map(e => e.message)
         },
         { status: 400 }
       );

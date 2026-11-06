@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { getFeaturedRecipes } from '@/data/recipes';
-import { analyticsEvents } from '@/lib/analytics';
 import type { Product } from '@/lib/types';
 
 const featuredRecipes = getFeaturedRecipes();
@@ -13,11 +12,6 @@ const featuredRecipes = getFeaturedRecipes();
 export default function RecipesPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
-  const [loading, setLoading] = useState<string | null>(null);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [customerEmail, setCustomerEmail] = useState('');
-  const [customerName, setCustomerName] = useState('');
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -33,45 +27,6 @@ export default function RecipesPage() {
 
     fetchProducts();
   }, []);
-
-  const closeCheckout = () => {
-    setSelectedProduct(null);
-    setCustomerEmail('');
-    setCustomerName('');
-  };
-
-  const handleCheckoutSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!selectedProduct) return;
-
-    setLoading(selectedProduct.id);
-    try {
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productId: selectedProduct.id,
-          quantity: 1,
-          customerEmail,
-          customerName,
-        }),
-      });
-      const data = await response.json();
-
-      if (data.url) {
-        analyticsEvents.checkoutStarted(selectedProduct.name, selectedProduct.price);
-        window.location.href = data.url;
-      } else {
-        console.error('Checkout failed:', data.error);
-        alert('Checkout failed. Please try again.');
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      alert('Checkout failed. Please try again.');
-    } finally {
-      setLoading(null);
-    }
-  };
 
   const productImageUrl = (product: Product) => {
     if (!product.image_path) return null;
@@ -135,6 +90,9 @@ export default function RecipesPage() {
               <p className="mt-6 max-w-xl text-base leading-7 text-black/58">
                 Some ideas need more room than a recipe page. Guides can hold the full process, variations, visual instruction, and the details worth keeping.
               </p>
+              <p className="mt-4 max-w-xl text-sm leading-6 text-black/60">
+                Direct guide downloads are temporarily paused while we improve delivery. You can still explore the recipes and join for updates when guides return.
+              </p>
             </div>
 
             <div>
@@ -165,16 +123,12 @@ export default function RecipesPage() {
                           {product.description && <p className="mt-3 max-w-xl text-sm leading-6 text-black/56">{product.description}</p>}
                           <p className="mt-3 text-sm font-medium text-[#9c3d24]">{product.price === 0 ? 'Free' : `$${product.price.toFixed(2)}`}</p>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            analyticsEvents.productViewed(product.name);
-                            setSelectedProduct(product);
-                          }}
-                          className="min-h-11 border border-[#9c3d24] px-5 text-xs font-semibold uppercase tracking-[0.16em] text-[#9c3d24] transition-colors hover:bg-[#9c3d24] hover:text-white"
+                        <Link
+                          href="/join"
+                          className="inline-flex min-h-11 items-center justify-center border border-[#9c3d24] px-5 text-xs font-semibold uppercase tracking-[0.16em] text-[#9c3d24] transition-colors hover:bg-[#9c3d24] hover:text-white"
                         >
-                          Get it
-                        </button>
+                          Get updates
+                        </Link>
                       </article>
                     );
                   })}
@@ -207,55 +161,7 @@ export default function RecipesPage() {
         </div>
       </section>
 
-      {selectedProduct && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-label={`Purchase ${selectedProduct.name}`}>
-          <div className="relative w-full max-w-xl bg-[#f4efe7] p-7 text-[#211d19] sm:p-9">
-            <button
-              type="button"
-              onClick={closeCheckout}
-              className="absolute right-5 top-5 text-2xl leading-none text-black/45 hover:text-black"
-              aria-label="Close purchase form"
-            >
-              ×
-            </button>
 
-            <p className="pr-8 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">Digital guide</p>
-            <h2 className="mt-4 pr-8 font-serif text-4xl leading-[1.05]">{selectedProduct.name}</h2>
-            {selectedProduct.description && <p className="mt-4 text-base leading-7 text-black/58">{selectedProduct.description}</p>}
-            <p className="mt-4 text-lg font-medium text-[#9c3d24]">{selectedProduct.price === 0 ? 'Free' : `$${selectedProduct.price.toFixed(2)}`}</p>
-
-            <form onSubmit={handleCheckoutSubmit} className="mt-8 space-y-5 border-t border-black/15 pt-7">
-              <label className="block">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/50">Email</span>
-                <input
-                  type="email"
-                  value={customerEmail}
-                  onChange={(event) => setCustomerEmail(event.target.value)}
-                  required
-                  className="mt-2 min-h-12 w-full border border-black/20 bg-transparent px-4 outline-none focus:border-[#9c3d24]"
-                />
-              </label>
-              <label className="block">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/50">Name</span>
-                <input
-                  type="text"
-                  value={customerName}
-                  onChange={(event) => setCustomerName(event.target.value)}
-                  required
-                  className="mt-2 min-h-12 w-full border border-black/20 bg-transparent px-4 outline-none focus:border-[#9c3d24]"
-                />
-              </label>
-              <button
-                type="submit"
-                disabled={loading === selectedProduct.id}
-                className="min-h-12 w-full bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {loading === selectedProduct.id ? 'Opening checkout…' : selectedProduct.price === 0 ? 'Get the guide' : 'Continue to checkout'}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

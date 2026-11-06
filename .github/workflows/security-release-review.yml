@@ -1,0 +1,118 @@
+name: Integrated Security Release Review
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integrated-security-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security-release:
+    name: Dependency, application and safe HTTP checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Read-only checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install exact lockfile
+        run: npm ci
+      - name: Test hermetic actual handler integrations
+        id: integration
+        continue-on-error: true
+        run: node --test tests/security-handler-integration.test.cjs
+
+      - name: Assert reviewed PostCSS resolution
+        run: |
+          node -e "const p=require('postcss/package.json'); if(p.version !== '8.5.31') process.exit(1); console.log('PostCSS '+p.version)"
+          test ! -e node_modules/next/node_modules/postcss/package.json
+      - name: Audit production dependencies at high threshold
+        id: audit
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high
+      - name: Typecheck security API and admin UI
+        id: typecheck
+        continue-on-error: true
+        run: npx tsc -p tsconfig.security.json --noEmit
+      - name: Lint campaign API and admin UI
+        id: lint
+        continue-on-error: true
+        run: npx eslint src/lib/admin-auth.ts src/app/api/campaigns/send/route.ts src/app/api/admin src/app/api/printful src/app/admin/page.tsx
+      - name: Build actual Next application with inert CI configuration
+        id: build
+        continue-on-error: true
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.invalid
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-not-real
+          SUPABASE_URL: https://example.invalid
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-not-real
+          STRIPE_SECRET_KEY: sk_test_ci_placeholder_not_real
+        run: npm run build
+      - name: Test unauthenticated API denial through local HTTP
+        id: smoke
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.invalid
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-not-real
+          SUPABASE_URL: https://example.invalid
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-not-real
+          STRIPE_SECRET_KEY: sk_test_ci_placeholder_not_real
+          WWP_ADMIN_USER_IDS: ''
+        run: |
+          set -euo pipefail
+          npm run start -- --port 3107 > /tmp/wwp-release-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 30); do
+            if curl --max-time 2 --silent --fail http://127.0.0.1:3107/ -o /dev/null; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then cat /tmp/wwp-release-http.log; exit 1; fi
+          status=$(curl --max-time 5 --silent -o /tmp/wwp-campaign-response.json -w '%{http_code}' -H 'Content-Type: application/json' -d '{"subject":"dry-run","html":"not sent"}' http://127.0.0.1:3107/api/campaigns/send)
+          test "$status" = "403"
+          grep -q 'Forbidden' /tmp/wwp-campaign-response.json
+          status=$(curl --max-time 5 --silent -o /tmp/wwp-download-response.json -w '%{http_code}' -H 'Content-Type: application/json' -d '{"orderId":"invalid"}' http://127.0.0.1:3107/api/send-download)
+          test "$status" = "403"
+          # Inert placeholder configuration: fail before any Supabase or Printful access.
+          for path in /api/admin/products /api/admin/orders /api/admin/essays /api/printful/catalog; do
+            status=$(curl --max-time 5 --silent -o /tmp/wwp-protected-response.json -w '%{http_code}' "http://127.0.0.1:3107$path")
+            case "$status" in
+              401|403) ;;
+              *) echo "Expected protected GET denial for $path but got $status"; exit 1;;
+            esac
+          done
+          status=$(curl --max-time 5 --silent -o /tmp/wwp-printful-write-response.json -w '%{http_code}' -H 'Content-Type: application/json' -d '{"products":[{"id":"synthetic"}]}' http://127.0.0.1:3107/api/printful/sync)
+          test "$status" = "403"
+          echo "Admin, Printful, campaign, and resend routes deny unauthenticated requests (no writes, mail, or credentials)."
+      - name: Enforce release review gates
+        if: always()
+        env:
+          INTEGRATION: ${{ steps.integration.outcome }}
+          AUDIT: ${{ steps.audit.outcome }}
+          TYPES: ${{ steps.typecheck.outcome }}
+          LINT: ${{ steps.lint.outcome }}
+          BUILD: ${{ steps.build.outcome }}
+          SMOKE: ${{ steps.smoke.outcome }}
+        run: |
+          echo "Handlers=$INTEGRATION Audit=$AUDIT Typecheck=$TYPES Lint=$LINT Build=$BUILD HTTP=$SMOKE"
+          test "$INTEGRATION" = "success"
+          test "$AUDIT" = "success"
+          test "$TYPES" = "success"
+          test "$LINT" = "success"
+          test "$BUILD" = "success"
+          test "$SMOKE" = "success"

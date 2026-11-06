@@ -54,7 +54,7 @@ export default function AdminPage() {
       // Dynamic import to avoid build-time issues
       const { supabase } = await import('@/lib/supabase/client');
       const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      setUser(user ? { id: user.id, email: user.email } : null);
       if (user) {
         fetchData();
       }
@@ -85,7 +85,7 @@ export default function AdminPage() {
         return;
       }
 
-      setUser(data.user);
+      setUser({ id: data.user.id, email: data.user.email });
       fetchData();
     } catch (error) {
       setLoginError('Login failed. Please try again.');
@@ -547,9 +547,18 @@ export default function AdminPage() {
                 setCampaignResult(null);
 
                 try {
+                  const { supabase } = await import('@/lib/supabase/client');
+                  const { data: { session } } = await supabase.auth.getSession();
+                  if (!session?.access_token) {
+                    throw new Error('Your admin session has expired. Please sign in again.');
+                  }
+
                   const response = await fetch('/api/campaigns/send', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                      'Content-Type': 'application/json',
+                      Authorization: `Bearer ${session.access_token}`,
+                    },
                     body: JSON.stringify({
                       subject: campaignSubject,
                       html: campaignHtml,
@@ -721,7 +730,12 @@ export default function AdminPage() {
                 setSyncResult(null);
                 setPrintfulError(null);
                 try {
-                  const response = await fetch('/api/printful/catalog');
+                  const { supabase } = await import('@/lib/supabase/client');
+                  const { data: { session } } = await supabase.auth.getSession();
+                  if (!session?.access_token) throw new Error('Admin session expired');
+                  const response = await fetch('/api/printful/catalog', {
+                    headers: { Authorization: `Bearer ${session.access_token}` },
+                  });
                   const data = await response.json();
                   if (data.success) {
                     setPrintfulProducts(data.data || []);
@@ -773,7 +787,7 @@ export default function AdminPage() {
           {!printfulError && printfulProducts.length === 0 && !printfulLoading && (
             <Card className="p-4 bg-yellow-50 border-yellow-200">
               <p className="text-sm text-yellow-800">
-                No products loaded. Click "Fetch Printful Catalog" to load products.
+                No products loaded. Click &quot;Fetch Printful Catalog&quot; to load products.
               </p>
             </Card>
           )}
@@ -827,13 +841,19 @@ export default function AdminPage() {
                       setSyncResult(null);
                       
                       const selectedProducts = printfulProducts.filter(p => 
-                        selectedPrintfulProducts.has(p.id?.toString() || p.sync_product?.id?.toString())
+                        selectedPrintfulProducts.has(String(p.id ?? p.sync_product?.id ?? ''))
                       );
                       
                       try {
+                        const { supabase } = await import('@/lib/supabase/client');
+                        const { data: { session } } = await supabase.auth.getSession();
+                        if (!session?.access_token) throw new Error('Admin session expired');
                         const response = await fetch('/api/printful/sync', {
                           method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
+                          headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${session.access_token}`,
+                          },
                           body: JSON.stringify({ products: selectedProducts }),
                         });
                         
@@ -874,11 +894,11 @@ export default function AdminPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {printfulProducts.map((product) => {
-                  const productId = product.id?.toString() || product.sync_product?.id?.toString();
+                  const productId = String(product.id ?? product.sync_product?.id ?? '');
                   const isSelected = selectedPrintfulProducts.has(productId);
                   
                   // Better data extraction
-                  const syncProduct = product.sync_product || product;
+                  const syncProduct = product.sync_product;
                   
                   // Ensure syncVariants is an array
                   let syncVariants: PrintfulVariant[] = [];
@@ -898,9 +918,12 @@ export default function AdminPage() {
                   const mainVariant = syncVariants.length > 0 ? syncVariants[0] : null;
                   
                   // Get image from multiple possible locations
-                  const image = syncProduct.thumbnail_url || 
-                               syncProduct.preview_url ||
-                               syncProduct.image ||
+                  const image = syncProduct?.thumbnail_url ||
+                               syncProduct?.preview_url ||
+                               syncProduct?.image ||
+                               (typeof product.thumbnail_url === 'string' ? product.thumbnail_url : null) ||
+                               (typeof product.preview_url === 'string' ? product.preview_url : null) ||
+                               (typeof product.image === 'string' ? product.image : null) ||
                                mainVariant?.preview_image ||
                                mainVariant?.files?.[0]?.preview_url ||
                                mainVariant?.files?.[0]?.url ||
@@ -915,8 +938,12 @@ export default function AdminPage() {
                     ? 'Free'
                     : 'Price TBD';
                   
-                  const name = syncProduct.name || product.name || 'Unnamed Product';
-                  const description = syncProduct.description || product.description || '';
+                  const name = syncProduct?.name ||
+                               (typeof product.name === 'string' ? product.name : '') ||
+                               'Unnamed Product';
+                  const description =
+                    (typeof syncProduct?.description === 'string' ? syncProduct.description : null) ||
+                    (typeof product.description === 'string' ? product.description : '');
                   const isWineBear = name.toLowerCase().includes('wine bear') || 
                                    name.toLowerCase().includes('winebear') ||
                                    description.toLowerCase().includes('wine bear');
@@ -1022,7 +1049,7 @@ export default function AdminPage() {
 
           {printfulProducts.length === 0 && !printfulLoading && (
             <Card className="p-8 text-center">
-              <p className="text-black/70 mb-4">Click "Fetch Printful Catalog" to load your products</p>
+              <p className="text-black/70 mb-4">Click &quot;Fetch Printful Catalog&quot; to load your products</p>
             </Card>
           )}
         </div>
@@ -1152,7 +1179,7 @@ export default function AdminPage() {
                   </Button>
                 </div>
                 <p className="text-xs text-black/60 mt-1">
-                  Enter a Substack URL and we'll automatically fetch the title, description, and image
+                  Enter a Substack URL and we&apos;ll automatically fetch the title, description, and image
                 </p>
               </div>
             </div>
