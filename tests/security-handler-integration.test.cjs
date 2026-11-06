@@ -111,12 +111,17 @@ test('Printful routes reject anonymous requests before touching products or prov
   assert.equal(queried,0);
 });
 
-test('new digital checkout is paused before Stripe; synthetic support payment is unaffected',async()=>{
-  let stripeCalls=0,currentKind='digital';
+test('checkout: current Stripe and legacy digital offers pause, while Gumroad and support remain',async()=>{
+  let stripeCalls=0;
+  let currentKind='digital',currentCommerceType='stripe';
   const offer=()=>({
     id:'synthetic-offer',kind:currentKind,
     availability:{status:'active'},
-    commerce:{type:'stripe',mode:'payment',fulfillment:{type:currentKind==='digital'?'digital_download':'none'}},
+    commerce:currentCommerceType==='external_checkout'
+      ? {type:'external_checkout',provider:'gumroad',href:'https://example.invalid/gumroad'}
+      : currentCommerceType==='legacy_checkout'
+        ? {type:'legacy_checkout',href:'/recipes?product=synthetic-offer'}
+        : {type:'stripe',mode:'payment',fulfillment:{type:currentKind==='digital'?'digital_download':'none'}},
     price:{amountCents:500,currency:'usd'},
     title:'Synthetic',description:'Safe fixture',images:[],source:{type:'legacy_product'},pagePath:'/recipes'
   });
@@ -140,15 +145,31 @@ test('new digital checkout is paused before Stripe; synthetic support payment is
     SUPABASE_SERVICE_ROLE_KEY:'fake-not-real'
   });
   const req=request({});req.nextUrl={origin:'https://example.invalid'};
-  const paused=await post(req);
-  assert.equal(paused.status,409);
-  assert.equal(paused.body.code,'DIGITAL_CHECKOUT_PAUSED');
-  assert.equal(stripeCalls,0);
-  currentKind='support';
+
+  const directStripe=await post(req);
+  assert.equal(directStripe.status,409);
+  assert.equal(directStripe.body.code,'DIGITAL_CHECKOUT_PAUSED');
+  assert.equal(stripeCalls,0,'Stripe digital offer must not create a charge session');
+
+  currentCommerceType='legacy_checkout';
+  const legacyDigital=await post(req);
+  assert.equal(legacyDigital.status,409,'Legacy Supabase catalog downloads must be paused too');
+  assert.equal(legacyDigital.body.code,'DIGITAL_CHECKOUT_PAUSED');
+  assert.equal(stripeCalls,0,'Legacy digital must not create a Stripe session');
+
+  currentCommerceType='external_checkout';
+  const gumroad=await post(req);
+  assert.equal(gumroad.status,200);
+  assert.equal(gumroad.body.external,true);
+  assert.equal(gumroad.body.url,'https://example.invalid/gumroad');
+  assert.equal(stripeCalls,0,'External digital checkout must bypass Stripe');
+
+  currentKind='support';currentCommerceType='stripe';
   const supported=await post(req);
   assert.equal(supported.status,200);
-  assert.equal(stripeCalls,1);
+  assert.equal(stripeCalls,1,'Support checkout must remain unaffected');
 });
+
 
 function campaignFixture({ allowlist = 'admin-id', user = { id: 'admin-id' }, subscribers = [], emailResults = [], authError = null } = {}) {
   const calls = { clients: 0, users: [], tables: [], mails: [] };

@@ -106,7 +106,8 @@ export async function POST(request: NextRequest) {
 
     // Temporarily hold NEW direct digital checkout until paid delivery is idempotent.
     // Existing paid orders are still processed by the webhook.
-    if (offer.kind === 'digital' && offer.commerce.type === 'stripe' &&
+    if (offer.kind === 'digital' &&
+        (offer.commerce.type === 'stripe' || offer.commerce.type === 'legacy_checkout') &&
         getFulfillmentType(offer) === 'digital_download') {
       return NextResponse.json(
         { error: 'Direct digital checkout is temporarily unavailable.',

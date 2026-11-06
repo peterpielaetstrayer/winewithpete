@@ -84,6 +84,9 @@ test('new direct digital Stripe checkout is paused before session creation', () 
   assert.ok(holdAt >= 0 && holdAt < stripeAt);
   assert.match(checkout, /offer\.kind === 'digital'/);
   assert.match(checkout, /offer\.commerce\.type === 'stripe'/);
+  assert.match(checkout, /offer\.commerce\.type === 'legacy_checkout'/);
+  const adapter = source('src/lib/commerce/legacy-product-adapter.ts');
+  assert.match(adapter, /type: 'legacy_checkout'/);
   assert.match(checkout, /getFulfillmentType\(offer\) === 'digital_download'/);
 });
 
