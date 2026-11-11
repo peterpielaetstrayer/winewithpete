@@ -103,7 +103,9 @@ test('Printful requests carry the authenticated admin bearer token', () => {
 
 test('guide shelf does not advertise paused first-party purchases', () => {
   const recipes = source('src/app/recipes/page.tsx');
-  assert.match(recipes, /Direct guide downloads are temporarily paused/);
+  assert.match(recipes, /Published field recipes are free to read and cook/);
+  assert.match(recipes, /direct downloads are temporarily paused/);
+  assert.match(recipes, /Download not yet available/);
   assert.match(recipes, /href="\/join"/);
   assert.doesNotMatch(recipes, /handleCheckoutSubmit|selectedProduct|\/api\/checkout|Opening checkout/);
   assert.doesNotMatch(recipes, /Get it/);
