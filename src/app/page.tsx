@@ -56,7 +56,7 @@ export default function Home() {
   return (
     <div className="bg-[#f4efe7] text-[#211d19]">
       {/* Opening */}
-      <section className="relative min-h-[86svh] overflow-hidden bg-black text-white md:min-h-[92vh]">
+      <section className="relative min-h-[76svh] overflow-hidden bg-black text-white md:min-h-[86vh]">
         <Image
           src="/images/hero/hero-campfire.png.png"
           alt="A Wine With Pete gathering around fire"
@@ -68,27 +68,27 @@ export default function Home() {
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,8,6,.88)_0%,rgba(10,8,6,.58)_42%,rgba(10,8,6,.18)_72%,rgba(10,8,6,.25)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/55 to-transparent" />
 
-        <div className="relative z-10 mx-auto flex min-h-[86svh] max-w-7xl items-end px-5 pb-16 pt-32 sm:px-8 md:min-h-[92vh] md:items-center md:px-12 md:pb-10 md:pt-28 lg:px-16">
+        <div className="relative z-10 mx-auto flex min-h-[76svh] max-w-7xl items-end px-5 pb-16 pt-32 sm:px-8 md:min-h-[86vh] md:items-center md:px-12 md:pb-10 md:pt-28 lg:px-16">
           <div className="max-w-3xl">
             <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.28em] text-[#d78959] md:text-xs">
               Wine With Pete
             </p>
-            <h1 className="max-w-[14ch] font-serif text-[clamp(2.8rem,6.2vw,5.8rem)] font-medium leading-[0.98] tracking-[-0.035em] text-white">
+            <h1 className="max-w-[15ch] font-serif text-[clamp(2.55rem,5.6vw,4.85rem)] font-medium leading-[0.98] tracking-[-0.035em] text-white">
               Rebuilding the table in an age that keeps teaching us to leave it.
             </h1>
             <p className="mt-7 max-w-xl text-base leading-7 text-white/82 sm:text-lg md:mt-8 md:text-xl md:leading-8">
-              Stories, recipes, guides, and gatherings shaped around food, wine, fire, hospitality, and conversation.
+              Recipes to cook, wines to explore, stories from tables we&apos;ve shared, and ideas for bringing people together.
             </p>
             <div className="mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center md:mt-10">
               <Link
                 href="#begin"
-                className="inline-flex min-h-12 items-center justify-center bg-[#a64225] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-[#85351f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="inline-flex min-h-12 items-center justify-center bg-[#a64225] px-6 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#85351f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 Start exploring <span className="ml-3" aria-hidden>→</span>
               </Link>
               <Link
                 href="#gather"
-                className="border-b border-[#d78959] pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:text-[#e3a078] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="border-b border-[#d78959] pb-1 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:text-[#e3a078] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 Gather with us
               </Link>
