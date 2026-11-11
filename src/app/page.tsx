@@ -97,6 +97,43 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Discover: existing public routes, no unreleased Explore link */}
+      <section id="begin" aria-labelledby="begin-title" className="scroll-mt-20 border-b border-black/10 bg-[#eee4d7] px-5 py-16 sm:px-8 md:px-12 md:py-20 lg:px-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10 flex flex-col justify-between gap-5 border-t border-black/20 pt-6 md:mb-12 md:flex-row md:items-end">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Begin somewhere</p>
+              <h2 id="begin-title" className="mt-5 max-w-2xl font-serif text-[clamp(2.1rem,4.2vw,4rem)] leading-[1.06] tracking-[-0.035em]">
+                Follow an appetite, a memory, or an idea.
+              </h2>
+            </div>
+            <p className="max-w-sm font-crimson text-xl italic leading-7 text-black/65">
+              Some things are meant to be read. Some are meant to be made. All of them start somewhere.
+            </p>
+          </div>
+          <div className="grid gap-px overflow-hidden border border-black/15 bg-black/15 md:grid-cols-3">
+            {entryways.map((entry) => (
+              <Link
+                key={entry.href}
+                href={entry.href}
+                className="group flex min-h-[190px] flex-col bg-[#f4efe7] p-7 md:min-h-[275px] transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#9c3d24] sm:p-9"
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">
+                  {entry.number} / {entry.eyebrow}
+                </p>
+                <h3 className="mt-5 max-w-sm font-serif text-3xl md:mt-9 leading-[1.07] tracking-[-0.025em]">
+                  {entry.title}
+                </h3>
+                <p className="mt-3 max-w-sm text-base leading-7 md:mt-5 text-black/65">{entry.description}</p>
+                <span className="mt-auto pt-4 text-xs font-semibold uppercase md:pt-8 tracking-[0.16em] text-[#9c3d24] group-hover:text-[#6f2819]">
+                  {entry.action} <span aria-hidden="true">→</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Why the table */}
       <section className="border-b border-black/10 bg-[#f4efe7] px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
         <div className="mx-auto grid max-w-7xl gap-12 md:grid-cols-[1.05fr_.95fr] md:items-center md:gap-16 lg:gap-24">
@@ -120,43 +157,6 @@ export default function Home() {
               className="object-cover"
             />
           </figure>
-        </div>
-      </section>
-
-      {/* Discover: existing public routes, no unreleased Explore link */}
-      <section id="begin" aria-labelledby="begin-title" className="scroll-mt-20 border-b border-black/10 bg-[#eee4d7] px-5 py-16 sm:px-8 md:px-12 md:py-20 lg:px-16">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-10 flex flex-col justify-between gap-5 border-t border-black/20 pt-6 md:mb-12 md:flex-row md:items-end">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Begin somewhere</p>
-              <h2 id="begin-title" className="mt-5 max-w-2xl font-serif text-[clamp(2.1rem,4.2vw,4rem)] leading-[1.06] tracking-[-0.035em]">
-                Follow an appetite, a memory, or an idea.
-              </h2>
-            </div>
-            <p className="max-w-sm font-crimson text-xl italic leading-7 text-black/65">
-              Some things are meant to be read. Some are meant to be made. All of them start somewhere.
-            </p>
-          </div>
-          <div className="grid gap-px overflow-hidden border border-black/15 bg-black/15 md:grid-cols-3">
-            {entryways.map((entry) => (
-              <Link
-                key={entry.href}
-                href={entry.href}
-                className="group flex min-h-[275px] flex-col bg-[#f4efe7] p-7 transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#9c3d24] sm:p-9"
-              >
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">
-                  {entry.number} / {entry.eyebrow}
-                </p>
-                <h3 className="mt-9 max-w-sm font-serif text-3xl leading-[1.07] tracking-[-0.025em]">
-                  {entry.title}
-                </h3>
-                <p className="mt-5 max-w-sm text-sm leading-7 text-black/65">{entry.description}</p>
-                <span className="mt-auto pt-8 text-xs font-semibold uppercase tracking-[0.16em] text-[#9c3d24] group-hover:text-[#6f2819]">
-                  {entry.action} <span aria-hidden="true">→</span>
-                </span>
-              </Link>
-            ))}
-          </div>
         </div>
       </section>
 
