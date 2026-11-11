@@ -44,12 +44,15 @@ export function SiteHeader() {
           Wine With Pete
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary navigation">
+        <nav className="hidden items-center gap-6 md:flex" aria-label="Primary navigation">
           <Link href="/gather" className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
             Gather
           </Link>
           <Link href="/journal" className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
             Journal
+          </Link>
+          <Link href="/explore" aria-current={pathname === '/explore' ? 'page' : undefined} className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
+            Explore
           </Link>
           <Link href="/about" className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
             About
@@ -92,6 +95,9 @@ export function SiteHeader() {
             </Link>
             <Link href="/journal" className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
               Journal
+            </Link>
+            <Link href="/explore" aria-current={pathname === '/explore' ? 'page' : undefined} className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
+              Explore
             </Link>
             <Link href="/about" className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
               About
