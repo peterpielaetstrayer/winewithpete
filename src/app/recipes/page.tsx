@@ -91,7 +91,7 @@ export default function RecipesPage() {
                 Some ideas need more room than a recipe page. Guides can hold the full process, variations, visual instruction, and the details worth keeping.
               </p>
               <p className="mt-4 max-w-xl text-sm leading-6 text-black/60">
-                Direct guide downloads are temporarily paused while we improve delivery. You can still explore the recipes and join for updates when guides return.
+                Published field recipes are free to read and cook—no account required. We are preparing existing guides for free access; direct downloads are temporarily paused while we verify delivery and publication readiness.
               </p>
             </div>
 
@@ -121,7 +121,7 @@ export default function RecipesPage() {
                         <div>
                           <h3 className="font-serif text-3xl leading-[1.08]">{product.name}</h3>
                           {product.description && <p className="mt-3 max-w-xl text-sm leading-6 text-black/56">{product.description}</p>}
-                          <p className="mt-3 text-sm font-medium text-[#9c3d24]">{product.price === 0 ? 'Free' : `$${product.price.toFixed(2)}`}</p>
+                          <p className="mt-3 text-sm font-medium text-[#9c3d24]">Free-access release in preparation · Download not yet available</p>
                         </div>
                         <Link
                           href="/join"
