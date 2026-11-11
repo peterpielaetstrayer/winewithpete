@@ -355,7 +355,7 @@ export default function Home() {
             <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Founding Table</p>
             <h2 className="font-serif text-5xl font-medium leading-none tracking-[-0.025em] sm:text-6xl">Pull up a chair.</h2>
             <p className="mt-7 max-w-xl font-crimson text-xl leading-8 text-black/68">
-              The Founding Table is the closer circle around Wine With Pete — new tables, invitations, field notes, essays, recipes, and things we&apos;re building before they reach everyone else.
+              The Founding Table is a free email list for people who want to stay close—new notes, recipes, invitations, and the work taking shape. Published stories and recipes remain open to everyone.
             </p>
             <Link
               href="/join"
