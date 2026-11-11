@@ -80,7 +80,7 @@ export default function JoinPage() {
               Pull up a chair.
             </h1>
             <p className="mt-7 max-w-2xl font-crimson text-2xl leading-9 text-black/68 sm:text-[1.6rem] sm:leading-10">
-              The closer circle around Wine With Pete—new tables, invitations, field notes, essays, recipes, and things still being built.
+              Join the free email list for occasional notes, new recipes and guides, and invitations. Public writing and recipes stay open to everyone—no account required.
             </p>
           </div>
 
@@ -114,7 +114,7 @@ export default function JoinPage() {
             {error ? (
               <p id="founding-table-error" className="mt-3 text-sm text-[#9c3d24]" role="alert">{error}</p>
             ) : (
-              <p id="founding-table-note" className="mt-3 text-xs leading-5 text-black/45">Occasional notes. No spam. Leave whenever you like.</p>
+              <p id="founding-table-note" className="mt-3 text-xs leading-5 text-black/45">Free email signup, not yet a member account. Occasional notes. Unsubscribe anytime.</p>
             )}
           </form>
         </div>
