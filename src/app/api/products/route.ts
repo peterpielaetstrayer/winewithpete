@@ -9,7 +9,6 @@ const PUBLIC_PRODUCT_FIELDS = [
   'price',
   'product_type',
   'product_category',
-  'file_path',
   'image_path',
   'is_active',
   'is_featured',

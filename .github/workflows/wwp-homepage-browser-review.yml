@@ -1,0 +1,117 @@
+name: WWP Homepage Browser Review
+
+on:
+  push:
+    branches:
+      - work/wwp-secure-homepage-review-20261111
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wwp-homepage-browser-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Read-only checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Node 20
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Build with inert nonproduction inputs
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.invalid
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-not-real
+          SUPABASE_URL: https://example.invalid
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-not-real
+          STRIPE_SECRET_KEY: sk_test_ci_placeholder_not_real
+        run: npm run build
+      - name: Review responsive homepage in isolated Chromium
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.invalid
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-not-real
+          SUPABASE_URL: https://example.invalid
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-not-real
+          STRIPE_SECRET_KEY: sk_test_ci_placeholder_not_real
+          WWP_ADMIN_USER_IDS: ''
+        run: |
+          set -euo pipefail
+          mkdir -p review-screenshots
+          npm run start -- --port 3108 > /tmp/wwp-home-browser.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 45); do
+            if curl --silent --max-time 2 --fail http://127.0.0.1:3108/ -o /dev/null; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then cat /tmp/wwp-home-browser.log; exit 1; fi
+          node --input-type=module <<'NODE'
+          import { chromium, expect } from '@playwright/test';
+
+          const base = 'http://127.0.0.1:3108';
+          const browser = await chromium.launch({ headless: true });
+          const sizes = [
+            { name: 'phone', width: 390, height: 844 },
+            { name: 'desktop', width: 1366, height: 900 },
+          ];
+
+          for (const size of sizes) {
+            const context = await browser.newContext({
+              viewport: { width: size.width, height: size.height },
+              reducedMotion: 'reduce',
+            });
+            const page = await context.newPage();
+            await page.route('**/*', async (route) => {
+              const request = route.request();
+              if (new URL(request.url()).origin === base) return route.continue();
+              return route.abort();
+            });
+            await page.goto(base, { waitUntil: 'domcontentloaded', timeout: 30000 });
+            await expect(page.getByRole('heading', { name: /Rebuilding the table in an age/i })).toBeVisible();
+            await expect(page.getByRole('link', { name: /Start exploring/i })).toBeVisible();
+            await page.getByRole('link', { name: /Start exploring/i }).click();
+            await expect(page).toHaveURL(/#begin$/);
+            await expect(page.locator('#begin')).toBeVisible();
+            for (const destination of ['/journal', '/recipes', '/tables']) {
+              if (await page.locator('#begin a[href="' + destination + '"]').count() !== 1) {
+                throw new Error(size.name + ': discovery destination missing or duplicated: ' + destination);
+              }
+            }
+            const overflow = await page.evaluate(() => ({
+              scrollWidth: document.documentElement.scrollWidth,
+              viewportWidth: window.innerWidth,
+            }));
+            if (overflow.scrollWidth > overflow.viewportWidth + 2) {
+              throw new Error(size.name + ': horizontal overflow: ' + JSON.stringify(overflow));
+            }
+            await page.goto(base, { waitUntil: 'domcontentloaded' });
+            await page.screenshot({
+              path: 'review-screenshots/wwp-home-' + size.name + '.png',
+              fullPage: true,
+            });
+            console.log(size.name + ': homepage discovery, links and overflow passed');
+            await context.close();
+          }
+          await browser.close();
+          NODE
+      - name: Preserve public-only review screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wwp-homepage-public-review-${{ github.sha }}
+          path: review-screenshots/
+          if-no-files-found: ignore
+          retention-days: 7

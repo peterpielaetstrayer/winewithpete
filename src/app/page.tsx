@@ -1,6 +1,33 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+const entryways = [
+  {
+    number: '01',
+    eyebrow: 'Read',
+    title: 'Stories worth returning to.',
+    description: 'Essays, observations, and field notes about what happens around the table—and beyond it.',
+    href: '/journal',
+    action: 'Enter the Journal',
+  },
+  {
+    number: '02',
+    eyebrow: 'Make',
+    title: 'Bring something to your own table.',
+    description: 'Recipes and practical guides to help you cook, experiment, and make an evening your own.',
+    href: '/recipes',
+    action: 'Browse recipes & guides',
+  },
+  {
+    number: '03',
+    eyebrow: 'Remember',
+    title: 'The gatherings behind the ideas.',
+    description: 'Menus, memories, and real tables that have shaped Wine With Pete.',
+    href: '/tables',
+    action: 'Visit the Table Archive',
+  },
+];
+
 const journalItems = [
   {
     eyebrow: 'Essay',
@@ -50,20 +77,20 @@ export default function Home() {
               Rebuilding the table in an age that keeps teaching us to leave it.
             </h1>
             <p className="mt-7 max-w-xl text-base leading-7 text-white/82 sm:text-lg md:mt-8 md:text-xl md:leading-8">
-              Gatherings, stories, and objects shaped around food, wine, fire, hospitality, and conversation.
+              Stories, recipes, guides, and gatherings shaped around food, wine, fire, hospitality, and conversation.
             </p>
             <div className="mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center md:mt-10">
               <Link
-                href="#gather"
+                href="#begin"
                 className="inline-flex min-h-12 items-center justify-center bg-[#a64225] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-[#85351f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
-                Gather with us <span className="ml-3" aria-hidden>→</span>
+                Start exploring <span className="ml-3" aria-hidden>→</span>
               </Link>
               <Link
-                href="#journal"
+                href="#gather"
                 className="border-b border-[#d78959] pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:text-[#e3a078] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
-                Enter the Journal
+                Gather with us
               </Link>
             </div>
           </div>
@@ -93,6 +120,43 @@ export default function Home() {
               className="object-cover"
             />
           </figure>
+        </div>
+      </section>
+
+      {/* Discover: existing public routes, no unreleased Explore link */}
+      <section id="begin" aria-labelledby="begin-title" className="scroll-mt-20 border-b border-black/10 bg-[#eee4d7] px-5 py-16 sm:px-8 md:px-12 md:py-20 lg:px-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10 flex flex-col justify-between gap-5 border-t border-black/20 pt-6 md:mb-12 md:flex-row md:items-end">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Begin somewhere</p>
+              <h2 id="begin-title" className="mt-5 max-w-2xl font-serif text-[clamp(2.1rem,4.2vw,4rem)] leading-[1.06] tracking-[-0.035em]">
+                Follow an appetite, a memory, or an idea.
+              </h2>
+            </div>
+            <p className="max-w-sm font-crimson text-xl italic leading-7 text-black/65">
+              Some things are meant to be read. Some are meant to be made. All of them start somewhere.
+            </p>
+          </div>
+          <div className="grid gap-px overflow-hidden border border-black/15 bg-black/15 md:grid-cols-3">
+            {entryways.map((entry) => (
+              <Link
+                key={entry.href}
+                href={entry.href}
+                className="group flex min-h-[275px] flex-col bg-[#f4efe7] p-7 transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#9c3d24] sm:p-9"
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">
+                  {entry.number} / {entry.eyebrow}
+                </p>
+                <h3 className="mt-9 max-w-sm font-serif text-3xl leading-[1.07] tracking-[-0.025em]">
+                  {entry.title}
+                </h3>
+                <p className="mt-5 max-w-sm text-sm leading-7 text-black/65">{entry.description}</p>
+                <span className="mt-auto pt-8 text-xs font-semibold uppercase tracking-[0.16em] text-[#9c3d24] group-hover:text-[#6f2819]">
+                  {entry.action} <span aria-hidden="true">→</span>
+                </span>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -291,7 +355,7 @@ export default function Home() {
             <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Founding Table</p>
             <h2 className="font-serif text-5xl font-medium leading-none tracking-[-0.025em] sm:text-6xl">Pull up a chair.</h2>
             <p className="mt-7 max-w-xl font-crimson text-xl leading-8 text-black/68">
-              The Founding Table is the closer circle around Wine With Pete — new tables, invitations, field notes, essays, recipes, and things we&apos;re building before they reach everyone else.
+              The Founding Table is a free email list for people who want to stay close—new notes, recipes, invitations, and the work taking shape. Published stories and recipes remain open to everyone.
             </p>
             <Link
               href="/join"
