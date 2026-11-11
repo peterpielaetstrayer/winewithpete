@@ -37,6 +37,13 @@ try {
       await page.getByRole('button', { name: 'Close menu' }).click();
     }
 
+    const discoveryPrecedesThesis = await page.locator('#begin').evaluate((el) =>
+      el.nextElementSibling?.textContent?.includes('Why the table') ?? false
+    );
+    if (!discoveryPrecedesThesis) {
+      throw new Error(size.name + ': Read/Make/Remember must appear immediately after the hero');
+    }
+    await loadImagesForScreenshot(page);
     await checkOverflow(page, size.name + ' homepage');
     await page.screenshot({ path: 'review-screenshots/wwp-home-' + size.name + '.png', fullPage: true });
 
@@ -62,6 +69,7 @@ try {
       throw new Error(size.name + ': ingredient font too small (' + ingredientFont + 'px)');
     }
 
+    await loadImagesForScreenshot(page);
     await checkOverflow(page, size.name + ' recipe');
     await page.screenshot({ path: 'review-screenshots/wwp-recipe-' + size.name + '.png', fullPage: true });
     await page.emulateMedia({ media: 'print' });
@@ -86,5 +94,16 @@ async function checkOverflow(page, label) {
   }));
   if (overflow.pageWidth > overflow.viewportWidth + 2) {
     throw new Error(label + ' horizontal overflow: ' + JSON.stringify(overflow));
+  }
+}
+
+async function loadImagesForScreenshot(page) {
+  const images = page.locator('img');
+  const count = await images.count();
+  for (let i = 0; i < count; i++) {
+    const img = images.nth(i);
+    if (!(await img.isVisible())) continue;
+    await img.scrollIntoViewIfNeeded({ timeout: 5000 });
+    await expect.poll(() => img.evaluate(el => el.complete && el.naturalWidth > 0), { timeout: 7000 }).toBeTruthy();
   }
 }
