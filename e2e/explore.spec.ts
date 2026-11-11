@@ -6,7 +6,7 @@ test('Explore has honest deduplicated content and no mobile overflow', async ({ 
   await expect(page.getByRole('heading', { name: '4 experiences' })).toBeVisible();
   await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(4);
   await expect(page.locator('[data-experience-id="giscours-vertical"]')).toHaveCount(1);
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, follow/);
   const width = await page.evaluate(() => ({ screen: window.innerWidth, actual: document.documentElement.scrollWidth }));
   expect(width.actual).toBeLessThanOrEqual(width.screen + 2);
 });
