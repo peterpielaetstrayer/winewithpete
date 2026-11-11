@@ -46,7 +46,7 @@ try {
       throw new Error(size.name + ': recipe must use exactly one main landmark');
     }
 
-    await expect(page.getByText('375–425°F')).toBeVisible();
+    await expect(page.getByText('375–425°F', { exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Print recipe' })).toBeVisible();
     await page.getByRole('link', { name: 'View ingredients' }).click();
     await expect(page).toHaveURL(/#ingredients$/);
