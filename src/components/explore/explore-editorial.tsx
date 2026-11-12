@@ -103,6 +103,14 @@ export function ExploreEditorial({ onSelectIntent }: { onSelectIntent: (intent: 
         </div>
       </section>
 
+    </>
+  );
+}
+
+/** Editorial process and archive follow the actionable catalog, not the other way around. */
+export function ExploreEditorialAfterCollection() {
+  return (
+    <>
       <section className="grid min-w-0 bg-[#30221d] text-[#f6e9de] md:grid-cols-[1.05fr_1fr]">
         <div className="relative isolate min-h-[330px] overflow-hidden md:min-h-[535px]">
           <EditorialPhoto photo="ingredients" alt="Aromatic ingredients and herbs prepared before cooking"
