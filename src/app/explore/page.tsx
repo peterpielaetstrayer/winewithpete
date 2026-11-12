@@ -84,7 +84,7 @@ export default function ExplorePage() {
   function clearFilters() { setTerm(''); setIntent('all'); setFormat('all'); setOrder('curated'); setPages(1); }
 
   return (
-    <main className="bg-[#f4efe7] text-[#211d19]">
+    <div className="bg-[#f4efe7] text-[#211d19]">
       <section className="relative isolate overflow-hidden bg-[#211d19] text-[#f4efe7]">
         <div className="absolute inset-y-0 right-0 -z-20 w-full md:w-[57%]">
           <Image src="/images/hero/hero-campfire.png.png" alt="" fill priority sizes="(max-width: 768px) 100vw, 55vw" className="object-cover opacity-35 md:opacity-70"/>
@@ -192,6 +192,6 @@ export default function ExplorePage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
