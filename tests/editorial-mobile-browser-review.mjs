@@ -30,10 +30,12 @@ try {
     await expect(page.locator('#begin a[href="/journal"]')).toHaveCount(1);
     await expect(page.locator('#begin a[href="/recipes"]')).toHaveCount(1);
     await expect(page.locator('#begin a[href="/tables"]')).toHaveCount(1);
+    await expect(page.locator('header a[href="/explore"]')).toHaveCount(size.name === 'phone' ? 0 : 1);
 
     if (size.name === 'phone') {
       await page.getByRole('button', { name: 'Open menu' }).click();
       await expect(page.getByRole('navigation', { name: 'Mobile navigation' })).toBeVisible();
+      await expect(page.getByRole('navigation', { name: 'Mobile navigation' }).getByRole('link', { name: 'Explore' })).toBeVisible();
       await page.getByRole('button', { name: 'Close menu' }).click();
     }
 
@@ -46,6 +48,15 @@ try {
     await loadImagesForScreenshot(page);
     await checkOverflow(page, size.name + ' homepage');
     await page.screenshot({ path: 'review-screenshots/wwp-home-' + size.name + '.png', fullPage: true });
+
+    await page.goto(base + '/explore', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await expect(page.getByRole('heading', { level: 1, name: 'A good evening starts somewhere.' })).toBeVisible();
+    await expect(page.locator('[data-experience-id]')).toHaveCount(4);
+    if (await page.getByRole('main').count() !== 1) {
+      throw new Error(size.name + ': Explore must use exactly one main landmark');
+    }
+    await checkOverflow(page, size.name + ' Explore');
+    await page.screenshot({ path: 'review-screenshots/wwp-explore-' + size.name + '.png', fullPage: true });
 
     await page.goto(base + '/recipes/chipotle-lime-fire-wings', { waitUntil: 'domcontentloaded', timeout: 30000 });
     await expect(page.getByRole('heading', { level: 1, name: 'Chipotle Lime Fire Wings' })).toBeVisible();
