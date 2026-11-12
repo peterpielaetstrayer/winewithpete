@@ -328,3 +328,41 @@ body{
     @apply bg-background text-foreground;
   }
 }
+
+
+/* WWP recipe print view — keeps published recipe data readable without a dark hero. */
+@media print {
+  @page { margin: 15mm; }
+  body:has(.wwp-recipe-print) header,
+  body:has(.wwp-recipe-print) footer,
+  .wwp-print-hide {
+    display: none !important;
+  }
+  .wwp-recipe-print,
+  .wwp-recipe-print * {
+    background: #fff !important;
+    color: #111 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  .wwp-recipe-print {
+    font-size: 11pt;
+  }
+  .wwp-recipe-print .wwp-print-content {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  .wwp-recipe-print li,
+  .wwp-recipe-print aside {
+    break-inside: avoid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wwp-recipe-print *,
+  .wwp-recipe-print *::before,
+  .wwp-recipe-print *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
