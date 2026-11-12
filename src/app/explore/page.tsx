@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react';
 import { ArrowRight, ArrowUpRight, BookOpen, Check, ChefHat, Compass, FileText, Search, SlidersHorizontal, Sparkles, Users, Wine, X } from 'lucide-react';
 
 import { experiences, type Experience } from '@/data/explore/experiences';
-import { EditorialPhoto, ExploreEditorial, EXPLORE_PHOTOS_ENABLED } from '@/components/explore/explore-editorial';
+import { EditorialPhoto, ExploreEditorial, ExploreEditorialAfterCollection, EXPLORE_PHOTOS_ENABLED } from '@/components/explore/explore-editorial';
 import { PAGE_SIZE, queryExperiences, visiblePage, type CatalogIntent, type CatalogFormat, type CatalogOrder } from '@/lib/explore/catalog';
 
 const intentions: { value: CatalogIntent; label: string; description: string; icon: typeof Compass }[] = [
@@ -188,6 +188,8 @@ export default function ExplorePage() {
           )}
         </div>
       </section>
+
+      <ExploreEditorialAfterCollection />
 
       <section className="border-t border-black/10 bg-[#eae0d3] px-5 py-14 sm:px-8 md:px-12 md:py-20 lg:px-16">
         <div className="mx-auto grid max-w-7xl gap-7 md:grid-cols-[1fr_.9fr] md:items-end">
