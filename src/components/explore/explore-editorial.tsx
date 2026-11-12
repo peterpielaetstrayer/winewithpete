@@ -5,13 +5,10 @@ import { ArrowDownRight, ArrowRight } from 'lucide-react';
 import type { CatalogIntent } from '@/lib/explore/catalog';
 
 /**
- * Copyright / consent gate: the GitHub repository is public.
- * The original Google Photos remain private. Do not put photographic derivatives
- * in this repo or activate this flag until image context and publication rights
- * have been approved. Local approved review builds may copy the private asset pack.
+ * Public photographic release: this branch includes eight selected, optimized WebP
+ * derivatives only. Camera originals remain private and are NOT in the repository.
+ * Revert the photo release commit if the images need to be withdrawn from the site.
  */
-// Photo release approved for this curated eight-image set. Only optimized, metadata-free WebP
-// derivatives are shipped. Revert this commit to roll back publication.
 export const EXPLORE_PHOTOS_ENABLED = true;
 
 export type ExplorePhoto = 'hero-seoul-bowl' | 'from-fire' | 'wine-table' | 'set-table' |
