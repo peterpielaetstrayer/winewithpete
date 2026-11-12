@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -57,6 +58,20 @@ export default function GiscoursTablePage() {
         </div>
       </section>
 
+      <figure className="mx-auto max-w-3xl px-5 pb-12 sm:px-8 md:pb-16">
+        <Image
+          src="/images/tables/giscours-exploration-board.webp"
+          alt="A shared serving board surrounded by glasses of red wine and printed tasting materials"
+          width={1050}
+          height={990}
+          sizes="(max-width: 768px) 94vw, 704px"
+          className="h-auto w-full"
+        />
+        <figcaption className="mt-3 text-sm leading-6 text-black/65">
+          The Giscours table mid-tasting, with the wines poured and a board to share.
+        </figcaption>
+      </figure>
+
       <section className="border-t border-black/10 px-5 py-12 sm:px-8 md:px-12 lg:px-16">
         <div className="mx-auto grid max-w-5xl gap-7 lg:grid-cols-[.7fr_1.3fr] lg:gap-20">
           <div>
@@ -102,7 +117,7 @@ export default function GiscoursTablePage() {
               The wine worked best when it stopped being the subject of the evening and became part of the table&apos;s rhythm.
             </p>
             <p className="mt-7 text-base leading-7 text-black/60">
-              That became the lesson worth repeating. The Exploration Board can provide enough structure to help people notice together without turning the table into a class. The archive will eventually hold the full photo sequence and printed tasting material from this evening; for now, this note preserves the first version of the format.
+              That became the lesson worth repeating. The Exploration Board can provide enough structure to help people notice together without turning the table into a class.
             </p>
           </div>
         </div>
