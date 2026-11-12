@@ -51,6 +51,9 @@ jobs:
       - name: Validate catalog search, filters and simulated scale
         run: node --experimental-strip-types --test tests/explore-catalog.test.mjs
 
+      - name: Verify public photo derivatives are bounded, exact, and free of private metadata
+        run: node --test tests/photo-publishing-safety.test.mjs
+
       - name: Audit critical production advisories without changing dependencies
         run: npm audit --omit=dev --audit-level=critical
 
