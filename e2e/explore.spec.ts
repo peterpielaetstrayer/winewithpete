@@ -53,3 +53,17 @@ test('Explore is reachable from the navigation without removing Journal', async 
   await expect(page).toHaveURL(/\/explore$/);
   await expect(page.getByRole('heading', { name: 'A good evening starts somewhere.' })).toBeVisible();
 });
+
+test('approved editorial photos load at real browser widths', async ({ page }) => {
+  await page.goto('/explore');
+  const keys = [
+    'hero-seoul-bowl', 'from-fire', 'wine-table', 'set-table',
+    'work-service', 'ingredients', 'fire-wings', 'outside-cheese',
+  ];
+  for (const key of keys) {
+    const photo = page.locator('img[data-editorial-photo="' + key + '"]').first();
+    await expect(photo).toHaveAttribute('src', /explore-v03/);
+    await photo.scrollIntoViewIfNeeded();
+    await expect.poll(() => photo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), { timeout: 15_000 }).toBe(true);
+  }
+});
