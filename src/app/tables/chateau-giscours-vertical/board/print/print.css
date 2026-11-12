@@ -1,0 +1,9 @@
+@media print {
+  @page { margin: 13mm; size: auto; }
+  body:has(#wwp-print-board) { background: #fff !important; }
+  body:has(#wwp-print-board) > header,
+  body:has(#wwp-print-board) > footer,
+  body:has(#wwp-print-board) .wwp-board-print-controls { display: none !important; }
+  #wwp-print-board { max-width: none; padding: 0; margin: 0; background: #fff !important; color: #111 !important; }
+  #wwp-print-board .wwp-vintage-sheet { break-inside: avoid; page-break-inside: avoid; }
+}

@@ -44,19 +44,22 @@ export function SiteHeader() {
           Wine With Pete
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary navigation">
-          <Link href="/gather" className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
+        <nav className="hidden items-center gap-5 md:flex lg:gap-6" aria-label="Primary navigation">
+          <Link href="/gather" className={`text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${linkClass}`}>
             Gather
           </Link>
-          <Link href="/journal" className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
+          <Link href="/journal" className={`text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${linkClass}`}>
             Journal
           </Link>
-          <Link href="/about" className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${linkClass}`}>
+          <Link href="/explore" aria-current={pathname === '/explore' ? 'page' : undefined} className={`text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${linkClass}`}>
+            Explore
+          </Link>
+          <Link href="/about" className={`text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${linkClass}`}>
             About
           </Link>
           <Link
             href="/join"
-            className={`border-b pb-1 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${isHome ? 'border-[#d78959] text-[#e5a17b] hover:text-white' : 'border-[#9c3d24] text-[#9c3d24] hover:text-[#6f2819]'}`}
+            className={`border-b pb-1 text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${isHome ? 'border-[#d78959] text-[#e5a17b] hover:text-white' : 'border-[#9c3d24] text-[#9c3d24] hover:text-[#6f2819]'}`}
           >
             Join the Table
           </Link>
@@ -65,7 +68,7 @@ export function SiteHeader() {
         <button
           ref={menuButtonRef}
           type="button"
-          className="flex h-10 w-10 items-center justify-center md:hidden"
+          className="flex h-11 w-11 items-center justify-center md:hidden"
           onClick={() => setIsMenuOpen((open) => !open)}
           aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMenuOpen}
@@ -92,6 +95,9 @@ export function SiteHeader() {
             </Link>
             <Link href="/journal" className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
               Journal
+            </Link>
+            <Link href="/explore" aria-current={pathname === '/explore' ? 'page' : undefined} className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
+              Explore
             </Link>
             <Link href="/about" className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
               About

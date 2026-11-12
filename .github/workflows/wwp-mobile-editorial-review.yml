@@ -1,0 +1,71 @@
+name: WWP Mobile Editorial Browser Review
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/app/page.tsx'
+      - 'src/app/recipes/**'
+      - 'src/app/globals.css'
+      - 'src/components/site-header.tsx'
+      - 'src/components/recipe-print-button.tsx'
+      - 'src/data/recipes.ts'
+      - 'tests/editorial-mobile-browser-review.mjs'
+      - '.github/workflows/wwp-mobile-editorial-review.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wwp-editorial-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  responsive-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://example.invalid
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-not-real
+      SUPABASE_URL: https://example.invalid
+      SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-not-real
+      STRIPE_SECRET_KEY: sk_test_ci_placeholder_not_real
+      WWP_ADMIN_USER_IDS: ''
+    steps:
+      - name: Read-only checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Node 20
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install isolated Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Build with inert nonproduction config
+        run: npm run build
+      - name: Test two responsive sizes, anchors, print and landmarks
+        run: |
+          set -euo pipefail
+          npm run start -- --port 3109 > /tmp/wwp-editorial-review.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 45); do
+            if curl --silent --max-time 2 --fail http://127.0.0.1:3109/ -o /dev/null; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then cat /tmp/wwp-editorial-review.log; exit 1; fi
+          node tests/editorial-mobile-browser-review.mjs
+      - name: Preserve public-only screenshots for manual review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wwp-editorial-mobile-review-${{ github.sha }}
+          path: review-screenshots/
+          if-no-files-found: ignore
+          retention-days: 7
