@@ -7,6 +7,9 @@ on:
     paths:
       - 'src/app/page.tsx'
       - 'src/app/recipes/**'
+      - 'src/app/explore/**'
+      - 'src/components/explore/**'
+      - 'public/images/explore-v03/**'
       - 'src/app/globals.css'
       - 'src/components/site-header.tsx'
       - 'src/components/recipe-print-button.tsx'
