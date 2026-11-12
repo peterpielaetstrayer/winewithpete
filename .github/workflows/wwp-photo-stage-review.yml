@@ -1,0 +1,76 @@
+name: WWP Photo Layout Safe Review
+on:
+  push:
+    branches:
+      - work/wwp-photo-layout-safe-stage-20261111
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wwp-photo-safe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEXT_PUBLIC_WWP_EXPLORE_PHOTOS: "false"
+      NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-only-placeholder
+      SUPABASE_SERVICE_ROLE_KEY: ci-only-placeholder
+      STRIPE_SECRET_KEY: sk_test_ci_only_placeholder
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install pinned dependencies
+        run: npm ci
+      - name: Gate critical production advisories
+        run: npm audit --omit=dev --audit-level=critical
+      - name: Typecheck featured app slices
+        run: npx tsc -p tsconfig.field-guides.json --noEmit
+      - name: Lint Explore changes
+        run: npx eslint src/app/explore src/components/explore src/data/explore src/lib/explore
+      - name: Test catalog and kitchen quantities
+        run: |
+          node --experimental-strip-types --test tests/explore-catalog.test.mjs
+          node --experimental-strip-types --test tests/field-guide-quantities.test.mjs
+      - name: Build safe preview without private photos
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Test interactive journeys on mobile and desktop
+        run: npx playwright test e2e/explore.spec.ts
+      - name: Reject private media and ensure photo mode is deliberately disabled
+        run: |
+          test ! -d public/images/explore-v03
+          grep -Fq 'export const EXPLORE_PHOTOS_ENABLED = false;' src/components/explore/explore-editorial.tsx
+      - name: Check integrated mobile, Explore and print journeys and capture safe screenshots
+        run: |
+          set -euo pipefail
+          npm run start -- --port 3109 > /tmp/wwp-photo-stage.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 45); do
+            if curl --silent --max-time 2 --fail http://127.0.0.1:3109/ -o /dev/null; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then cat /tmp/wwp-photo-stage.log; exit 1; fi
+          node tests/editorial-mobile-browser-review.mjs
+      - name: Save public-safe review screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wwp-photo-safe-visual-review
+          path: review-screenshots/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Verify no dependency edits
+        run: git diff --exit-code -- package.json package-lock.json
