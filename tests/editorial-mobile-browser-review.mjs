@@ -55,6 +55,7 @@ try {
     if (await page.getByRole('main').count() !== 1) {
       throw new Error(size.name + ': Explore must use exactly one main landmark');
     }
+    await loadImagesForScreenshot(page);
     await checkOverflow(page, size.name + ' Explore');
     await page.screenshot({ path: 'review-screenshots/wwp-explore-' + size.name + '.png', fullPage: true });
 
