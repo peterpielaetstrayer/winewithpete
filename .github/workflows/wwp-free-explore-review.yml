@@ -1,6 +1,9 @@
 name: WWP Free Explore Integration Review
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - work/wwp-free-explore-integration-20261111
@@ -14,7 +17,7 @@ concurrency:
 
 jobs:
   quality:
-    if: github.ref == 'refs/heads/work/wwp-free-explore-integration-20261111'
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/work/wwp-free-explore-integration-20261111'
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
