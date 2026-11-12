@@ -56,7 +56,7 @@ export default function Home() {
   return (
     <div className="bg-[#f4efe7] text-[#211d19]">
       {/* Opening */}
-      <section className="relative min-h-[86svh] overflow-hidden bg-black text-white md:min-h-[92vh]">
+      <section className="relative min-h-[76svh] overflow-hidden bg-black text-white md:min-h-[86vh]">
         <Image
           src="/images/hero/hero-campfire.png.png"
           alt="A Wine With Pete gathering around fire"
@@ -68,31 +68,68 @@ export default function Home() {
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,8,6,.88)_0%,rgba(10,8,6,.58)_42%,rgba(10,8,6,.18)_72%,rgba(10,8,6,.25)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/55 to-transparent" />
 
-        <div className="relative z-10 mx-auto flex min-h-[86svh] max-w-7xl items-end px-5 pb-16 pt-32 sm:px-8 md:min-h-[92vh] md:items-center md:px-12 md:pb-10 md:pt-28 lg:px-16">
+        <div className="relative z-10 mx-auto flex min-h-[76svh] max-w-7xl items-end px-5 pb-16 pt-32 sm:px-8 md:min-h-[86vh] md:items-center md:px-12 md:pb-10 md:pt-28 lg:px-16">
           <div className="max-w-3xl">
             <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.28em] text-[#d78959] md:text-xs">
               Wine With Pete
             </p>
-            <h1 className="max-w-[14ch] font-serif text-[clamp(2.8rem,6.2vw,5.8rem)] font-medium leading-[0.98] tracking-[-0.035em] text-white">
+            <h1 className="max-w-[15ch] font-serif text-[clamp(2.55rem,5.6vw,4.85rem)] font-medium leading-[0.98] tracking-[-0.035em] text-white">
               Rebuilding the table in an age that keeps teaching us to leave it.
             </h1>
             <p className="mt-7 max-w-xl text-base leading-7 text-white/82 sm:text-lg md:mt-8 md:text-xl md:leading-8">
-              Stories, recipes, guides, and gatherings shaped around food, wine, fire, hospitality, and conversation.
+              Recipes to cook, wines to explore, stories from tables we&apos;ve shared, and ideas for bringing people together.
             </p>
             <div className="mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center md:mt-10">
               <Link
                 href="#begin"
-                className="inline-flex min-h-12 items-center justify-center bg-[#a64225] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-[#85351f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="inline-flex min-h-12 items-center justify-center bg-[#a64225] px-6 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#85351f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 Start exploring <span className="ml-3" aria-hidden>→</span>
               </Link>
               <Link
                 href="#gather"
-                className="border-b border-[#d78959] pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:text-[#e3a078] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="border-b border-[#d78959] pb-1 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:text-[#e3a078] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 Gather with us
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Discover: existing public routes, no unreleased Explore link */}
+      <section id="begin" aria-labelledby="begin-title" className="scroll-mt-20 border-b border-black/10 bg-[#eee4d7] px-5 py-16 sm:px-8 md:px-12 md:py-20 lg:px-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10 flex flex-col justify-between gap-5 border-t border-black/20 pt-6 md:mb-12 md:flex-row md:items-end">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Begin somewhere</p>
+              <h2 id="begin-title" className="mt-5 max-w-2xl font-serif text-[clamp(2.1rem,4.2vw,4rem)] leading-[1.06] tracking-[-0.035em]">
+                Follow an appetite, a memory, or an idea.
+              </h2>
+            </div>
+            <p className="max-w-sm font-crimson text-xl italic leading-7 text-black/65">
+              Some things are meant to be read. Some are meant to be made. All of them start somewhere.
+            </p>
+          </div>
+          <div className="grid gap-px overflow-hidden border border-black/15 bg-black/15 md:grid-cols-3">
+            {entryways.map((entry) => (
+              <Link
+                key={entry.href}
+                href={entry.href}
+                className="group flex min-h-[190px] flex-col bg-[#f4efe7] p-7 md:min-h-[275px] transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#9c3d24] sm:p-9"
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">
+                  {entry.number} / {entry.eyebrow}
+                </p>
+                <h3 className="mt-5 max-w-sm font-serif text-3xl md:mt-9 leading-[1.07] tracking-[-0.025em]">
+                  {entry.title}
+                </h3>
+                <p className="mt-3 max-w-sm text-base leading-7 md:mt-5 text-black/65">{entry.description}</p>
+                <span className="mt-auto pt-4 text-xs font-semibold uppercase md:pt-8 tracking-[0.16em] text-[#9c3d24] group-hover:text-[#6f2819]">
+                  {entry.action} <span aria-hidden="true">→</span>
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -120,43 +157,6 @@ export default function Home() {
               className="object-cover"
             />
           </figure>
-        </div>
-      </section>
-
-      {/* Discover: existing public routes, no unreleased Explore link */}
-      <section id="begin" aria-labelledby="begin-title" className="scroll-mt-20 border-b border-black/10 bg-[#eee4d7] px-5 py-16 sm:px-8 md:px-12 md:py-20 lg:px-16">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-10 flex flex-col justify-between gap-5 border-t border-black/20 pt-6 md:mb-12 md:flex-row md:items-end">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Begin somewhere</p>
-              <h2 id="begin-title" className="mt-5 max-w-2xl font-serif text-[clamp(2.1rem,4.2vw,4rem)] leading-[1.06] tracking-[-0.035em]">
-                Follow an appetite, a memory, or an idea.
-              </h2>
-            </div>
-            <p className="max-w-sm font-crimson text-xl italic leading-7 text-black/65">
-              Some things are meant to be read. Some are meant to be made. All of them start somewhere.
-            </p>
-          </div>
-          <div className="grid gap-px overflow-hidden border border-black/15 bg-black/15 md:grid-cols-3">
-            {entryways.map((entry) => (
-              <Link
-                key={entry.href}
-                href={entry.href}
-                className="group flex min-h-[275px] flex-col bg-[#f4efe7] p-7 transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#9c3d24] sm:p-9"
-              >
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">
-                  {entry.number} / {entry.eyebrow}
-                </p>
-                <h3 className="mt-9 max-w-sm font-serif text-3xl leading-[1.07] tracking-[-0.025em]">
-                  {entry.title}
-                </h3>
-                <p className="mt-5 max-w-sm text-sm leading-7 text-black/65">{entry.description}</p>
-                <span className="mt-auto pt-8 text-xs font-semibold uppercase tracking-[0.16em] text-[#9c3d24] group-hover:text-[#6f2819]">
-                  {entry.action} <span aria-hidden="true">→</span>
-                </span>
-              </Link>
-            ))}
-          </div>
         </div>
       </section>
 
