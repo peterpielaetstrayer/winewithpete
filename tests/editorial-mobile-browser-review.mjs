@@ -30,7 +30,7 @@ try {
     await expect(page.locator('#begin a[href="/journal"]')).toHaveCount(1);
     await expect(page.locator('#begin a[href="/recipes"]')).toHaveCount(1);
     await expect(page.locator('#begin a[href="/tables"]')).toHaveCount(1);
-    await expect(page.locator('header a[href="/explore"]')).toHaveCount(size.name === 'phone' ? 0 : 1);
+    await expect(page.locator('header a[href="/explore"]')).toHaveCount(1);
 
     if (size.name === 'phone') {
       await page.getByRole('button', { name: 'Open menu' }).click();
