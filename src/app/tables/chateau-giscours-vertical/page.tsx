@@ -93,7 +93,7 @@ export default function GiscoursTablePage() {
         <div className="mx-auto max-w-5xl">
           <div className="grid gap-12 md:grid-cols-[.7fr_1.3fr] md:gap-20">
             <div>
-              <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">The menu</h2>
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">From the menu</h2>
               <figure className="mt-6 max-w-sm">
               <Image
                 src="/images/tables/giscours-opening-bites.webp"
@@ -130,7 +130,7 @@ export default function GiscoursTablePage() {
               The wine worked best when it stopped being the subject of the evening and became part of the table&apos;s rhythm.
             </p>
             <p className="mt-7 text-base leading-7 text-black/60">
-              That became the lesson worth repeating. The Exploration Board can provide enough structure to help people notice together without turning the table into a class.
+              As the wines opened, everyone could compare how they tasted and talk about what surprised them.
             </p>
           </div>
         </div>
@@ -154,11 +154,6 @@ export default function GiscoursTablePage() {
           <h2 className="font-serif text-3xl">The end of the meal</h2>
           <p className="mt-4 max-w-md text-base leading-7 text-black/65">
             Cheese and chocolate tarts gave us one more reason to stay at the table and return to the wines.
-          </p>
-          <p className="mt-4 text-sm">
-            <Link href="/tables/chateau-giscours-vertical/board" className="text-[#9c3d24] underline underline-offset-4">
-              Open the interactive Exploration Board
-            </Link>
           </p>
         </div>
       </section>
