@@ -24,9 +24,11 @@
 
 **Code prerequisite added to this branch:** The legacy `/api/baseline-method/subscribe` route previously inserted with an anonymous client and returned a full subscriber row. It now inserts through the server-only service-role client and selects/returns only `id`. The no-longer-used anonymous newsletter mutation helper was removed from `src/lib/supabase/database.ts`. The main `/api/newsletter/subscribe`, `/api/gatherings/interest`, campaign, and unsubscribe routes already use the server-only client.
 
+**Signing configuration check:** Vercel has a server-side `SUPABASE_SERVICE_ROLE_KEY`, but no dedicated `WWP_UNSUBSCRIBE_SIGNING_SECRET` in the currently listed Production/Preview/Development variables. The signing helper can temporarily fall back to the service-role key; a separate stable signing secret is preferred before sending real unsubscribe links so database-key rotation does not invalidate previously delivered opt-out URLs. Do not log, display, or check in either secret. The helper now generates links to the current Vercel preview domain during Preview QA and to `winewithpete.me` in Production; both endpoints must be verified without touching existing contacts.
+
 **Proposed production remediation (not yet executed):**
 
-1. Deploy the complete reviewed server-route change first, verify production service-role configuration and basic site health.
+1. Review the Vercel preview and source checks. Configure a dedicated server-only unsubscribe signing secret for the relevant environments (or explicitly accept the documented temporary fallback), then deploy the complete reviewed server-route change. Verify production service-role configuration and basic site health.
 2. In the confirmed production project, after explicit approval for changing database access, execute the following in one transaction. This changes **permissions and policies only**, not subscriber rows:
 
    ```sql
