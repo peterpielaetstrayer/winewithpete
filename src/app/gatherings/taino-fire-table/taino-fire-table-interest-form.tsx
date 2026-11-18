@@ -63,7 +63,7 @@ export function TainoFireTableInterestForm() {
           note: note || undefined,
           source: 'taino_fire_table',
           pagePath: '/gatherings/taino-fire-table',
-          newsletterOptIn: true,
+          newsletterOptIn: false,
           utm,
         }),
       });
@@ -94,7 +94,7 @@ export function TainoFireTableInterestForm() {
         <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9c3d24]">You&apos;re on the list</p>
         <h3 className="mt-4 font-serif text-3xl leading-[1.08]">We&apos;ll keep you close to the table.</h3>
         <p className="mt-4 max-w-xl text-base leading-7 text-black/58">
-          Future dinner notes, recipes, invitation updates, and other developments can find you here as the concept takes shape.
+          Your interest in this particular table is recorded. If we reach out about its next steps, we&apos;ll use the details you shared.
         </p>
       </div>
     );

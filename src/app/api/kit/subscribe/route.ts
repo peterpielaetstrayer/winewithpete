@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { email, tags } = body;
+    const { email } = body;
 
     if (!email || typeof email !== 'string') {
       return NextResponse.json(
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
     console.log('Kit subscription successful:', {
       email: email.substring(0, 3) + '***',
-      tags: result.data?.tags,
+      tags: ['december-reset'],
     });
 
     return NextResponse.json({

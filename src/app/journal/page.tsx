@@ -17,8 +17,8 @@ const sections = [
       'Menus, photographs, places, ideas, and reflections from the evenings that make Wine With Pete real. The archive is meant to become part portfolio, part cultural memory.',
     href: '/tables',
     cta: 'Enter the Table Archive',
-    image: '/images/events/events-community-gathering.png.png',
-    imageAlt: 'A Wine With Pete gathering around the table',
+    image: '/images/explore-v03/hero-seoul-bowl.webp',
+    imageAlt: 'The Seoul Bowl table with a shared meal and printed menus',
   },
   {
     eyebrow: 'Essays',
@@ -27,8 +27,8 @@ const sections = [
       'Writing about gathering, friendship, attention, hospitality, culture, technology, ritual, and the forces that shape how we live with one another.',
     href: '/essays',
     cta: 'Read the essays',
-    image: '/images/about/about-pete-beach-fire.png.png',
-    imageAlt: 'Wine With Pete around an outdoor fire',
+    image: '/images/explore-v03/wine-table.webp',
+    imageAlt: 'Wine bottles and a printed menu on a Wine With Pete table',
   },
   {
     eyebrow: 'Recipes & Guides',
@@ -37,8 +37,8 @@ const sections = [
       'Field recipes, practical guides, and designed resources built from real meals and experiments—not a separate recipe site, but the useful layer of the same world.',
     href: '/recipes',
     cta: 'Explore recipes and guides',
-    image: '/images/hero/hero-campfire.png.png',
-    imageAlt: 'Cooking over a Wine With Pete fire',
+    image: '/images/explore-v03/ingredients.webp',
+    imageAlt: 'Lemons, garlic, herbs, and spices arranged for cooking',
   },
 ];
 
@@ -91,7 +91,7 @@ export default function JournalPage() {
       </section>
 
       <section className="relative isolate overflow-hidden bg-black px-5 py-24 text-white sm:px-8 md:px-12 md:py-32 lg:px-16">
-        <Image src="/images/hero/hero-campfire.png.png" alt="" fill sizes="100vw" className="-z-20 object-cover opacity-45" />
+        <Image src="/images/explore-v03/from-fire.webp" alt="" fill sizes="100vw" className="-z-20 object-cover opacity-45" />
         <div className="absolute inset-0 -z-10 bg-black/55" />
         <div className="mx-auto max-w-5xl text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#e5a17b]">An editorial principle</p>

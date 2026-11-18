@@ -64,14 +64,6 @@ function InlineEmailForm({ onSuccess }: { onSuccess: () => void }) {
 
 // Product preview component
 function ProductPreview({ product }: { product: Product }) {
-  const handleGetIt = () => {
-    // Redirect to the appropriate page where they can complete checkout
-    const isDigital = ['recipe_card', 'guide', 'ebook', 'bundle'].includes(product.product_type) || product.product_category === 'digital';
-    const redirectUrl = isDigital ? `/recipes` : `/store`;
-    // Add product ID as query param so the page can highlight/pre-select it
-    window.location.href = `${redirectUrl}?product=${encodeURIComponent(product.id)}`;
-  };
-
   const imageUrl = product.image_path?.startsWith('http') 
     ? product.image_path 
     : product.image_path
@@ -98,13 +90,10 @@ function ProductPreview({ product }: { product: Product }) {
         {product.description && product.description !== product.name && (
           <p className="text-sm text-[#f6f3ef]/80 mb-2 line-clamp-2">{product.description}</p>
         )}
-        <p className="text-[#f6f3ef] font-medium mb-3">${product.price.toFixed(2)}</p>
-        <button
-          onClick={handleGetIt}
-          className="w-full py-2 px-4 rounded-full bg-[#c98a2b] text-white text-sm font-medium hover:bg-[#b87a1f] transition-colors"
-        >
-          Get It
-        </button>
+        <p className="mb-3 text-xs text-[#f6f3ef]/65">Historical guide listing · direct downloads are not open</p>
+        <Link href="/recipes" className="block w-full rounded-full bg-[#c98a2b] px-4 py-2 text-center text-sm font-medium text-white hover:bg-[#b87a1f]">
+          See available recipes and guides
+        </Link>
       </div>
     </div>
   );
@@ -154,7 +143,6 @@ export function StartPageContent() {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [featuredEssay, setFeaturedEssay] = useState<FeaturedEssay | null>(null);
   const [featuredRecipes, setFeaturedRecipes] = useState<Product[]>([]);
-  const [featuredMerch, setFeaturedMerch] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -162,16 +150,12 @@ export function StartPageContent() {
     Promise.all([
       fetch('/api/essays?featured=true').then(r => r.json()),
       fetch('/api/products?featured=true&category=digital').then(r => r.json()),
-      fetch('/api/products?featured=true&category=physical').then(r => r.json()),
-    ]).then(([essaysRes, recipesRes, merchRes]) => {
+    ]).then(([essaysRes, recipesRes]) => {
       if (essaysRes.success && essaysRes.data?.length > 0) {
         setFeaturedEssay(essaysRes.data[0]);
       }
       if (recipesRes.success) {
         setFeaturedRecipes(recipesRes.data?.slice(0, 3) || []);
-      }
-      if (merchRes.success && merchRes.data?.length > 0) {
-        setFeaturedMerch(merchRes.data[0]);
       }
       setLoading(false);
     }).catch(err => {
@@ -235,7 +219,8 @@ export function StartPageContent() {
               ))
             ) : (
               <div className="text-center text-[#f6f3ef]/60 py-4">
-                <p className="mb-4">Featured recipes coming soon.</p>
+                <p className="mb-4">The free recipe collection is open. Start with a field recipe or a guide for your next table.</p>
+                <Link href="/explore" className="underline underline-offset-4 hover:text-[#f6f3ef]">Find something to make →</Link>
               </div>
             )}
           </div>
@@ -254,36 +239,25 @@ export function StartPageContent() {
         {/* Section separator */}
         <div className="h-px bg-[#f6f3ef]/10"></div>
 
-        {/* Shop Merch */}
+        {/* Objects: intentionally no checkout until physical commerce is ready */}
         <ExpandableSection
           id="merch"
-          title="Shop Merch"
-          buttonText="Browse Store"
+          title="Objects From the Table"
+          buttonText="About the Objects"
           buttonHref="/store"
           isExpanded={expandedSection === 'merch'}
           onToggle={handleToggle}
         >
-          <div className="space-y-4">
-            {loading ? (
-              <div className="text-center text-[#f6f3ef]/60 py-4">
-                <p className="mb-4">Loading...</p>
-              </div>
-            ) : featuredMerch ? (
-              <ProductPreview product={featuredMerch} />
-            ) : (
-              <div className="text-center text-[#f6f3ef]/60 py-4">
-                <p className="mb-4">Featured merch coming soon.</p>
-              </div>
-            )}
-            {/* Always show browse link - outside space-y-4 to ensure visibility */}
-          </div>
+          <p className="py-4 text-center text-sm leading-6 text-[#f6f3ef]/75">
+            The merchandise shop is not open yet. Objects will appear when they are ready, not before.
+          </p>
           <div className="mt-6 pt-6 border-t border-[#f6f3ef]/30">
             <Link
               href="/store"
               className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-base font-medium transition-colors underline decoration-[#f6f3ef]/40 hover:decoration-[#f6f3ef]"
               onClick={() => analyticsEvents.startPageButtonClicked('Browse All Merch')}
             >
-              Browse all merch →
+              Learn about Objects →
             </Link>
           </div>
         </ExpandableSection>
@@ -306,13 +280,13 @@ export function StartPageContent() {
             <EssayPreview essay={featuredEssay} />
           ) : (
             <div className="text-center text-[#f6f3ef]/60 py-4">
-              <p className="mb-3">Featured essay coming soon.</p>
+              <p className="mb-3">Read the notes, ideas, and stories already gathered around the table.</p>
               <Link
-                href="/essays"
+                href="/journal"
                 className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-sm font-medium transition-colors"
                 onClick={() => analyticsEvents.startPageButtonClicked('Browse All Essays')}
               >
-                Browse all essays →
+                Enter the journal →
               </Link>
             </div>
           )}

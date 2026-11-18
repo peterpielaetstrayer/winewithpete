@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -18,6 +19,8 @@ const tables = [
     copy:
       'An early Wine With Pete pilot built around live fire: clams, skewers, steak, cobbler, and an evening designed to move with the fire rather than fight it.',
     href: null,
+    image: null,
+    imageAlt: null,
   },
   {
     title: 'Château Giscours Vertical',
@@ -28,6 +31,8 @@ const tables = [
     copy:
       'Four vintages of Château Giscours around one table, with a menu designed to give the wines room to change over the course of the evening.',
     href: '/tables/chateau-giscours-vertical',
+    image: '/images/tables/giscours-bottles-menu.webp',
+    imageAlt: 'Bottles of Château Giscours alongside the evening menu',
   },
   {
     title: 'The Seoul Bowl Table',
@@ -38,6 +43,8 @@ const tables = [
     copy:
       'A build-your-own Korean barbecue table centered on shared bowls, four sauces, texture, and the simple pleasure of everyone reaching into the middle.',
     href: '/tables/seoul-bowl-table',
+    image: '/images/explore-v03/hero-seoul-bowl.webp',
+    imageAlt: 'The Seoul Bowl table laid with shared food and printed menus',
   },
 ];
 
@@ -68,6 +75,17 @@ export default function TablesPage() {
                   <p className="mt-3 text-sm leading-6 text-black/48">{table.date}</p>
                 </div>
                 <div>
+                  {table.image && table.imageAlt && (
+                    <div className="relative mb-6 aspect-[16/10] max-w-xl overflow-hidden bg-black">
+                      <Image
+                        src={table.image}
+                        alt={table.imageAlt}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 40vw"
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
                   {table.format && (
                     <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9c3d24]">
                       Format · {table.format}

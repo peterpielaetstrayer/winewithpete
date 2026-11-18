@@ -23,9 +23,9 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/images/hero/hero-campfire.png.png',
-        width: 1200,
-        height: 630,
+        url: '/images/explore-v03/hero-seoul-bowl.webp',
+        width: 1800,
+        height: 1139,
         alt: 'The Baseline Method - Return to Your Foundation',
       },
     ],
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'The Baseline Method | Wine With Pete',
     description: 'An evergreen guide to rebuild your physical and mental baseline through small, repeatable daily anchors.',
-    images: ['/images/hero/hero-campfire.png.png'],
+    images: ['/images/explore-v03/hero-seoul-bowl.webp'],
   },
   robots: {
     index: true,

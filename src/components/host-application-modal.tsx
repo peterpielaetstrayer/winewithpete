@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
@@ -43,8 +42,8 @@ export function HostApplicationModal({ isOpen, onClose }: HostApplicationModalPr
 
           {/* Description */}
           <p className="text-black/70 mb-6 leading-relaxed">
-            We're putting the finishing touches on our host application process. 
-            In the meantime, we'd love to hear from you about hosting opportunities.
+            We&apos;re exploring ways to bring more people around the table.
+            In the meantime, we&apos;d love to hear from you about hosting opportunities.
           </p>
 
           {/* Email CTA */}
@@ -61,16 +60,9 @@ export function HostApplicationModal({ isOpen, onClose }: HostApplicationModalPr
             </a>
           </div>
 
-          {/* What to expect */}
-          <div className="text-left">
-            <h4 className="font-medium mb-3 text-charcoal">What to expect:</h4>
-            <ul className="text-sm text-black/70 space-y-2">
-              <li>• Fire setup guides & conversation decks</li>
-              <li>• Menu cards & open-fire recipes</li>
-              <li>• Event page creation & RSVP management</li>
-              <li>• Community support & resources</li>
-            </ul>
-          </div>
+          <p className="text-left text-sm leading-6 text-black/65">
+            Share your location, the kind of evening you have in mind, and what support would make it possible.
+          </p>
 
           {/* Close button */}
           <Button 

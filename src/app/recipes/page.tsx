@@ -12,14 +12,17 @@ const featuredRecipes = getFeaturedRecipes();
 export default function RecipesPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState(false);
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await fetch('/api/products?category=digital');
+        if (!response.ok) throw new Error('Guide catalog unavailable');
         const data = await response.json();
         setProducts(data.data || []);
       } catch (error) {
         console.error('Failed to fetch digital products:', error);
+        setProductsError(true);
       } finally {
         setProductsLoading(false);
       }
@@ -113,6 +116,11 @@ export default function RecipesPage() {
               </article>
               {productsLoading ? (
                 <div className="border-y border-black/15 py-10 text-sm text-black/45">Checking the guide shelf…</div>
+              ) : productsError ? (
+                <div className="border-y border-black/15 py-10" role="status">
+                  <p className="font-serif text-3xl leading-[1.12]">The archive shelf could not load.</p>
+                  <p className="mt-4 text-base leading-7 text-black/58">The free Better Taco Night guide above is still available. The older guide listings can be checked again later.</p>
+                </div>
               ) : products.length > 0 ? (
                 <div className="border-y border-black/15">
                   {products.map((product) => {

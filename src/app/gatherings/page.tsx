@@ -15,15 +15,18 @@ const contactMailto = buildInquiryMailto('Wine With Pete — Gathering Inquiry')
 export default function GatheringsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [eventsError, setEventsError] = useState(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const response = await fetch('/api/events');
+        if (!response.ok) throw new Error('Table calendar unavailable');
         const data = await response.json();
         setEvents(data.data || data.events || []);
       } catch (error) {
         console.error('Failed to fetch events:', error);
+        setEventsError(true);
       } finally {
         setLoading(false);
       }
@@ -53,8 +56,8 @@ export default function GatheringsPage() {
           <Link href="/gatherings/taino-fire-table" className="group grid gap-10 border-y border-black/15 py-10 lg:grid-cols-[1.15fr_.85fr] lg:items-center lg:gap-16 lg:py-14">
             <div className="relative min-h-[420px] overflow-hidden bg-black sm:min-h-[560px]">
               <Image
-                src="/images/events/events-community-gathering.png.png"
-                alt="Wine With Pete community gathering"
+                src="/images/explore-v03/from-fire.webp"
+                alt="An open-fire cooking experiment, not the proposed Taíno Fire Table"
                 fill
                 sizes="(max-width: 1024px) 100vw, 58vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-[1.015]"
@@ -87,8 +90,8 @@ export default function GatheringsPage() {
             <article className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
               <div className="relative min-h-[430px] overflow-hidden bg-black sm:min-h-[560px]">
                 <Image
-                  src="/images/hero/hero-campfire.png.png"
-                  alt="Gathering around open fire"
+                  src="/images/explore-v03/from-fire.webp"
+                  alt="Chicken cooking above a bed of coals"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
@@ -106,8 +109,8 @@ export default function GatheringsPage() {
             <article className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
               <div className="relative min-h-[430px] overflow-hidden bg-black sm:min-h-[560px] lg:order-2">
                 <Image
-                  src="/images/about/about-pete-beach-fire.png.png"
-                  alt="Intimate gathering with wine and conversation"
+                  src="/images/explore-v03/wine-table.webp"
+                  alt="Wine and menus ready at a Wine With Pete table"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
@@ -135,6 +138,11 @@ export default function GatheringsPage() {
             <div>
               {loading ? (
                 <div className="border-y border-black/15 py-12 text-sm text-black/48">Checking the table calendar…</div>
+              ) : eventsError ? (
+                <div className="border-y border-black/15 py-10" role="status">
+                  <p className="font-serif text-3xl leading-[1.12]">The calendar could not load.</p>
+                  <p className="mt-4 text-base leading-7 text-black/58">Please check back shortly. You can still raise your hand below if you are interested in a future table.</p>
+                </div>
               ) : events.length > 0 ? (
                 <div className="grid gap-6 md:grid-cols-2">
                   {events.map((event) => <EventCard key={event.id} event={event} />)}

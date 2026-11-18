@@ -73,8 +73,8 @@ export default function PlanPage() {
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:gap-20">
           <div className="relative min-h-[500px] overflow-hidden bg-black sm:min-h-[640px]">
             <Image
-              src="/images/about/about-pete-beach-fire.png.png"
-              alt="Planning a Wine With Pete gathering around fire and hospitality"
+              src="/images/explore-v03/ingredients.webp"
+              alt="Ingredients and spices prepared for cooking"
               fill
               sizes="(max-width: 1024px) 100vw, 52vw"
               className="object-cover"

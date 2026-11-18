@@ -26,6 +26,14 @@ const entryways = [
     href: '/tables',
     action: 'Visit the Table Archive',
   },
+  {
+    number: '04',
+    eyebrow: 'Explore',
+    title: 'Find a place to begin.',
+    description: 'Browse the free recipes, guides, ideas, and tables already open for you to use.',
+    href: '/explore',
+    action: 'Open Explore',
+  },
 ];
 
 const journalItems = [
@@ -34,21 +42,22 @@ const journalItems = [
     title: 'Why the Table Still Matters',
     copy: 'On belonging, ritual, and one of the oldest social technologies we have.',
     href: '/essays',
-    image: '/images/about/about-pete-beach-fire.png.png',
+    image: '/images/explore-v03/wine-table.webp',
   },
   {
     eyebrow: 'Recipe',
     title: 'Chipotle-Lime Fire Wings',
     copy: 'Smoke, lime, chipotle, agave, and cilantro — food built to be eaten outside.',
     href: '/recipes/chipotle-lime-fire-wings',
-    image: '/images/hero/hero-campfire.png.png',
+    // This is a cooking study, not a documented image of the named recipe.
+    image: '/images/explore-v03/ingredients.webp',
   },
   {
     eyebrow: 'Table',
     title: 'From the Table',
     copy: 'A growing record of the meals, fires, menus, and conversations behind Wine With Pete.',
     href: '/tables',
-    image: '/images/events/events-community-gathering.png.png',
+    image: '/images/explore-v03/hero-seoul-bowl.webp',
   },
 ];
 
@@ -58,8 +67,8 @@ export default function Home() {
       {/* Opening */}
       <section className="relative min-h-[76svh] overflow-hidden bg-black text-white md:min-h-[86vh]">
         <Image
-          src="/images/hero/hero-campfire.png.png"
-          alt="A Wine With Pete gathering around fire"
+          src="/images/explore-v03/hero-seoul-bowl.webp"
+          alt="A real Wine With Pete table prepared for the Seoul Bowl gathering"
           fill
           priority
           sizes="100vw"
@@ -81,7 +90,7 @@ export default function Home() {
             </p>
             <div className="mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center md:mt-10">
               <Link
-                href="#begin"
+                href="/explore"
                 className="inline-flex min-h-12 items-center justify-center bg-[#a64225] px-6 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#85351f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 Start exploring <span className="ml-3" aria-hidden>→</span>
@@ -97,7 +106,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Discover: existing public routes, no unreleased Explore link */}
+      {/* Four public ways to enter the editorial world */}
       <section id="begin" aria-labelledby="begin-title" className="scroll-mt-20 border-b border-black/10 bg-[#eee4d7] px-5 py-16 sm:px-8 md:px-12 md:py-20 lg:px-16">
         <div className="mx-auto max-w-7xl">
           <div className="mb-10 flex flex-col justify-between gap-5 border-t border-black/20 pt-6 md:mb-12 md:flex-row md:items-end">
@@ -111,7 +120,7 @@ export default function Home() {
               Some things are meant to be read. Some are meant to be made. All of them start somewhere.
             </p>
           </div>
-          <div className="grid gap-px overflow-hidden border border-black/15 bg-black/15 md:grid-cols-3">
+          <div className="grid gap-px overflow-hidden border border-black/15 bg-black/15 md:grid-cols-2 xl:grid-cols-4">
             {entryways.map((entry) => (
               <Link
                 key={entry.href}
@@ -150,8 +159,8 @@ export default function Home() {
 
           <figure className="relative mx-auto aspect-[4/5] w-full max-w-xl overflow-hidden md:mx-0">
             <Image
-              src="/images/about/about-pete-beach-fire.png.png"
-              alt="Wine With Pete around the fire"
+              src="/images/explore-v03/set-table.webp"
+              alt="An actual Wine With Pete table set with menus and glassware"
               fill
               sizes="(max-width: 768px) 100vw, 45vw"
               className="object-cover"
@@ -178,8 +187,8 @@ export default function Home() {
               <article className="sm:col-span-2">
                 <div className="relative aspect-[16/9] overflow-hidden bg-black">
                   <Image
-                    src="/images/events/events-community-gathering.png.png"
-                    alt="A Wine With Pete gathering"
+                    src="/images/explore-v03/wine-table.webp"
+                    alt="Wines and a printed Wine With Pete menu on a prepared table"
                     fill
                     sizes="(max-width: 1024px) 100vw, 65vw"
                     className="object-cover transition-transform duration-700 hover:scale-[1.015]"
@@ -194,8 +203,8 @@ export default function Home() {
               <article>
                 <div className="relative aspect-[4/5] overflow-hidden bg-black">
                   <Image
-                    src="/images/hero/hero-campfire.png.png"
-                    alt="Cooking over fire"
+                    src="/images/explore-v03/from-fire.webp"
+                    alt="Chicken cooking over an open fire"
                     fill
                     sizes="(max-width: 640px) 100vw, 32vw"
                     className="object-cover"
@@ -208,8 +217,8 @@ export default function Home() {
               <article className="sm:pt-16">
                 <div className="relative aspect-[4/5] overflow-hidden bg-black">
                   <Image
-                    src="/images/about/about-pete-beach-fire.png.png"
-                    alt="A gathering shaped around fire and conversation"
+                    src="/images/explore-v03/work-service.webp"
+                    alt="Small dishes being plated before service"
                     fill
                     sizes="(max-width: 640px) 100vw, 32vw"
                     className="object-cover"
@@ -237,8 +246,8 @@ export default function Home() {
             <article className="grid bg-[#f4efe7] md:grid-cols-[1.02fr_.98fr] lg:grid-cols-1 xl:grid-cols-[1.02fr_.98fr]">
               <div className="relative min-h-[340px] md:min-h-[460px] lg:min-h-[390px] xl:min-h-[500px]">
                 <Image
-                  src="/images/events/events-community-gathering.png.png"
-                  alt="A privately hosted Wine With Pete table"
+                  src="/images/explore-v03/set-table.webp"
+                  alt="A Wine With Pete table prepared for guests"
                   fill
                   sizes="(max-width: 1024px) 100vw, 32vw"
                   className="object-cover"
@@ -261,8 +270,8 @@ export default function Home() {
             <article className="grid bg-[#f4efe7] md:grid-cols-[1.02fr_.98fr] lg:grid-cols-1 xl:grid-cols-[1.02fr_.98fr]">
               <div className="relative min-h-[340px] md:min-h-[460px] lg:min-h-[390px] xl:min-h-[500px]">
                 <Image
-                  src="/images/about/about-pete-beach-fire.png.png"
-                  alt="Planning a gathering with Wine With Pete"
+                  src="/images/explore-v03/ingredients.webp"
+                  alt="Ingredients laid out for a cooking experiment"
                   fill
                   sizes="(max-width: 1024px) 100vw, 32vw"
                   className="object-cover"
@@ -325,7 +334,7 @@ export default function Home() {
       {/* Manifesto */}
       <section className="relative isolate overflow-hidden bg-black px-5 py-24 text-white sm:px-8 md:px-12 md:py-32 lg:px-16">
         <Image
-          src="/images/hero/hero-campfire.png.png"
+          src="/images/explore-v03/from-fire.webp"
           alt=""
           fill
           sizes="100vw"
@@ -344,8 +353,8 @@ export default function Home() {
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.9fr_1.1fr] lg:items-center lg:gap-20">
           <div className="relative aspect-[4/3] overflow-hidden bg-black">
             <Image
-              src="/images/events/events-community-gathering.png.png"
-              alt="A place at the Wine With Pete table"
+              src="/images/explore-v03/outside-cheese.webp"
+              alt="A cheese board prepared outdoors"
               fill
               sizes="(max-width: 1024px) 100vw, 45vw"
               className="object-cover"

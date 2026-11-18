@@ -9,18 +9,7 @@ export function StructuredData() {
       '@type': 'Organization',
       name: 'Wine With Pete',
       url: 'https://winewithpete.me',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://winewithpete.me/images/hero/hero-campfire.png.png',
-      },
-    },
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: 'https://winewithpete.me/essays?search={search_term_string}',
-      },
-      'query-input': 'required name=search_term_string',
+      image: 'https://winewithpete.me/images/explore-v03/hero-seoul-bowl.webp',
     },
   };
 
@@ -29,7 +18,7 @@ export function StructuredData() {
     '@type': 'Organization',
     name: 'Wine With Pete',
     url: 'https://winewithpete.me',
-    logo: 'https://winewithpete.me/images/hero/hero-campfire.png.png',
+    image: 'https://winewithpete.me/images/explore-v03/hero-seoul-bowl.webp',
     description: 'A community for philosophical conversation, fire-cooked meals, and meaningful connections.',
     sameAs: [
       process.env.NEXT_PUBLIC_INSTAGRAM_URL,

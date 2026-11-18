@@ -7,7 +7,7 @@ export function SiteStructuredData() {
     '@type': 'Organization',
     name: 'Wine With Pete',
     url: 'https://winewithpete.me',
-    logo: 'https://winewithpete.me/images/hero/hero-campfire.png.png',
+    image: 'https://winewithpete.me/images/explore-v03/hero-seoul-bowl.webp',
     description,
     sameAs: [
       process.env.NEXT_PUBLIC_INSTAGRAM_URL,
