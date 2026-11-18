@@ -91,11 +91,26 @@ export default function RecipesPage() {
                 Some ideas need more room than a recipe page. Guides can hold the full process, variations, visual instruction, and the details worth keeping.
               </p>
               <p className="mt-4 max-w-xl text-sm leading-6 text-black/60">
-                Published field recipes are free to read and cook—no account required. We are preparing existing guides for free access; direct downloads are temporarily paused while we verify delivery and publication readiness.
+                Published recipes and the interactive field-guide preview are free to use—no account required. We are preparing more of the archive for free access; direct downloads of those older guides remain paused while we verify the files and delivery.
               </p>
             </div>
 
             <div>
+              <article className="mb-10 border-y border-[#9c3d24]/25 bg-[#f4efe7] px-6 py-8 sm:px-8 sm:py-10">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.19em] text-[#9c3d24]">Available now · Interactive field guide</p>
+                <h3 className="mt-4 font-serif text-3xl leading-[1.08] sm:text-4xl">The Better Taco Night</h3>
+                <p className="mt-4 max-w-2xl text-base leading-7 text-black/65">
+                  A step-by-step companion for a silky bean-and-cheese burrito, with a shopping checklist, cooking steps, and a printable edition. This is a kitchen-test draft, not a finalized recipe.
+                </p>
+                <div className="mt-7 flex flex-wrap gap-4">
+                  <Link href="/guides/better-taco-night" className="inline-flex min-h-12 items-center justify-center bg-[#9c3d24] px-5 text-xs font-semibold uppercase tracking-[0.15em] text-white transition-colors hover:bg-[#7b311d]">
+                    Cook with the guide
+                  </Link>
+                  <Link href="/guides/better-taco-night/print" className="inline-flex min-h-12 items-center justify-center border border-[#9c3d24]/50 px-5 text-xs font-semibold uppercase tracking-[0.15em] text-[#9c3d24] transition-colors hover:bg-[#eee4d7]">
+                    Printable draft
+                  </Link>
+                </div>
+              </article>
               {productsLoading ? (
                 <div className="border-y border-black/15 py-10 text-sm text-black/45">Checking the guide shelf…</div>
               ) : products.length > 0 ? (
@@ -135,7 +150,7 @@ export default function RecipesPage() {
                 </div>
               ) : (
                 <div className="border-y border-black/15 py-10">
-                  <p className="font-serif text-3xl leading-[1.12]">The guide shelf is still being built.</p>
+                  <p className="font-serif text-3xl leading-[1.12]">More guides are being prepared.</p>
                   <p className="mt-4 max-w-2xl text-base leading-7 text-black/58">
                     New guides will appear here when they are ready to be useful—not simply because the site needs more products.
                   </p>
