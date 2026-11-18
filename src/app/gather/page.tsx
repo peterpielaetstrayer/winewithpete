@@ -17,8 +17,8 @@ const pathways = [
       'A privately hosted Wine With Pete evening shaped around your people, place, food, wine, and reason for gathering. The aim is not simply to serve dinner. It is to give the evening a point of view and a rhythm of its own.',
     href: '/signature-table',
     cta: 'Explore the Signature Table',
-    image: '/images/events/events-community-gathering.png.png',
-    imageAlt: 'A Wine With Pete gathering around the table',
+    image: '/images/explore-v03/set-table.webp',
+    imageAlt: 'An actual Wine With Pete table set for a gathering',
   },
   {
     eyebrow: 'Gathering Blueprint',
@@ -27,8 +27,8 @@ const pathways = [
       'For hosts who want to bring the gathering to life themselves. Wine With Pete shapes the menu direction, wine, atmosphere, pacing, and gathering structure into a practical blueprint for the night.',
     href: '/plan',
     cta: 'Plan your gathering',
-    image: '/images/about/about-pete-beach-fire.png.png',
-    imageAlt: 'A gathering shaped around fire and hospitality',
+    image: '/images/explore-v03/work-service.webp',
+    imageAlt: 'Prepared small plates being arranged before a meal',
   },
 ];
 

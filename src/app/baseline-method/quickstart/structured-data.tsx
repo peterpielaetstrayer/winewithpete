@@ -13,13 +13,8 @@ export function QuickStartStructuredData() {
       '@type': 'Organization',
       name: 'Wine With Pete',
       url: 'https://winewithpete.me',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://winewithpete.me/images/hero/hero-campfire.png.png',
-      },
+      image: 'https://winewithpete.me/images/explore-v03/hero-seoul-bowl.webp',
     },
-    datePublished: '2024-01-01',
-    dateModified: new Date().toISOString().split('T')[0],
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': 'https://winewithpete.me/baseline-method/quickstart',

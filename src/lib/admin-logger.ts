@@ -4,7 +4,7 @@ export interface AdminAction {
   action: string;
   resource: string;
   resourceId?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   ip?: string;
   userAgent?: string;
   timestamp: Date;
@@ -15,7 +15,7 @@ export function logAdminAction(
   action: string,
   resource: string,
   resourceId?: string,
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ) {
   const adminAction: AdminAction = {
     action,

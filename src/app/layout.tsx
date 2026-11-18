@@ -52,10 +52,10 @@ export const metadata: Metadata = {
     siteName: 'Wine With Pete',
     images: [
       {
-        url: '/images/hero/hero-campfire.png.png',
-        width: 1200,
-        height: 630,
-        alt: 'Wine With Pete gathering around fire',
+        url: '/images/explore-v03/hero-seoul-bowl.webp',
+        width: 1800,
+        height: 1139,
+        alt: 'The Seoul Bowl gathering table, prepared for a Wine With Pete evening',
       },
     ],
     locale: 'en_US',
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Wine With Pete — Rebuilding the Table',
     description: 'Gatherings, stories, recipes, and objects shaped around food, wine, fire, hospitality, and conversation.',
-    images: ['/images/hero/hero-campfire.png.png'],
+    images: ['/images/explore-v03/hero-seoul-bowl.webp'],
   },
   robots: {
     index: true,

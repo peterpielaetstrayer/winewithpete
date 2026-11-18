@@ -43,11 +43,10 @@ export async function POST(request: NextRequest) {
     };
 
     // Try to subscribe to newsletter in Supabase (but don't fail if it's down)
-    let subscriber = null;
     let supabaseSuccess = false;
     let supabaseError: string | null = null;
     try {
-      subscriber = await subscribeToNewsletter(sanitizedData);
+      await subscribeToNewsletter(sanitizedData);
       supabaseSuccess = true;
       console.log('Successfully saved to Supabase');
     } catch (error) {
@@ -128,10 +127,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Unable to save subscription. Please try again later or contact support.',
-          details: 'Database connection failed',
-          debug: {
-            supabase: supabaseError?.substring(0, 100) || 'Unknown error',
-          }
+          details: 'Subscription service temporarily unavailable'
         },
         { status: 500 }
       );
@@ -226,12 +222,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: subscriber,
-      supabase_synced: supabaseSuccess,
-      loops_synced: loopsSynced,
-      email_sent: emailSent,
-      email_error: emailError || undefined,
-      loops_error: loopsError || undefined,
       message: 'Successfully subscribed to our newsletter!'
     });
 
@@ -282,9 +272,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: 'Failed to subscribe. Please try again.',
-        details: error instanceof Error ? error.message : 'Unknown error',
-        // Include error type for debugging
-        error_type: error instanceof Error ? error.constructor.name : typeof error
+        details: 'Subscription service temporarily unavailable'
       },
       { status: 500 }
     );

@@ -8,6 +8,7 @@ import { apiCors, addCorsHeaders } from '@/lib/cors';
 export async function POST(request: NextRequest) {
   // Handle CORS
   const corsHeaders = apiCors(request);
+  if (corsHeaders instanceof NextResponse) return corsHeaders;
   
   try {
     
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Validation failed', 
-          details: validationResult.error.errors.map(e => e.message)
+          details: validationResult.error.issues.map(e => e.message)
         },
         { status: 400 }
       );
@@ -57,13 +58,12 @@ export async function POST(request: NextRequest) {
     // Create RSVP
     const rsvp = await createRSVP(eventId, sanitizedData);
 
-    // TODO: Send confirmation email via Kit
-    // For now, just return success
+    // RSVP is recorded as pending; no confirmation email is currently sent.
 
     const response = NextResponse.json({
       success: true,
       data: rsvp,
-      message: 'RSVP submitted successfully! You will receive a confirmation email shortly.'
+      message: 'RSVP received. Your place is pending confirmation.'
     });
     return addCorsHeaders(response, corsHeaders);
 

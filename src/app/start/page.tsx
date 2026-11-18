@@ -16,9 +16,9 @@ export const metadata: Metadata = {
     siteName: 'Wine With Pete',
     images: [
       {
-        url: '/images/hero/hero-campfire.png.png',
-        width: 1200,
-        height: 630,
+        url: '/images/explore-v03/hero-seoul-bowl.webp',
+        width: 1800,
+        height: 1139,
         alt: 'Wine With Pete - Food, fire, and conversations',
       },
     ],
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Wine With Pete',
     description: 'Food, fire, and conversations that stay with you long after the embers die.',
-    images: ['/images/hero/hero-campfire.png.png'],
+    images: ['/images/explore-v03/hero-seoul-bowl.webp'],
   },
   robots: {
     index: true,
@@ -47,7 +47,7 @@ export default function StartPage() {
         <div className="absolute inset-0 opacity-30 pointer-events-none">
           <div className="absolute top-0 right-0 w-full h-1/2 overflow-hidden">
             <Image
-              src="/images/hero/hero-campfire.png.png"
+              src="/images/explore-v03/from-fire.webp"
               alt=""
               fill
               className="object-cover object-right-top"

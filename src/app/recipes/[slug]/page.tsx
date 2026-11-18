@@ -80,7 +80,7 @@ export default async function RecipePage({ params }: PageProps) {
       {/* Atmospheric fire photography is decorative, not a photograph of this recipe. */}
       <section className="wwp-print-hide relative isolate overflow-hidden bg-[#211d19] text-[#f4efe7]">
         <Image
-          src="/images/hero/hero-campfire.png.png"
+          src="/images/explore-v03/from-fire.webp"
           alt=""
           fill
           priority

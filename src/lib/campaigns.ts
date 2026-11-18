@@ -2,7 +2,7 @@
 // This allows you to send automated campaigns to all subscribers in Supabase
 
 import { sendEmail } from './email';
-import { getSupabaseClient } from './supabase/database';
+import { createClient } from './supabase/server';
 
 interface CampaignEmail {
   subject: string;
@@ -24,7 +24,7 @@ export async function sendCampaignEmail(
 ) {
   try {
     // Get all active subscribers from Supabase
-    const supabase = getSupabaseClient();
+    const supabase = createClient();
     let query = supabase
       .from('newsletter_subscribers')
       .select('email, name')

@@ -45,8 +45,8 @@ export default function SignatureTablePage() {
 
           <div className="relative min-h-[520px] bg-black lg:min-h-full">
             <Image
-              src="/images/events/events-community-gathering.png.png"
-              alt="A Wine With Pete gathering around the table"
+              src="/images/explore-v03/set-table.webp"
+              alt="A prepared Wine With Pete table with menus and glassware"
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 56vw"
@@ -107,8 +107,8 @@ export default function SignatureTablePage() {
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:gap-20">
           <div className="relative min-h-[480px] overflow-hidden bg-black sm:min-h-[620px]">
             <Image
-              src="/images/about/about-pete-beach-fire.png.png"
-              alt="Wine With Pete around fire"
+              src="/images/explore-v03/wine-table.webp"
+              alt="Wine bottles and menus arranged on a Wine With Pete table"
               fill
               sizes="(max-width: 1024px) 100vw, 52vw"
               className="object-cover"

@@ -1,4 +1,5 @@
 'use strict';
+/* eslint-disable @typescript-eslint/no-require-imports -- Hermetic CommonJS VM harness */
 
 // Hermetic handler-level integration tests of REAL application TypeScript.
 // They run inside a VM with stubbed services and inert process.env.

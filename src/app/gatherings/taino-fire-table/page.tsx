@@ -30,8 +30,8 @@ export default function TainoFireTablePage() {
     <main className="bg-[#f4efe7] text-[#211d19]">
       <section className="relative isolate min-h-[78vh] overflow-hidden bg-black text-white">
         <Image
-          src="/images/hero/hero-campfire.png.png"
-          alt="Live fire at a Wine With Pete table"
+          src="/images/explore-v03/from-fire.webp"
+          alt=""
           fill
           priority
           sizes="100vw"
@@ -54,6 +54,7 @@ export default function TainoFireTablePage() {
             <p className="mt-7 max-w-3xl text-[10px] font-semibold uppercase leading-6 tracking-[0.2em] text-white/48 sm:text-xs">
               Achiote · live fire · roots & sea · shared plates · curated wines · conversation
             </p>
+            <p className="mt-3 text-xs leading-5 text-white/65">Photography from an earlier fire-cooking study. This table is a concept in development.</p>
           </div>
         </div>
       </section>

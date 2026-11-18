@@ -51,8 +51,8 @@ export default function AboutPage() {
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:gap-20">
           <div className="relative min-h-[520px] overflow-hidden bg-black sm:min-h-[650px]">
             <Image
-              src="/images/about/about-pete-beach-fire.png.png"
-              alt="Pete around an outdoor fire"
+              src="/images/explore-v03/work-service.webp"
+              alt="Small plates taking shape during Wine With Pete food preparation"
               fill
               sizes="(max-width: 1024px) 100vw, 52vw"
               className="object-cover"
@@ -60,7 +60,7 @@ export default function AboutPage() {
           </div>
 
           <div className="max-w-xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Pete</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Pete · The path here</p>
             <h2 className="mt-5 font-serif text-4xl leading-[1.05] tracking-[-0.025em] sm:text-5xl">A winding path back to the table.</h2>
             <div className="mt-7 space-y-5 text-lg leading-8 text-black/64">
               <p>
@@ -103,7 +103,7 @@ export default function AboutPage() {
       </section>
 
       <section className="relative isolate overflow-hidden bg-black px-5 py-24 text-white sm:px-8 md:px-12 md:py-32 lg:px-16">
-        <Image src="/images/hero/hero-campfire.png.png" alt="" fill sizes="100vw" className="-z-20 object-cover opacity-42" />
+        <Image src="/images/explore-v03/from-fire.webp" alt="" fill sizes="100vw" className="-z-20 object-cover opacity-42" />
         <div className="absolute inset-0 -z-10 bg-black/60" />
         <div className="mx-auto max-w-5xl text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#e5a17b]">The thesis</p>

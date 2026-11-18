@@ -1094,10 +1094,19 @@ export default function AdminPage() {
                       if (!newEssayUrl.trim()) return;
                       setFetchingMetadata(true);
                       try {
+                        const { supabase } = await import('@/lib/supabase/client');
+                        const { data: { session } } = await supabase.auth.getSession();
+                        if (!session) {
+                          alert('Not authenticated');
+                          return;
+                        }
                         // Fetch OG metadata
                         const metadataRes = await fetch('/api/og-metadata', {
                           method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${session.access_token}`,
+                          },
                           body: JSON.stringify({ url: newEssayUrl }),
                         });
                         const metadataData = await metadataRes.json();
@@ -1123,14 +1132,6 @@ export default function AdminPage() {
                             setFetchingMetadata(false);
                             return;
                           }
-                        }
-
-                        const { supabase } = await import('@/lib/supabase/client');
-                        const { data: { session } } = await supabase.auth.getSession();
-                        
-                        if (!session) {
-                          alert('Not authenticated');
-                          return;
                         }
 
                         // Get max display_order

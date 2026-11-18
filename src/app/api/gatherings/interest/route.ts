@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     // Validate input
     const validationResult = gatheringInterestSchema.safeParse(body);
     if (!validationResult.success) {
-      const errors = validationResult.error.errors.map(e => e.message);
+      const errors = validationResult.error.issues.map(e => e.message);
       return validationErrorResponse(errors);
     }
 
@@ -95,7 +95,8 @@ export async function POST(request: NextRequest) {
       interestTypes: normalizeInterestTypes(payload),
       note: sanitizeOptionalText(payload.note, 2000),
       source: normalizeIdentifier(payload.source, 'general', 100),
-      newsletterOptIn: payload.newsletterOptIn ?? true,
+      // Interest in a single gathering is not blanket newsletter consent.
+      newsletterOptIn: payload.newsletterOptIn ?? false,
       utmSource: sanitizeOptionalText(payload.utm?.source, 100),
       utmMedium: sanitizeOptionalText(payload.utm?.medium, 100),
       utmCampaign: sanitizeOptionalText(payload.utm?.campaign, 100),

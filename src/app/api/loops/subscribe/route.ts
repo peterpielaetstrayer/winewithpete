@@ -106,7 +106,9 @@ export async function POST(request: NextRequest) {
       // Handle duplicate email - Loops may return 400 or 409
       const errorMessage = typeof errorData === 'string' 
         ? errorData.toLowerCase() 
-        : (errorData?.message || errorData?.error || '').toLowerCase();
+        : errorData && typeof errorData === 'object'
+          ? String((errorData as Record<string, unknown>).message || (errorData as Record<string, unknown>).error || '').toLowerCase()
+          : '';
       
       const isDuplicate = 
         loopsResponse.status === 409 ||

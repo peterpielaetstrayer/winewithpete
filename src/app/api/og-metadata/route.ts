@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { verifyAdmin } from '@/lib/admin-auth';
 
 interface OGMetadata {
   title?: string;
@@ -9,6 +10,11 @@ interface OGMetadata {
 
 export async function POST(request: NextRequest) {
   try {
+    // This is an admin-only URL fetcher; never expose it as a public proxy.
+    if (!(await verifyAdmin(request))) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { url } = await request.json();
 
     if (!url || typeof url !== 'string') {
@@ -29,8 +35,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const host = targetUrl.hostname.toLowerCase().replace(/^\[|\]$/g, '');
+    const ipv4 = /^(\d{1,3}\.){3}\d{1,3}$/.test(host);
+    const octets = ipv4 ? host.split('.').map(Number) : [];
+    const privateIpv4 = ipv4 && (
+      octets[0] === 0 || octets[0] === 10 || octets[0] === 127 || octets[0] >= 224 ||
+      (octets[0] === 169 && octets[1] === 254) ||
+      (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31) ||
+      (octets[0] === 192 && octets[1] === 168)
+    );
+    if (targetUrl.protocol !== 'https:' || targetUrl.username || targetUrl.password ||
+      host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') ||
+      host === '::1' || host.includes(':') || privateIpv4) {
+      return NextResponse.json({ error: 'Only public HTTPS pages are supported' }, { status: 400 });
+    }
+
     // Fetch the HTML
     const response = await fetch(targetUrl.toString(), {
+      redirect: 'error',
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; WineWithPete/1.0; +https://winewithpete.me)',
       },
@@ -142,12 +164,12 @@ export async function POST(request: NextRequest) {
     // Extract og:title
     metadata.title = extractMeta('og:title') || 
                      html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim() || 
-                     null;
+                     undefined;
 
     // Extract og:description
     metadata.description = extractMeta('og:description') || 
                            extractMeta('', 'description') ||
-                           null;
+                           undefined;
 
     // Extract og:image (try multiple sources)
     let imageUrl = extractMeta('og:image');
