@@ -98,7 +98,7 @@ export const emailTemplates = {
     text: `Your recipe cards are ready! Download links: ${downloadLinks.map(l => l.downloadUrl).join(', ')}`
   }),
 
-  newsletterWelcome: (name: string, recipeCardUrl?: string) => ({
+  newsletterWelcome: (name: string, recipeCardUrl?: string, unsubscribeUrl?: string | null) => ({
     subject: 'Glad you\'re here',
     html: `
       <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px; line-height: 1.6; color: #333;">
@@ -116,21 +116,22 @@ export const emailTemplates = {
         <p>The Founding Table is a small, intentional space. It's where I share things that don't always fit neatly on social media or in longer essays. Thoughts in progress. Recipes meant to be cooked over fire or slow heat. Invitations to gather, reflect, and pay attention.</p>
         <p>Here's what you can expect, at a human pace:</p>
         <ul style="list-style: none; padding-left: 0;">
-          <li style="margin-bottom: 8px;">• Weekly reflections — short, grounded ideas about ritual, attention, food, and being human</li>
-          <li style="margin-bottom: 8px;">• Fire-friendly recipe cards — simple, nourishing things meant to be shared</li>
+          <li style="margin-bottom: 8px;">• Occasional reflections — ideas about ritual, attention, food, and being human</li>
+          <li style="margin-bottom: 8px;">• Recipes and guides — things to make and share</li>
           <li style="margin-bottom: 8px;">• Occasional invitations — dinners, gatherings, or moments worth showing up for</li>
           <li style="margin-bottom: 8px;">• Community notes — reflections that come from cooking, hosting, and listening</li>
         </ul>
-        <p>This is different from my longer essays on Substack. Those are more structured. The Founding Table is closer to a journal you open once a week.</p>
+        <p>There's no fixed schedule. When I have something worth sharing, I'll send a note.</p>
         <p>If you'd like to explore a bit right now, you can:</p>
         <ul style="list-style: none; padding-left: 0;">
-          <li style="margin-bottom: 8px;">• Read the essays <a href="https://winewithpete.substack.com" style="color: #5b2320; text-decoration: underline;">here</a></li>
-          <li style="margin-bottom: 8px;">• Browse recent recipes <a href="https://winewithpete.me/recipes" style="color: #5b2320; text-decoration: underline;">here</a></li>
+          <li style="margin-bottom: 8px;">• Read the <a href="https://winewithpete.me/journal" style="color: #5b2320; text-decoration: underline;">Journal</a></li>
+          <li style="margin-bottom: 8px;">• Explore <a href="https://winewithpete.me/explore" style="color: #5b2320; text-decoration: underline;">recipes, guides, and gatherings</a></li>
         </ul>
         <p>No rush. No algorithm to satisfy. Come and go as you need.</p>
         <p>Mostly, I just want you to know this: you're welcome here. You don't need to optimize anything. Just show up when it feels right.</p>
         <p>Glad you're at the Founding Table.</p>
         <p>Warmly,<br>Pete</p>
+        ${unsubscribeUrl ? `<p style="margin-top:28px;font-size:12px;color:#666">Don't want future emails? <a href="${unsubscribeUrl.replace(/&/g, '&amp;')}" style="color:#5b2320">Unsubscribe</a> anytime.</p>` : '<p style="margin-top:28px;font-size:12px;color:#666">To leave the email list, contact pete@winewithpete.me.</p>'}
       </div>
     `,
     text: `Hey there,
@@ -141,17 +142,17 @@ ${recipeCardUrl ? `Your Fire Ritual Recipe Card: ${recipeCardUrl}\n\n` : ''}The 
 
 Here's what you can expect, at a human pace:
 
-• Weekly reflections — short, grounded ideas about ritual, attention, food, and being human
-• Fire-friendly recipe cards — simple, nourishing things meant to be shared
+• Occasional reflections — ideas about ritual, attention, food, and being human
+• Recipes and guides — things to make and share
 • Occasional invitations — dinners, gatherings, or moments worth showing up for
 • Community notes — reflections that come from cooking, hosting, and listening
 
-This is different from my longer essays on Substack. Those are more structured. The Founding Table is closer to a journal you open once a week.
+There's no fixed schedule. When I have something worth sharing, I'll send a note.
 
 If you'd like to explore a bit right now, you can:
 
-• Read the essays here: https://winewithpete.substack.com
-• Browse recent recipes here: https://winewithpete.me/recipes
+• Read the Journal: https://winewithpete.me/journal
+• Explore recipes, guides, and gatherings: https://winewithpete.me/explore
 
 No rush. No algorithm to satisfy. Come and go as you need.
 
@@ -160,7 +161,9 @@ Mostly, I just want you to know this: you're welcome here. You don't need to opt
 Glad you're at the Founding Table.
 
 Warmly,
-Pete`
+Pete
+
+${unsubscribeUrl ? `Unsubscribe from the Founding Table: ${unsubscribeUrl}` : 'To leave the email list, contact pete@winewithpete.me.'}`
   }),
 
   baselineMethodWelcome: (name: string, gumroadUrl: string) => ({

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { subscribeToNewsletter } from '@/lib/supabase/database';
-import { newsletterSchema, validateEmail, validateName } from '@/lib/validations';
+import { createClient } from '@/lib/supabase/server';
 import { sendEmail, emailTemplates } from '@/lib/email';
+import { createUnsubscribeUrl } from '@/lib/newsletter-unsubscribe';
 // import type { NewsletterFormData } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
@@ -25,7 +25,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { email, name } = body;
+    const email = body.email.trim();
+    const name = typeof body.name === 'string' ? body.name : undefined;
 
     // Simple email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -44,9 +45,24 @@ export async function POST(request: NextRequest) {
 
     // Try to subscribe to newsletter in Supabase (but don't fail if it's down)
     let supabaseSuccess = false;
+    let subscriptionId: string | null = null;
     let supabaseError: string | null = null;
     try {
-      await subscribeToNewsletter(sanitizedData);
+      // This server-only client can return the new ID even when subscriber
+      // SELECT is correctly denied to anonymous clients by RLS.
+      const { data: subscriber, error: insertError } = await createClient()
+        .from('newsletter_subscribers')
+        .insert({
+          email: sanitizedData.email,
+          name: sanitizedData.name || null,
+          preferences: {},
+          is_active: true,
+        })
+        .select('id')
+        .single();
+      if (insertError) throw insertError;
+      if (!subscriber?.id) throw new Error('Subscription saved without a subscriber ID');
+      subscriptionId = subscriber.id;
       supabaseSuccess = true;
       console.log('Successfully saved to Supabase');
     } catch (error) {
@@ -199,7 +215,11 @@ export async function POST(request: NextRequest) {
       } else {
         // Get recipe card URL from environment variable (if set)
         const recipeCardUrl = process.env.NEXT_PUBLIC_RECIPE_CARD_URL;
-        const welcomeEmail = emailTemplates.newsletterWelcome(sanitizedData.name || 'Friend', recipeCardUrl);
+        const welcomeEmail = emailTemplates.newsletterWelcome(
+          sanitizedData.name || 'Friend',
+          recipeCardUrl,
+          subscriptionId ? createUnsubscribeUrl(subscriptionId) : null
+        );
         const emailResult = await sendEmail({
           to: sanitizedData.email,
           subject: welcomeEmail.subject,

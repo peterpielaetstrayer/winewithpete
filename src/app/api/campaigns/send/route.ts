@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendEmail } from '@/lib/email';
 import { createClient } from '@/lib/supabase/server';
+import { createUnsubscribeUrl } from '@/lib/newsletter-unsubscribe';
 
 /**
  * Explicit, server-side authorization for bulk subscriber email.
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
     const supabase = createClient();
     const { data: subscribers, error } = await supabase
       .from('newsletter_subscribers')
-      .select('email, name')
+      .select('id, email, name')
       .eq('is_active', true)
       .limit(requestedLimit);
 
@@ -76,12 +77,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, sent: 0, failed: 0, message: 'No active subscribers found' });
     }
 
+    const recipientMessages = subscribers.map((subscriber) => ({
+      ...subscriber,
+      unsubscribeUrl: createUnsubscribeUrl(subscriber.id),
+    }));
+    // Never send a marketing campaign without a working opt-out path.
+    if (recipientMessages.some((subscriber) => !subscriber.unsubscribeUrl)) {
+      return NextResponse.json({ error: 'Campaign unsubscribe links are unavailable' }, { status: 503 });
+    }
+
     const results = await Promise.allSettled(
-      subscribers.map((subscriber) => sendEmail({
+      recipientMessages.map((subscriber) => sendEmail({
         to: subscriber.email,
         subject,
-        html: html.replace(/\{name\}/g, subscriber.name || 'Friend'),
-        text: text?.replace(/\{name\}/g, subscriber.name || 'Friend'),
+        html: html.replace(/\{name\}/g, subscriber.name || 'Friend') +
+          `<p style="font-size:12px;color:#666;margin-top:28px">No longer want these notes? <a href="${subscriber.unsubscribeUrl?.replace(/&/g, '&amp;')}">Unsubscribe</a>.</p>`,
+        text: (text || '').replace(/\{name\}/g, subscriber.name || 'Friend') +
+          `\n\nUnsubscribe from the Founding Table: ${subscriber.unsubscribeUrl}`,
       }))
     );
     // sendEmail returns null on delivery failure (does not always throw).
