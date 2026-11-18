@@ -30,7 +30,8 @@ test('task and format filters compose, and empty results can be reset', async ({
   await page.getByRole('button', { name: 'See the whole collection' }).click();
   await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(4);
   await page.getByRole('combobox', { name: 'Filter by format' }).selectOption('print');
-  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(2);
+  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(1);
+  await expect(page.locator('[data-experience-id="better-taco-night"]')).toBeVisible();
 });
 
 test('visitors can navigate to a real recipe and alternate printed format', async ({ page }) => {
@@ -40,6 +41,14 @@ test('visitors can navigate to a real recipe and alternate printed format', asyn
   await taco.getByRole('link', { name: /Printable recipe/ }).click();
   await expect(page.getByRole('heading', { name: 'The Perfect Bean & Cheese Burrito' })).toBeVisible();
   await expect(page.getByText('Kitchen-test draft.', { exact: true })).toBeVisible();
+});
+
+test('Recipes & Guides shelves the available Better Taco Night field guide', async ({ page }) => {
+  await page.goto('/recipes');
+  await expect(page.getByRole('heading', { name: 'The Better Taco Night' })).toBeVisible();
+  await expect(page.getByText('kitchen-test draft, not a finalized recipe', { exact: false })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Cook with the guide' })).toHaveAttribute('href', '/guides/better-taco-night');
+  await expect(page.getByRole('link', { name: 'Printable draft' })).toHaveAttribute('href', '/guides/better-taco-night/print');
 });
 
 test('Explore is reachable from the navigation without removing Journal', async ({ page, isMobile }) => {

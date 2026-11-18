@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { ArrowRight, ArrowUpRight, BookOpen, Check, ChefHat, Compass, FileText, Search, SlidersHorizontal, Sparkles, Users, Wine, X } from 'lucide-react';

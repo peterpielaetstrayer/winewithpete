@@ -9,6 +9,7 @@ export default defineConfig({
   reporter: process.env.CI ? [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]] : 'list',
   use: {
     baseURL: 'http://127.0.0.1:4173',
+    launchOptions: process.env.WWP_SYSTEM_CHROMIUM ? { executablePath: process.env.WWP_SYSTEM_CHROMIUM } : undefined,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
