@@ -17,7 +17,12 @@ export function createUnsubscribeUrl(subscriberId: string): string | null {
   const key = signingKey();
   if (!key || !SUBSCRIBER_ID.test(subscriberId)) return null;
 
-  const url = new URL('/unsubscribe', 'https://winewithpete.me');
+  // Preview emails must link back to the preview deployment so the full
+  // consent lifecycle can be tested before exposing it on the public site.
+  const origin = process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'https://winewithpete.me';
+  const url = new URL('/unsubscribe', origin);
   url.searchParams.set('id', subscriberId.toLowerCase());
   url.searchParams.set('token', signatureFor(subscriberId, key));
   return url.toString();
