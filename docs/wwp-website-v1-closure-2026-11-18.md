@@ -27,7 +27,7 @@ Based on the earlier stabilization candidate [PR #22](https://github.com/peterpi
 | Full TypeScript | Pass |
 | ESLint | Pass with non-blocking warnings, no errors |
 | Source/security/catalog suite | 46 passing; webhook replay test still demonstrates unresolved duplicate fulfillment |
-| New sitewide tests | 8 passing: image provenance, route integrity, event-photo attribution, no fictitious merch, consent, metadata fetcher guard |
+| New sitewide tests | 9 passing: image provenance, route integrity, event-photo attribution, no fictitious merch, legacy Start commerce, consent, metadata fetcher guard |
 | Production build with inert placeholders | Pass; 58 routes generated |
 | Real-browser mobile/desktop | **Pending GitHub CI / browser-enabled environment**; local Chromium failed earlier due runtime socket permission |
 | Production signup, interest, welcome email, unsubscribe | **Not yet exercised** with approved test contacts |

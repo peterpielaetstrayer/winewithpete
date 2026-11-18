@@ -57,6 +57,12 @@ test('store never shows simulated products as purchasable inventory', () => {
   assert.match(store, /The merchandise shop is not open yet/);
 });
 
+test('legacy Start landing page does not send visitors to unavailable checkout', () => {
+  const start = read('src/app/start/start-page-content.tsx');
+  assert.doesNotMatch(start, /Shop Merch|Get It|Browse all merch|\/api\/checkout/);
+  assert.match(start, /The merchandise shop is not open yet/);
+});
+
 test('future Taíno concept imagery is not described as a documented event', () => {
   const concept = read('src/app/gatherings/taino-fire-table/page.tsx');
   assert.match(concept, /This table is a concept in development/);
