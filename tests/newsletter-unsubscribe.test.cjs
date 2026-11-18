@@ -55,6 +55,17 @@ test('unsubscribe links are signed, subscriber-specific and need a server-only s
   assert.equal(noSecret.verifyUnsubscribeToken(subscriberId, token), false);
 });
 
+test('preview unsubscribe links stay on the preview deployment', () => {
+  const signer = load('src/lib/newsletter-unsubscribe.ts', {}, {
+    WWP_UNSUBSCRIBE_SIGNING_SECRET: 'test-only-dedicated-secret',
+    VERCEL_ENV: 'preview',
+    VERCEL_URL: 'winewithpete-test-preview.vercel.app',
+  });
+  const url = new URL(signer.createUnsubscribeUrl(subscriberId));
+  assert.equal(url.origin, 'https://winewithpete-test-preview.vercel.app');
+  assert.equal(signer.verifyUnsubscribeToken(subscriberId, url.searchParams.get('token')), true);
+});
+
 test('unsubscribe POST rejects invalid links before database access', async () => {
   let calls = 0;
   const route = load('src/app/api/newsletter/unsubscribe/route.ts', {
