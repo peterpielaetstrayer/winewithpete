@@ -36,6 +36,14 @@ export async function POST(request: NextRequest) {
 
     const nextPreferences = { ...preferences };
     delete nextPreferences.pending_rejoin;
+    // Preserve the original signup attribution and every earlier rejoin
+    // confirmation. `newsletter_consent` remains the latest consent event.
+    const previousConsent = nextPreferences.newsletter_consent;
+    if (previousConsent && typeof previousConsent === 'object' && !Array.isArray(previousConsent)) {
+      const history = Array.isArray(nextPreferences.newsletter_consent_history)
+        ? nextPreferences.newsletter_consent_history : [];
+      nextPreferences.newsletter_consent_history = [...history, previousConsent];
+    }
     nextPreferences.newsletter_consent = {
       source: 'email_rejoin_confirmation',
       confirmed_at: new Date().toISOString(),
