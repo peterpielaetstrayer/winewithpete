@@ -17,7 +17,7 @@ Based on the earlier stabilization candidate [PR #22](https://github.com/peterpi
 2. **Clearer entry paths.** Home hero and fourth entryway lead to the already-live free `/explore` collection. Other entryways still go to Journal, Recipes, and Tables.
 3. **Honest Objects page.** Physical checkout is actually paused in the API. The storefront no longer suggests that products can be bought, shows simulated inventory, or leads visitors into a checkout error. `/store` is a finished explanatory page with open paths to Explore, Recipes, and Join. Reintroducing actual merchandise requires a verified payment/fulfillment workflow and separate go-live decision.
 4. **Failure states and privacy.** API failures are not mistaken for an empty event/guide shelf; gathering interest is not silently treated as general newsletter consent; unverified RSVP confirmation email is no longer promised. Sensitive subscription provider/database error details are not exposed in public JSON. The admin-only OG-metadata fetcher now requires an allowlisted admin identity, public HTTPS target, and refuses redirect-following.
-5. **Legacy entry.** The `/start` landing page no longer promotes checkout of paused merchandise or unavailable historical downloads. Existing genuinely free content stays accessible.
+5. **Legacy entry.** The `/start` landing page no longer promotes checkout of paused merchandise, unavailable historical downloads, or fabricated "coming soon" featured content when real free material is already published. Existing genuinely free content stays accessible. An unused old ConvertKit endpoint now explicitly retires instead of ever claiming a non-persisted email signup succeeded.
 6. **Baseline hygiene.** Mechanical type repairs restored full TypeScript checking (CORS return variant, Zod v4 issues, typed response extraction, obsolete Supabase export). ESLint's previously blocking errors were removed; remaining warnings are tracked as maintainability work.
 
 ## Verification evidence (local, not production)
@@ -27,7 +27,7 @@ Based on the earlier stabilization candidate [PR #22](https://github.com/peterpi
 | Full TypeScript | Pass |
 | ESLint | Pass with non-blocking warnings, no errors |
 | Source/security/catalog suite | 46 passing; webhook replay test still demonstrates unresolved duplicate fulfillment |
-| New sitewide tests | 9 passing: image provenance, route integrity, event-photo attribution, no fictitious merch, legacy Start commerce, consent, metadata fetcher guard |
+| New sitewide tests | 10 passing: image provenance, route integrity, event-photo attribution, no fictitious merch, legacy Start, no phantom subscription, consent, metadata fetcher guard |
 | Production build with inert placeholders | Pass; 58 routes generated |
 | Real-browser mobile/desktop | **Pending GitHub CI / browser-enabled environment**; local Chromium failed earlier due runtime socket permission |
 | Production signup, interest, welcome email, unsubscribe | **Not yet exercised** with approved test contacts |

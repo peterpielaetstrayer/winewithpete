@@ -61,6 +61,13 @@ test('legacy Start landing page does not send visitors to unavailable checkout',
   const start = read('src/app/start/start-page-content.tsx');
   assert.doesNotMatch(start, /Shop Merch|Get It|Browse all merch|\/api\/checkout/);
   assert.match(start, /The merchandise shop is not open yet/);
+  assert.doesNotMatch(start, /Featured recipes coming soon|Featured essay coming soon/);
+});
+
+test('unused ConvertKit endpoint never reports a fictitious subscription', () => {
+  const route = read('src/app/api/convertkit/subscribe/route.ts');
+  assert.doesNotMatch(route, /success:\s*true|placeholder-api-key|api\.convertkit\.com/);
+  assert.match(route, /status:\s*410/);
 });
 
 test('future Taíno concept imagery is not described as a documented event', () => {

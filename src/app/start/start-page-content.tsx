@@ -219,7 +219,8 @@ export function StartPageContent() {
               ))
             ) : (
               <div className="text-center text-[#f6f3ef]/60 py-4">
-                <p className="mb-4">Featured recipes coming soon.</p>
+                <p className="mb-4">The free recipe collection is open. Start with a field recipe or a guide for your next table.</p>
+                <Link href="/explore" className="underline underline-offset-4 hover:text-[#f6f3ef]">Find something to make →</Link>
               </div>
             )}
           </div>
@@ -279,13 +280,13 @@ export function StartPageContent() {
             <EssayPreview essay={featuredEssay} />
           ) : (
             <div className="text-center text-[#f6f3ef]/60 py-4">
-              <p className="mb-3">Featured essay coming soon.</p>
+              <p className="mb-3">Read the notes, ideas, and stories already gathered around the table.</p>
               <Link
-                href="/essays"
+                href="/journal"
                 className="block text-center text-[#f6f3ef] hover:text-[#f6f3ef] text-sm font-medium transition-colors"
                 onClick={() => analyticsEvents.startPageButtonClicked('Browse All Essays')}
               >
-                Browse all essays →
+                Enter the journal →
               </Link>
             </div>
           )}
