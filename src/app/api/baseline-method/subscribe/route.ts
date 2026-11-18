@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { subscribeToNewsletter } from '@/lib/supabase/database';
+import { createClient } from '@/lib/supabase/server';
 import { sendEmail, emailTemplates } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
@@ -41,11 +41,25 @@ export async function POST(request: NextRequest) {
     };
 
     // Save to Supabase (source of truth)
-    let subscriber = null;
+    let subscriber: { id: string } | null = null;
     let supabaseSuccess = false;
     let supabaseError: string | null = null;
     try {
-      subscriber = await subscribeToNewsletter(sanitizedData);
+      // Subscriber reads and writes belong to a server-only client. The
+      // anonymous role must not be able to enumerate or update the list.
+      const { data, error } = await createClient()
+        .from('newsletter_subscribers')
+        .insert({
+          email: sanitizedData.email,
+          name: sanitizedData.name || null,
+          preferences: {},
+          is_active: true,
+        })
+        .select('id')
+        .single();
+      if (error) throw error;
+      if (!data?.id) throw new Error('Subscription saved without a subscriber ID');
+      subscriber = { id: data.id };
       supabaseSuccess = true;
       console.log('Successfully saved to Supabase');
     } catch (error) {

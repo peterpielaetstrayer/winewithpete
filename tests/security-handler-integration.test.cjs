@@ -193,6 +193,7 @@ function campaignFixture({ allowlist = 'admin-id', user = { id: 'admin-id' }, su
   const services = {
     'next/server': next,
     '@/lib/supabase/server': { createClient: () => { calls.clients++; return supabase; } },
+    '@/lib/newsletter-unsubscribe': { createUnsubscribeUrl: (id) => `https://winewithpete.me/unsubscribe?id=${id}&token=test` },
     '@/lib/email': { sendEmail: async (payload) => {
       calls.mails.push(payload);
       const n = calls.mails.length - 1;
@@ -243,7 +244,7 @@ test('campaign: verified authorized identity rejects unsupported tag targeting w
 
 test('campaign: mocked verified identity and subscriber query count successful and null mail results', async () => {
   const x = campaignFixture({
-    subscribers: [{email:'person1@example.invalid',name:'Ada'},{email:'person2@example.invalid',name:'Lin'}],
+    subscribers: [{id:'one',email:'person1@example.invalid',name:'Ada'},{id:'two',email:'person2@example.invalid',name:'Lin'}],
     emailResults: [{id:'fake-success'},null]
   });
   const response = await x.POST(request({subject:'A note',html:'Hi {name}',text:'Hello {name}',limit:2},
@@ -254,8 +255,10 @@ test('campaign: mocked verified identity and subscriber query count successful a
   assert.equal(response.body.total, 2);
   assert.equal(response.body.success, false);
   assert.equal(x.calls.mails.length, 2);
-  assert.equal(x.calls.mails[0].html, 'Hi Ada');
-  assert.equal(x.calls.mails[1].text, 'Hello Lin');
+  assert.match(x.calls.mails[0].html, /^Hi Ada/);
+  assert.match(x.calls.mails[0].html, /Unsubscribe/);
+  assert.match(x.calls.mails[1].text, /^Hello Lin/);
+  assert.match(x.calls.mails[1].text, /Unsubscribe/);
 });
 
 function fulfillmentFixture(order, { signatureError = false, mailOutcome = {id:'fake-message'} } = {}) {
