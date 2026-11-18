@@ -153,18 +153,26 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unable to process your request. Please try again later.' }, { status: 503 });
           }
 
-          const { data: updated, error: updateError } = await db
+          // Only replace the pending token if it still matches what we read.
+          // Otherwise concurrent requests could each send a different link,
+          // with the second request silently invalidating the first email.
+          let updateQuery = db
             .from('newsletter_subscribers')
             .update({ preferences: { ...preferences, pending_rejoin: confirmation.pending } })
             .eq('id', existing.id)
-            .eq('is_active', false)
-            .select('id')
-            .maybeSingle();
+            .eq('is_active', false);
+          updateQuery = typeof pending?.token_hash === 'string'
+            ? updateQuery.eq('preferences->pending_rejoin->>token_hash', pending.token_hash)
+            : updateQuery.is('preferences->pending_rejoin->>token_hash', null);
+          const { data: updated, error: updateError } = await updateQuery.select('id').maybeSingle();
 
-          if (updateError || !updated) {
+          if (updateError) {
             console.error('Unable to prepare newsletter rejoin confirmation', updateError?.code);
             return NextResponse.json({ error: 'Unable to process your request. Please try again later.' }, { status: 503 });
           }
+          // A competing request already prepared a confirmation. Avoid a
+          // second email and return the same privacy-preserving response.
+          if (!updated) return confirmationResponse();
 
           const message = emailTemplates.newsletterRejoinConfirmation(confirmation.url);
           let sent = null;
