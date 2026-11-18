@@ -38,7 +38,11 @@ export default function StartHerePage() {
 
       if (response.ok) {
         // Check if it's a duplicate subscription
-        if (result.already_subscribed) {
+        if (result.confirmation_requested) {
+          alert('Check your email for a link to confirm your return to the Founding Table.');
+          setEmail('');
+          setName('');
+        } else if (result.already_subscribed) {
           alert('You\'re already subscribed! Check your email for our latest updates.');
           setEmail(''); // Clear the form
           setName(''); // Clear the form

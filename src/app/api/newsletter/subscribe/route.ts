@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { sendEmail, emailTemplates } from '@/lib/email';
 import { createUnsubscribeUrl } from '@/lib/newsletter-unsubscribe';
+import {
+  createRejoinConfirmation,
+  isRejoinRequestCoolingDown,
+  type PendingRejoin,
+} from '@/lib/newsletter-rejoin';
 // import type { NewsletterFormData } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
@@ -55,7 +60,13 @@ export async function POST(request: NextRequest) {
         .insert({
           email: sanitizedData.email,
           name: sanitizedData.name || null,
-          preferences: {},
+          preferences: {
+            newsletter_consent: {
+              source: 'website_founding_table',
+              submitted_at: new Date().toISOString(),
+              method: 'signup_form',
+            },
+          },
           is_active: true,
         })
         .select('id')
@@ -106,7 +117,76 @@ export async function POST(request: NextRequest) {
         lowerMessage.includes('duplicate key value')
       ) {
         console.log('Duplicate email detected:', sanitizedData.email.substring(0, 3) + '***');
-        // Return early with success message for duplicates
+        // Never silently reactivate a previously unsubscribed address.
+        // The mailbox owner must follow a fresh, one-time email confirmation.
+        const db = createClient();
+        const { data: existing, error: lookupError } = await db
+          .from('newsletter_subscribers')
+          .select('id, is_active, preferences')
+          .eq('email', sanitizedData.email)
+          .maybeSingle();
+
+        if (lookupError || !existing) {
+          console.error('Unable to look up duplicate newsletter signup', lookupError?.code);
+          return NextResponse.json({ error: 'Unable to process your request. Please try again later.' }, { status: 503 });
+        }
+
+        if (!existing.is_active) {
+          const preferences: Record<string, unknown> = existing.preferences &&
+            typeof existing.preferences === 'object' && !Array.isArray(existing.preferences)
+            ? existing.preferences : {};
+          const pending = preferences.pending_rejoin as PendingRejoin | undefined;
+          const confirmationResponse = () => NextResponse.json({
+            success: true,
+            confirmation_requested: true,
+            message: 'If you recently requested to rejoin, check your inbox for a confirmation link.',
+          });
+
+          // Repeated requests do not generate a stream of confirmation emails.
+          if (isRejoinRequestCoolingDown(pending)) return confirmationResponse();
+          if (!process.env.RESEND_API_KEY) {
+            return NextResponse.json({ error: 'Email confirmation is temporarily unavailable. Please try again later.' }, { status: 503 });
+          }
+
+          const confirmation = createRejoinConfirmation(existing.id);
+          if (!confirmation) {
+            return NextResponse.json({ error: 'Unable to process your request. Please try again later.' }, { status: 503 });
+          }
+
+          const { data: updated, error: updateError } = await db
+            .from('newsletter_subscribers')
+            .update({ preferences: { ...preferences, pending_rejoin: confirmation.pending } })
+            .eq('id', existing.id)
+            .eq('is_active', false)
+            .select('id')
+            .maybeSingle();
+
+          if (updateError || !updated) {
+            console.error('Unable to prepare newsletter rejoin confirmation', updateError?.code);
+            return NextResponse.json({ error: 'Unable to process your request. Please try again later.' }, { status: 503 });
+          }
+
+          const message = emailTemplates.newsletterRejoinConfirmation(confirmation.url);
+          let sent = null;
+          try {
+            sent = await sendEmail({ to: sanitizedData.email, ...message });
+          } catch (sendError) {
+            console.error('Newsletter rejoin email provider failed', sendError);
+          }
+          if (!sent) {
+            // Permit a retry if the provider failed, without touching other pending tokens.
+            await db.from('newsletter_subscribers')
+              .update({ preferences })
+              .eq('id', existing.id)
+              .eq('is_active', false)
+              .eq('preferences->pending_rejoin->>token_hash', confirmation.pending.token_hash);
+            return NextResponse.json({ error: 'Unable to send confirmation right now. Please try again later.' }, { status: 503 });
+          }
+
+          return confirmationResponse();
+        }
+
+        // An active duplicate does not get another welcome email.
         return NextResponse.json(
           { 
             success: true,

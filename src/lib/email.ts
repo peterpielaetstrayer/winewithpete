@@ -64,6 +64,20 @@ export async function sendEmail(emailData: EmailData) {
 
 // Email templates
 export const emailTemplates = {
+  newsletterRejoinConfirmation: (url: string) => ({
+    subject: 'Confirm your return to the Founding Table',
+    html: `
+      <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:20px;line-height:1.6;color:#333">
+        <p>Hey there,</p>
+        <p>Someone asked to rejoin the Wine With Pete Founding Table using this email address.</p>
+        <p>If that was you, confirm below and I'll welcome you back to the occasional notes, recipes, and invitations.</p>
+        <p><a href="${url.replace(/&/g, '&amp;')}" style="display:inline-block;background:#5b2320;color:white;padding:12px 20px;text-decoration:none">Confirm my return</a></p>
+        <p>This link expires in 24 hours. If you didn't request it, you can ignore this email; you won't be added back.</p>
+        <p>— Pete</p>
+      </div>
+    `,
+    text: `Someone asked to rejoin the Wine With Pete Founding Table using this email address.\n\nIf it was you, confirm here (valid for 24 hours): ${url}\n\nIf it wasn't you, ignore this message. You won't be added back.\n\n— Pete`,
+  }),
   rsvpConfirmation: (name: string, eventTitle: string, eventDate: string) => ({
     subject: `RSVP Confirmed: ${eventTitle}`,
     html: `

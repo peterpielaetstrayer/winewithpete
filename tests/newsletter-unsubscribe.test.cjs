@@ -87,6 +87,16 @@ test('unsubscribe POST deactivates only the verified subscriber and is idempoten
       from(table) {
         assert.equal(table, 'newsletter_subscribers');
         return {
+          select(columns) {
+            assert.equal(columns, 'preferences');
+            return { eq(column, id) {
+              assert.equal(column, 'id');
+              assert.equal(id, subscriberId);
+              return { maybeSingle: async () => ({
+                data: { preferences: { gathering_interest: { source: 'historic' } } }, error: null,
+              }) };
+            } };
+          },
           update(value) {
             updates.push(value);
             return { eq: async (column, id) => {
@@ -104,6 +114,7 @@ test('unsubscribe POST deactivates only the verified subscriber and is idempoten
   assert.equal(result.body.success, true);
   assert.equal(updates.length, 1);
   assert.equal(updates[0].is_active, false);
+  assert.equal(updates[0].preferences.gathering_interest.source, 'historic');
   const repeated = await route.POST(json({ id: subscriberId, token: 'valid' }));
   assert.equal(repeated.status, 200);
   assert.equal(updates.length, 2);
@@ -137,6 +148,7 @@ test('Founding Table signup persists with server-only client and sends a signed 
       newsletterWelcome: (_, __, url) => ({ subject: 'Glad you are here', html: url, text: url }),
     }, sendEmail: async (data) => { emails.push(data); return { id: 'mock-welcome' }; } },
     '@/lib/newsletter-unsubscribe': { createUnsubscribeUrl: () => 'https://winewithpete.me/unsubscribe?id=signed' },
+    '@/lib/newsletter-rejoin': load('src/lib/newsletter-rejoin.ts'),
     '@/lib/validations': {},
   };
   const route = load('src/app/api/newsletter/subscribe/route.ts', services, { RESEND_API_KEY: 'test-only' });
@@ -147,6 +159,202 @@ test('Founding Table signup persists with server-only client and sends a signed 
   assert.equal(inserted[0].email, 'alex@example.test');
   assert.equal(emails.length, 1);
   assert.match(emails[0].html, /unsubscribe\?id=signed/);
+  assert.equal(inserted[0].preferences.newsletter_consent.source, 'website_founding_table');
+});
+
+function rejoinDatabase(isActive = false) {
+  const state = {
+    id: subscriberId, email: 'returning@example.test',
+    is_active: isActive, preferences: { gathering_interest: { source: 'historic' } },
+  };
+  const calls = { insert: 0, lookup: 0, updates: [] };
+
+  const db = {
+    from(table) {
+      assert.equal(table, 'newsletter_subscribers');
+      return {
+        insert() {
+          calls.insert++;
+          return { select: () => ({ single: async () => ({
+            data: null, error: { code: '23505', message: 'duplicate key value violates unique constraint' },
+          }) }) };
+        },
+        select(columns) {
+          assert.ok(columns === 'preferences' || columns.includes('id'));
+          return { eq(column, value) {
+            assert.ok(column === 'email' || column === 'id');
+            assert.equal(value, column === 'email' ? state.email : subscriberId);
+            return { maybeSingle: async () => {
+              calls.lookup++;
+              return { data: { ...state, preferences: { ...state.preferences } }, error: null };
+            } };
+          } };
+        },
+        update(value) {
+          const filters = [];
+          let applied = false;
+          let result;
+          const apply = () => {
+            if (!applied) {
+              applied = true;
+              const matches = filters.every(([column, match]) => {
+                if (column === 'id') return match === state.id;
+                if (column === 'is_active') return match === state.is_active;
+                if (column === 'preferences->pending_rejoin->>token_hash') {
+                  return match === state.preferences.pending_rejoin?.token_hash;
+                }
+                throw new Error('Unexpected update filter ' + column);
+              });
+              if (matches) {
+                Object.assign(state, value);
+                calls.updates.push(value);
+              }
+              result = { data: matches ? { id: state.id } : null, error: null };
+            }
+            return result;
+          };
+          const query = {
+            eq(column, match) { filters.push([column, match]); return query; },
+            select(columns) { assert.equal(columns, 'id'); return { maybeSingle: async () => apply() }; },
+            then(resolve, reject) { return Promise.resolve(apply()).then(resolve, reject); },
+          };
+          return query;
+        },
+      };
+    },
+  };
+  return { db, state, calls };
+}
+
+function rejoinServices(fixture, emails) {
+  const helper = load('src/lib/newsletter-rejoin.ts');
+  return {
+    'next/server': response,
+    '@/lib/supabase/server': { createClient: () => fixture.db },
+    '@/lib/newsletter-rejoin': helper,
+    '@/lib/newsletter-unsubscribe': { createUnsubscribeUrl: () => null },
+    '@/lib/email': {
+      emailTemplates: {
+        newsletterRejoinConfirmation: (url) => ({ subject: 'Confirm', html: url, text: url }),
+      },
+      sendEmail: async (email) => { emails.push(email); return { id: 'mock-confirmation' }; },
+    },
+  };
+}
+
+test('rejoin links are private one-time proof with expiry, and previews stay on preview', () => {
+  const helper = load('src/lib/newsletter-rejoin.ts', {}, {
+    VERCEL_ENV: 'preview', VERCEL_URL: 'wwp-preview.vercel.app',
+  });
+  const now = Date.now();
+  const confirmation = helper.createRejoinConfirmation(subscriberId, now);
+  const url = new URL(confirmation.url);
+  assert.equal(url.origin, 'https://wwp-preview.vercel.app');
+  assert.ok(!url.search.includes(confirmation.pending.token_hash), 'Only the token hash goes to storage');
+  assert.equal(helper.verifyRejoinConfirmation(subscriberId, url.searchParams.get('token'), confirmation.pending, now), true);
+  assert.equal(helper.verifyRejoinConfirmation(subscriberId, '0'.repeat(64), confirmation.pending, now), false);
+  assert.equal(helper.verifyRejoinConfirmation(subscriberId, url.searchParams.get('token'), confirmation.pending,
+    now + helper.REJOIN_CONFIRMATION_TTL_MS), false);
+  assert.equal(helper.isRejoinRequestCoolingDown(confirmation.pending, now + 1000), true);
+  assert.equal(helper.isRejoinRequestCoolingDown(confirmation.pending, now + helper.REJOIN_REQUEST_COOLDOWN_MS), false);
+});
+
+test('active duplicate is idempotent and sends no new email', async () => {
+  const fixture = rejoinDatabase(true);
+  const emails = [];
+  const route = load('src/app/api/newsletter/subscribe/route.ts', rejoinServices(fixture, emails),
+    { RESEND_API_KEY: 'test-only' });
+  const result = await route.POST(json({ email: fixture.state.email }));
+  assert.equal(result.status, 200);
+  assert.equal(result.body.already_subscribed, true);
+  assert.equal(fixture.state.is_active, true);
+  assert.equal(fixture.calls.updates.length, 0);
+  assert.equal(emails.length, 0);
+});
+
+test('inactive duplicate receives one confirmation, not reactivation or a welcome email', async () => {
+  const fixture = rejoinDatabase();
+  const emails = [];
+  const route = load('src/app/api/newsletter/subscribe/route.ts', rejoinServices(fixture, emails),
+    { RESEND_API_KEY: 'test-only' });
+  const result = await route.POST(json({ email: fixture.state.email }));
+  assert.equal(result.status, 200);
+  assert.equal(result.body.confirmation_requested, true);
+  assert.equal(fixture.state.is_active, false);
+  assert.equal(fixture.state.preferences.gathering_interest.source, 'historic');
+  assert.equal(emails.length, 1);
+  assert.match(emails[0].text, /\/rejoin\?id=/);
+
+  const repeated = await route.POST(json({ email: fixture.state.email }));
+  assert.equal(repeated.body.confirmation_requested, true);
+  assert.equal(emails.length, 1, 'A duplicate request during cooldown must not send another email');
+});
+
+test('rejoin confirmation requires deliberate POST, preserves preferences, and rejects replay', async () => {
+  const fixture = rejoinDatabase();
+  const emails = [];
+  const services = rejoinServices(fixture, emails);
+  const subscribe = load('src/app/api/newsletter/subscribe/route.ts', services, { RESEND_API_KEY: 'test-only' });
+  await subscribe.POST(json({ email: fixture.state.email }));
+  const emailUrl = new URL(emails[0].text);
+  const id = emailUrl.searchParams.get('id');
+  const token = emailUrl.searchParams.get('token');
+  const route = load('src/app/api/newsletter/rejoin/route.ts', services);
+
+  const invalid = await route.POST(json({ id: 'not-a-uuid', token }));
+  assert.equal(invalid.status, 400);
+  const badToken = await route.POST(json({ id, token: '0'.repeat(64) }));
+  assert.equal(badToken.status, 400);
+  assert.equal(fixture.state.is_active, false);
+
+  const confirmed = await route.POST(json({ id, token }));
+  assert.equal(confirmed.status, 200);
+  assert.equal(confirmed.body.success, true);
+  assert.equal(fixture.state.is_active, true);
+  assert.equal(fixture.state.preferences.gathering_interest.source, 'historic');
+  assert.equal(fixture.state.preferences.pending_rejoin, undefined);
+  assert.equal(fixture.state.preferences.newsletter_consent.source, 'email_rejoin_confirmation');
+
+  const repeated = await route.POST(json({ id, token }));
+  assert.equal(repeated.status, 400);
+  assert.equal(fixture.state.is_active, true);
+});
+
+test('an unsubscribe request revokes a still-pending rejoin link', async () => {
+  const fixture = rejoinDatabase();
+  const emails = [];
+  const services = rejoinServices(fixture, emails);
+  await load('src/app/api/newsletter/subscribe/route.ts', services, { RESEND_API_KEY: 'test-only' })
+    .POST(json({ email: fixture.state.email }));
+  const link = new URL(emails[0].text);
+
+  const unsubscribe = load('src/app/api/newsletter/unsubscribe/route.ts', {
+    'next/server': response,
+    '@/lib/newsletter-unsubscribe': { verifyUnsubscribeToken: () => true },
+    '@/lib/supabase/server': { createClient: () => fixture.db },
+  });
+  const result = await unsubscribe.POST(json({ id: subscriberId, token: 'valid-unsubscribe' }));
+  assert.equal(result.status, 200);
+  assert.equal(fixture.state.is_active, false);
+  assert.equal(fixture.state.preferences.pending_rejoin, undefined);
+
+  const confirm = load('src/app/api/newsletter/rejoin/route.ts', services);
+  const afterward = await confirm.POST(json({
+    id: link.searchParams.get('id'), token: link.searchParams.get('token'),
+  }));
+  assert.equal(afterward.status, 400);
+  assert.equal(fixture.state.is_active, false);
+});
+
+test('a failed confirmation email leaves the address inactive and allows retry', async () => {
+  const fixture = rejoinDatabase();
+  const services = rejoinServices(fixture, []);
+  services['@/lib/email'].sendEmail = async () => null;
+  const route = load('src/app/api/newsletter/subscribe/route.ts', services, { RESEND_API_KEY: 'test-only' });
+  const result = await route.POST(json({ email: fixture.state.email }));
+  assert.equal(result.status, 503);
+  assert.equal(fixture.state.is_active, false);
+  assert.equal(fixture.state.preferences.pending_rejoin, undefined);
 });
 
 test('campaign sends one signed unsubscribe link per recipient and respects active filtering', async () => {

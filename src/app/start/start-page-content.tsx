@@ -26,8 +26,12 @@ function InlineEmailForm({ onSuccess }: { onSuccess: () => void }) {
       const result = await response.json();
       
       if (response.ok && result.success) {
-        analyticsEvents.newsletterSignup();
-        showToast('Welcome to the Circle! Check your email.', 'success');
+        if (!result.already_subscribed && !result.confirmation_requested) analyticsEvents.newsletterSignup();
+        showToast(result.confirmation_requested
+          ? 'Check your inbox for a link to confirm your return.'
+          : result.already_subscribed
+            ? 'You’re already at the Founding Table.'
+            : 'Welcome to the Founding Table! Check your email.', 'success');
         setEmail('');
         onSuccess();
       } else {
