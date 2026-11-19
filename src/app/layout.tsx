@@ -87,8 +87,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ErrorBoundary>
           <SiteStructuredData />
           <AnalyticsBridge />
+          <a
+            href="#site-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-[#f4efe7] focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-[#211d19] focus:shadow-lg focus:outline-2 focus:outline-offset-2 focus:outline-[#9c3d24]"
+          >
+            Skip to content
+          </a>
           <SiteHeader />
-          <main className="flex-1">{children}</main>
+          <main id="site-content" tabIndex={-1} className="flex-1">{children}</main>
           <SiteFooter />
           <Analytics />
           <SpeedInsights />

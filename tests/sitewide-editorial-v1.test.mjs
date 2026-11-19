@@ -43,6 +43,17 @@ test('homepage opens the existing free Explore catalog from its hero and entrywa
   assert.match(home, /href="\/explore"/);
 });
 
+test('shared header has a legible home scrim and visible keyboard access', () => {
+  const header = read('src/components/site-header.tsx');
+  const layout = read('src/app/layout.tsx');
+  assert.match(header, /bg-black\/60/);
+  assert.match(header, /text-\[#ffd4b6\]/);
+  assert.match(header, /focus-visible:outline-2/);
+  assert.match(layout, /Skip to content/);
+  assert.match(layout, /href="#site-content"/);
+  assert.match(layout, /id="site-content" tabIndex=\{-1\}/);
+});
+
 test('Table Archive uses event-specific verified photographs without inventing Knife & Fire photos', () => {
   const archive = read('src/app/tables/page.tsx');
   assert.match(archive, /giscours-bottles-menu\.webp/);
