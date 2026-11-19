@@ -1,5 +1,16 @@
 import { expect, test } from '@playwright/test';
 
+test('keyboard visitors can skip the shared navigation on the homepage', async ({ page }) => {
+  await page.goto('/');
+  const skipLink = page.getByRole('link', { name: 'Skip to content' });
+  await page.keyboard.press('Tab');
+  await expect(skipLink).toBeFocused();
+  await expect(skipLink).toBeVisible();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/#site-content$/);
+  await expect(page.locator('#site-content')).toBeVisible();
+});
+
 test('Explore has honest deduplicated content and no mobile overflow', async ({ page }) => {
   await page.goto('/explore');
   await expect(page.getByRole('heading', { name: 'A good evening starts somewhere.' })).toBeVisible();

@@ -28,38 +28,42 @@ export function SiteHeader() {
   }, [isMenuOpen]);
 
   const linkClass = isHome
-    ? 'text-white/90 hover:text-white'
+    ? 'text-white/95 hover:text-white'
     : 'text-[#211d19]/75 hover:text-[#9c3d24]';
+
+  const focusClass = isHome
+    ? 'focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white'
+    : 'focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#9c3d24]';
 
   return (
     <header
-      className={`${isHome ? 'absolute inset-x-0 top-0 border-white/15 bg-black/10 text-white' : 'relative border-black/10 bg-[#f4efe7] text-[#211d19]'} z-50 border-b`}
+      className={`${isHome ? 'absolute inset-x-0 top-0 border-white/15 bg-black/60 text-white' : 'relative border-black/10 bg-[#f4efe7] text-[#211d19]'} z-50 border-b`}
     >
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8 md:px-12 lg:px-16">
         <Link
           href="/"
-          className="font-serif text-xl font-semibold tracking-[0.02em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9c3d24]"
+          className={`font-serif text-xl font-semibold tracking-[0.02em] ${focusClass}`}
           aria-label="Wine With Pete home"
         >
           Wine With Pete
         </Link>
 
         <nav className="hidden items-center gap-5 md:flex lg:gap-6" aria-label="Primary navigation">
-          <Link href="/gather" className={`text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${linkClass}`}>
+          <Link href="/gather" className={`text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${linkClass} ${focusClass}`}>
             Gather
           </Link>
-          <Link href="/journal" className={`text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${linkClass}`}>
+          <Link href="/journal" className={`text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${linkClass} ${focusClass}`}>
             Journal
           </Link>
-          <Link href="/explore" aria-current={pathname === '/explore' ? 'page' : undefined} className={`text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${linkClass}`}>
+          <Link href="/explore" aria-current={pathname === '/explore' ? 'page' : undefined} className={`text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${linkClass} ${focusClass}`}>
             Explore
           </Link>
-          <Link href="/about" className={`text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${linkClass}`}>
+          <Link href="/about" className={`text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${linkClass} ${focusClass}`}>
             About
           </Link>
           <Link
             href="/join"
-            className={`border-b pb-1 text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${isHome ? 'border-[#d78959] text-[#e5a17b] hover:text-white' : 'border-[#9c3d24] text-[#9c3d24] hover:text-[#6f2819]'}`}
+            className={`border-b pb-1 text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${isHome ? 'border-[#ffd4b6] text-[#ffd4b6] hover:text-white' : 'border-[#9c3d24] text-[#9c3d24] hover:text-[#6f2819]'} ${focusClass}`}
           >
             Join the Table
           </Link>
@@ -68,7 +72,7 @@ export function SiteHeader() {
         <button
           ref={menuButtonRef}
           type="button"
-          className="flex h-11 w-11 items-center justify-center md:hidden"
+          className={`flex h-11 w-11 items-center justify-center md:hidden ${focusClass}`}
           onClick={() => setIsMenuOpen((open) => !open)}
           aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMenuOpen}
@@ -90,19 +94,19 @@ export function SiteHeader() {
           className="absolute inset-x-0 top-[72px] border-b border-black/10 bg-[#f4efe7] px-5 py-8 text-[#211d19] shadow-[0_20px_50px_rgba(0,0,0,.12)] sm:px-8 md:hidden"
         >
           <nav className="mx-auto flex max-w-7xl flex-col" aria-label="Mobile navigation">
-            <Link href="/gather" className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
+            <Link href="/gather" className="border-b border-black/10 py-4 font-serif text-3xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9c3d24]" onClick={() => setIsMenuOpen(false)}>
               Gather
             </Link>
-            <Link href="/journal" className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
+            <Link href="/journal" className="border-b border-black/10 py-4 font-serif text-3xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9c3d24]" onClick={() => setIsMenuOpen(false)}>
               Journal
             </Link>
-            <Link href="/explore" aria-current={pathname === '/explore' ? 'page' : undefined} className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
+            <Link href="/explore" aria-current={pathname === '/explore' ? 'page' : undefined} className="border-b border-black/10 py-4 font-serif text-3xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9c3d24]" onClick={() => setIsMenuOpen(false)}>
               Explore
             </Link>
-            <Link href="/about" className="border-b border-black/10 py-4 font-serif text-3xl" onClick={() => setIsMenuOpen(false)}>
+            <Link href="/about" className="border-b border-black/10 py-4 font-serif text-3xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9c3d24]" onClick={() => setIsMenuOpen(false)}>
               About
             </Link>
-            <Link href="/join" className="mt-6 text-xs font-semibold uppercase tracking-[0.18em] text-[#9c3d24]" onClick={() => setIsMenuOpen(false)}>
+            <Link href="/join" className="mt-6 text-xs font-semibold uppercase tracking-[0.18em] text-[#9c3d24] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9c3d24]" onClick={() => setIsMenuOpen(false)}>
               Join the Founding Table →
             </Link>
           </nav>
