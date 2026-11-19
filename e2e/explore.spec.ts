@@ -83,6 +83,7 @@ test('Gather includes the published host experience and intentionally related ta
   await expect(page.getByRole('heading', { name: '5 experiences' })).toBeVisible();
   await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(5);
   await expect(page.locator('[data-experience-id="set-a-table"]')).toBeVisible();
+  await expect(page.locator('[data-testid="explore-results"] > article').first()).toHaveAttribute('data-experience-id', 'set-a-table');
   await expect(page.locator('[data-experience-id="seoul-bowl-table"]')).toBeVisible();
   await expect(page.locator('[data-experience-id="learn-to-notice-wine"]')).toHaveCount(0);
 });
