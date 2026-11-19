@@ -57,22 +57,23 @@ export default function GatheringsPage() {
             <div className="relative min-h-[420px] overflow-hidden bg-black sm:min-h-[560px]">
               <Image
                 src="/images/explore-v03/from-fire.webp"
-                alt="An open-fire cooking experiment, not the proposed Taíno Fire Table"
+                alt="Chicken cooking over a live fire during an earlier Wine With Pete experiment"
                 fill
                 sizes="(max-width: 1024px) 100vw, 58vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-[1.015]"
               />
             </div>
             <div className="max-w-xl">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Featured Table</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Table in development</p>
               <h2 className="mt-5 font-serif text-4xl leading-[1.04] tracking-[-0.025em] transition-colors group-hover:text-[#9c3d24] sm:text-5xl">
                 Taíno Fire Table
               </h2>
               <p className="mt-6 text-lg leading-8 text-black/62">
                 A Puerto Rican–Nordic feast rooted in achiote, live-fire cooking, roots, sea, curated wines, and conversation.
               </p>
+              <p className="mt-4 text-sm leading-6 text-black/55">An evolving idea, not a scheduled or bookable event.</p>
               <span className="mt-8 inline-block border-b border-[#9c3d24] pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#9c3d24]">
-                Enter the table →
+                Explore the idea →
               </span>
             </div>
           </Link>
