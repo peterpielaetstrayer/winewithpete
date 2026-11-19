@@ -64,11 +64,11 @@ export function ExploreEditorial({ onSelectIntent }: { onSelectIntent: (intent: 
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[.23em] text-[#a14e34]">A way of being together</p>
           <h2 className="mt-5 max-w-3xl font-serif text-[clamp(2.7rem,5.4vw,5.8rem)] leading-[1.02] tracking-[-.055em]">
-            Food is part of it.<br/><span className="italic text-[#9f5037]">The table is the point.</span>
+            What we make matters.<br/><span className="italic text-[#9f5037]">So does what we share.</span>
           </h2>
         </div>
         <p className="max-w-lg pb-2 font-crimson text-xl leading-8 text-[#5e4e43] md:text-2xl md:leading-9">
-          A meal is never just a meal. There is the planning, the making, the first pour, and everything that happens once people sit down.
+          Start with whatever interests you: a recipe to try, a wine to get to know, a gathering to shape, or a story from another table.
         </p>
       </section>
 
