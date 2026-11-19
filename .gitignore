@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+/review-screenshots/
 
 # next.js
 /.next/

@@ -11,34 +11,34 @@ export const metadata: Metadata = {
 
 const sections = [
   {
-    eyebrow: 'Tables',
-    title: 'The gatherings themselves.',
+    eyebrow: 'From the Table · May 2026',
+    title: 'Four vintages, one long table.',
     body:
-      'Menus, photographs, places, ideas, and reflections from the evenings that make Wine With Pete real. The archive is meant to become part portfolio, part cultural memory.',
-    href: '/tables',
-    cta: 'Enter the Table Archive',
+      'At the Château Giscours Vertical, four vintages and a carefully paced menu gave everyone something to notice, compare, and talk about. Here is the evening as it happened.',
+    href: '/tables/chateau-giscours-vertical',
+    cta: 'Read the Giscours table story',
+    image: '/images/tables/giscours-exploration-board.webp',
+    imageAlt: 'The Château Giscours tasting board from the actual Wine With Pete dinner',
+  },
+  {
+    eyebrow: 'From the Table · June 2026',
+    title: 'A meal everyone helped build.',
+    body:
+      'The Seoul Bowl Table brought Korean barbecue, sauces, greens, and choices into the middle of the room. The best part was watching people make the meal their own.',
+    href: '/tables/seoul-bowl-table',
+    cta: 'Read the Seoul Bowl story',
     image: '/images/explore-v03/hero-seoul-bowl.webp',
-    imageAlt: 'The Seoul Bowl table with a shared meal and printed menus',
+    imageAlt: 'The actual Seoul Bowl gathering with shared food and printed menus',
   },
   {
-    eyebrow: 'Essays',
-    title: 'The ideas underneath the table.',
+    eyebrow: 'Cook with the work · Field guide preview',
+    title: 'Make a better taco night.',
     body:
-      'Writing about gathering, friendship, attention, hospitality, culture, technology, ritual, and the forces that shape how we live with one another.',
-    href: '/essays',
-    cta: 'Read the essays',
-    image: '/images/explore-v03/wine-table.webp',
-    imageAlt: 'Wine bottles and a printed menu on a Wine With Pete table',
-  },
-  {
-    eyebrow: 'Recipes & Guides',
-    title: 'Things worth making and passing on.',
-    body:
-      'Field recipes, practical guides, and designed resources built from real meals and experiments—not a separate recipe site, but the useful layer of the same world.',
-    href: '/recipes',
-    cta: 'Explore recipes and guides',
+      'Start with the bean-and-cheese burrito companion: shopping list, cooking steps, and a printable edition. It is an open kitchen-test draft, ready to try and improve.',
+    href: '/guides/better-taco-night',
+    cta: 'Try the interactive guide',
     image: '/images/explore-v03/ingredients.webp',
-    imageAlt: 'Lemons, garlic, herbs, and spices arranged for cooking',
+    imageAlt: 'Ingredients laid out before a Wine With Pete cooking session; not a photograph of the unfinished guide recipe',
   },
 ];
 
@@ -64,11 +64,25 @@ export default function JournalPage() {
         </div>
       </section>
 
-      <section className="px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
-        <div className="mx-auto max-w-7xl space-y-24 md:space-y-32">
+      <section className="px-5 pb-8 pt-12 sm:px-8 md:px-12 md:pb-12 md:pt-16 lg:px-16">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 border-b border-black/15 pb-10 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Start with what is here</p>
+            <h2 className="mt-4 max-w-2xl font-serif text-4xl leading-tight sm:text-5xl">Real tables. Something to make.</h2>
+          </div>
+          <nav aria-label="Journal shelves" className="flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium text-[#9c3d24]">
+            <Link href="/tables" className="min-h-11 content-center underline underline-offset-4">Table archive</Link>
+            <Link href="/essays" className="min-h-11 content-center underline underline-offset-4">Essays</Link>
+            <Link href="/recipes" className="min-h-11 content-center underline underline-offset-4">Recipes &amp; guides</Link>
+          </nav>
+        </div>
+      </section>
+
+      <section className="px-5 pb-20 sm:px-8 md:px-12 md:pb-28 lg:px-16">
+        <div className="mx-auto max-w-7xl space-y-20 md:space-y-28">
           {sections.map((section, index) => (
             <article key={section.title} className="grid gap-10 lg:grid-cols-[1.15fr_.85fr] lg:items-center lg:gap-16">
-              <div className={`relative min-h-[380px] overflow-hidden bg-black sm:min-h-[520px] ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+              <div className={`relative min-h-[265px] overflow-hidden bg-black sm:min-h-[440px] ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
                 <Image
                   src={section.image}
                   alt={section.imageAlt}
@@ -98,27 +112,6 @@ export default function JournalPage() {
           <blockquote className="mt-7 font-serif text-4xl leading-[1.08] tracking-[-0.025em] sm:text-5xl md:text-6xl">
             The Journal should not invent a world for Wine With Pete. It should notice the one being built.
           </blockquote>
-        </div>
-      </section>
-
-      <section className="px-5 py-20 sm:px-8 md:px-12 md:py-24 lg:px-16">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.75fr_1.25fr] lg:gap-20">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">As the archive grows</p>
-            <h2 className="mt-5 font-serif text-4xl leading-[1.05] sm:text-5xl">More forms can enter without changing the center.</h2>
-          </div>
-          <div className="border-y border-black/15 py-2">
-            {[
-              ['Field Notes', 'Short observations from places, wines, meals, fires, experiments, and people.'],
-              ['Films', 'Monologues, gathering films, food stories, and cultural histories when video is the right medium.'],
-              ['Guides', 'Designed resources that go deeper than a post and can live as useful objects in their own right.'],
-            ].map(([title, body]) => (
-              <div key={title} className="grid gap-3 border-b border-black/10 py-7 last:border-b-0 sm:grid-cols-[180px_1fr] sm:gap-8">
-                <h3 className="font-serif text-2xl">{title}</h3>
-                <p className="max-w-2xl text-sm leading-6 text-black/58">{body}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
