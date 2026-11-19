@@ -1,12 +1,13 @@
 # Founding Table audience reconciliation — November 19, 2026
 
-**Status: counts and source history verified; individual overlap, current Kit status, and historical consent remain unresolved. No import, reactivation, campaign, or contact mutation is authorized by this note.**
+**Status: counts and source history verified; individual overlap, Kit's confirmed and other suppression-status counts, and historical consent remain unresolved. No import, reactivation, campaign, or contact mutation is authorized by this note.**
 
 ## Distinct ledgers, not one total
 
 | Source / grain | Verified evidence | What the number does *not* establish |
 | --- | --- | --- |
 | Mailchimp subscribed-segment export → Kit import | A self-emailed historical Mailchimp-format CSV contained **62 distinct contacts**. Kit's **July 4, 2025** “Import is done” email confirmed **62 subscribers added**. | Not 62 active Kit subscribers today; not 62 contacts absent from Supabase; not independent proof of current marketing consent. |
+| Kit chart and unsubscribe filter (Nov 19, 2026) | A user-provided Kit **Total subscribers** chart CSV has **56** for each of 32 days (Oct 19–Nov 19, 2026). A Kit **Unsubscribed** status screenshot shows **3 cancelled** records, all originally dated Jul 4, 2025; cancellation dates were Jul 14, Jul 28, and Oct 2, 2025. | Chart is not a contact roster or a count of currently confirmed/sendable records: Kit documents that the historical Total chart can include active and cancelled contacts and exclude other suppression statuses. No overlap can be deduced from this count; cancelled contacts must not be reactivated. |
 | Wine With Pete website / Supabase `newsletter_subscribers` | November 18 production read-only query: **16 distinct records**, **15 active** historical website signups (Sep 2025–Jul 2026) and **1 inactive QA record** from a successful test subscribe/unsubscribe on Nov 18. | Not 15 people proven new relative to Kit. `is_active` is a system status, not complete historic consent provenance. |
 | Resend | Verified as delivery transport for the website's welcome email and authenticated campaign path. | Not a separate list to add to either audience. |
 | Loops / Substack | Separate legacy or publication paths. No verified active integration or reconciled audience count in this assessment. | Not grounds for adding another count or automatically importing contacts. |
@@ -15,7 +16,7 @@ These are different **systems, dates, and status definitions**. The historical K
 
 ## Quality and consent findings
 
-- **Duplicate/overlap check: not yet runnable.** Current Kit subscribed, unsubscribed, and suppressed exports are unavailable without Kit account access. The present Supabase connector does not have permission to the production Wine With Pete project `nybsqanrdltoaoraejpt`. Do not infer overlap from dates or aggregate counts.
+- **Duplicate/overlap check: not yet runnable.** Kit's Total subscribers chart and three unsubscribed/cancelled statuses are now verified from user-provided Nov 19 exports/screenshot. Full Kit confirmed, cancelled and other suppression-state **contact-level** exports remain unavailable for comparison. The present Supabase connector does not have permission to the production Wine With Pete project `nybsqanrdltoaoraejpt`. Do not infer overlap from dates or aggregate counts.
 - **Historical Mailchimp metadata has limitations.** In 59/62 CSV rows, `OPTIN_TIME` equals `CONFIRM_TIME`; in 3/62, the confirmation timestamp precedes the opt-in timestamp. This is insufficient to establish a verified double-opt-in history for each address.
 - **Website provenance is incomplete.** At the November 18 read-only audit, 13/15 active Supabase historical rows had empty/null `preferences`. The schema did not independently record explicit `source`, `consented_at`, or `unsubscribed_at` fields. The new signup/rejoin flow now records better evidence for future actions, without retroactively proving consent for older contacts.
 - **Signup and opt-out operation is verified.** The November 18 live single-address QA preserved the original 15 active records and ended with one inactive test contact. The dangerous broad newsletter table grants/policies had already been removed and verified. This resolved the production security gate, not the old-list provenance question.
@@ -31,6 +32,8 @@ These are different **systems, dates, and status definitions**. The historical K
 
 ## Evidence receipts
 
+- November 19 user-provided Kit Total subscribers chart CSV: 32 daily values, all 56; Kit Unsubscribed filter screenshot: three cancelled, no raw email addresses retained in this note. Kit chart definition: https://help.kit.com/en/articles/2502526-understanding-the-subscribers-charts-in-kit.
+
 - Gmail: Kit, subject **“Import is done”**, dated **July 4, 2025**, confirming 62 imported subscribers (read-only search Nov 19).
-- The archived self-emailed Mailchimp subscribed-segment CSV and its 62-unique-contact count were reviewed Nov 18; current Kit state remains unverified.
+- The archived self-emailed Mailchimp subscribed-segment CSV and its 62-unique-contact count were reviewed Nov 18; current Kit contact-level status and identity overlap remain unverified.
 - November 18 authenticated production Supabase aggregate-only verification and the safe Join/welcome/unsubscribe QA are recorded in Peter OS `20_Projects/Wine_With_Pete.md`. No personal addresses are reproduced here.
