@@ -92,10 +92,16 @@ export default function SeoulBowlTablePage() {
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#d78959]">Previous table</p>
             <h2 className="mt-3 font-serif text-3xl sm:text-4xl">Château Giscours Vertical</h2>
+            <p className="mt-4 max-w-lg font-crimson text-lg leading-7 text-white/70">Inspired to bring people together? There are a few ways to make a table of your own.</p>
           </div>
-          <Link href="/tables/chateau-giscours-vertical" className="border-b border-[#d78959] pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-white">
-            Read the table note →
-          </Link>
+          <div className="flex flex-col items-start gap-5 sm:items-end">
+            <Link href="/gather" className="border-b border-[#d78959] pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#f0b88f]">
+              Explore ways to gather →
+            </Link>
+            <Link href="/tables/chateau-giscours-vertical" className="border-b border-white/30 pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+              Read the previous table note →
+            </Link>
+          </div>
         </div>
       </section>
     </main>

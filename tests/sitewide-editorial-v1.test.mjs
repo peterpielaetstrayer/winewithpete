@@ -72,7 +72,22 @@ test('unused ConvertKit endpoint never reports a fictitious subscription', () =>
 
 test('future Taíno concept imagery is not described as a documented event', () => {
   const concept = read('src/app/gatherings/taino-fire-table/page.tsx');
+  const listing = read('src/app/gatherings/page.tsx');
   assert.match(concept, /This table is a concept in development/);
+  assert.match(listing, /Table in development/);
+  assert.match(listing, /not a scheduled or bookable event/);
+  assert.match(listing, /Explore the idea/);
+  assert.doesNotMatch(listing, /Featured Table/);
+});
+
+test('completed table stories invite readers to gather without losing the story trail', () => {
+  for (const path of ['src/app/tables/chateau-giscours-vertical/page.tsx', 'src/app/tables/seoul-bowl-table/page.tsx']) {
+    const story = read(path);
+    assert.match(story, /href="\/gather"/);
+    assert.match(story, /Explore ways to gather/);
+  }
+  assert.match(read('src/app/tables/chateau-giscours-vertical/page.tsx'), /href="\/tables\/seoul-bowl-table"/);
+  assert.match(read('src/app/tables/seoul-bowl-table/page.tsx'), /href="\/tables\/chateau-giscours-vertical"/);
 });
 
 test('gathering interest does not silently become newsletter consent', () => {

@@ -8,7 +8,8 @@ test('Giscours remains an editorial table story after board retirement', async (
   await expect(page.getByText('Red Wine Exploration Board No. 01', { exact: false })).toBeVisible();
   await expect(page.getByText('Mushroom toast')).toBeVisible();
   await expect(page.getByText('Chocolate tart', { exact: true })).toBeVisible();
-  await expect(page.getByRole('link', { name: /Read the table note/ })).toHaveAttribute('href', '/tables/seoul-bowl-table');
+  await expect(page.getByRole('link', { name: /Read the next table note/ })).toHaveAttribute('href', '/tables/seoul-bowl-table');
+  await expect(page.getByRole('link', { name: /Explore ways to gather/ })).toHaveAttribute('href', '/gather');
   const dimensions = await page.evaluate(() => ({ content: document.documentElement.scrollWidth, viewport: window.innerWidth }));
   expect(dimensions.content).toBeLessThanOrEqual(dimensions.viewport + 2);
 });
