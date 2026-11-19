@@ -33,7 +33,13 @@ test('task intentions and delivery formats intersect without duplicating entries
   assert.deepEqual(queryExperiences(experiences, { intent: 'taste' }).map(item => item.id), ['learn-to-notice-wine', 'giscours-vertical']);
   assert.deepEqual(queryExperiences(experiences, { intent: 'read' }).map(item => item.id), ['giscours-vertical', 'seoul-bowl-table']);
   assert.deepEqual(queryExperiences(experiences, { format: 'print' }).map(item => item.id), ['better-taco-night', 'learn-to-notice-wine']);
-  assert.deepEqual(queryExperiences(experiences, { intent: 'gather', format: 'interactive' }).map(item => item.id), ['better-taco-night', 'set-a-table']);
+  assert.deepEqual(queryExperiences(experiences, { intent: 'gather' }).map(item => item.id), [
+    'set-a-table', 'seoul-bowl-table', 'better-taco-night', 'chipotle-lime-fire-wings', 'giscours-vertical',
+  ]);
+  assert.deepEqual(queryExperiences(experiences, { intent: 'gather', format: 'interactive' }).map(item => item.id), ['set-a-table', 'better-taco-night']);
+  assert.deepEqual(queryExperiences(experiences, { intent: 'gather', order: 'az' }).map(item => item.id), [
+    'giscours-vertical', 'chipotle-lime-fire-wings', 'set-a-table', 'better-taco-night', 'seoul-bowl-table',
+  ]);
   assert.deepEqual(queryExperiences(experiences, { intent: 'read', format: 'recipe' }), []);
 });
 

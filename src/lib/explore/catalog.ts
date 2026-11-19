@@ -28,9 +28,19 @@ export function queryExperiences(items: readonly Experience[], filters: ExploreQ
     ].join(' '));
     return words.every(word => text.includes(word));
   });
-  return matches.sort((a, b) => filters.order === 'az'
-    ? a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }) || a.id.localeCompare(b.id)
-    : a.rank - b.rank || a.title.localeCompare(b.title));
+  return matches.sort((a, b) => {
+    if (filters.order === 'az') {
+      return a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }) || a.id.localeCompare(b.id);
+    }
+    // A chosen lane should surface experiences built for that purpose first,
+    // followed by cross-lane inspiration. The first intent is the primary lane.
+    if (filters.intent && filters.intent !== 'all') {
+      const aPrimary = a.intents[0] === filters.intent;
+      const bPrimary = b.intents[0] === filters.intent;
+      if (aPrimary !== bPrimary) return aPrimary ? -1 : 1;
+    }
+    return a.rank - b.rank || a.title.localeCompare(b.title);
+  });
 }
 
 export function visiblePage(results: readonly Experience[], count: number): Experience[] {
