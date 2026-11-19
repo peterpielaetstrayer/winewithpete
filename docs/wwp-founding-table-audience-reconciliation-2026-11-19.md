@@ -23,6 +23,8 @@ These are different **systems, dates, and status definitions**. The historical K
 - **Website provenance is incomplete.** At the November 18 read-only audit, 13/15 active Supabase historical rows had empty/null `preferences`. The schema did not independently record explicit `source`, `consented_at`, or `unsubscribed_at` fields. The new signup/rejoin flow now records better evidence for future actions, without retroactively proving consent for older contacts.
 - **Signup and opt-out operation is verified.** The November 18 live single-address QA preserved the original 15 active records and ended with one inactive test contact. The dangerous broad newsletter table grants/policies had already been removed and verified. This resolved the production security gate, not the old-list provenance question.
 
+- **Organization scope confirmed Nov 19:** Peter's Supabase dashboard shows **Wine With Pete** as its own **Free Plan** organization with one project, separate from **OWLL**. The currently connected Supabase integration lists only the OWLL organization and three OWLL projects, so it still lacks authorization to the Wine With Pete organization. Do not treat prior successfully verified production work through a different access path as evidence that this connector has equivalent access.
+
 ## Migration decision and gates (Nov 19)
 
 - **Direction approved in principle:** consolidate current Kit-confirmed Wine With Pete subscribers into the existing Supabase newsletter ledger; retain existing website signups and use Resend for email delivery. The current Kit CSV verifies **56 active**, the Kit screenshot shows **3 cancelled** (not contained in the active CSV), and the latest site snapshot has **15 active** and **1 inactive test**.
