@@ -23,6 +23,7 @@ const coverThemes: Record<string, { background: string; foreground: string; labe
   'chipotle-lime-fire-wings': { background: '#333a29', foreground: '#f0e4c8', label: 'COOK / WITH FIRE', monogram: 'FIRE' },
   'giscours-vertical': { background: '#4a292f', foreground: '#f3ddc1', label: 'RED WINE / EXPLORATION', monogram: '4' },
   'seoul-bowl-table': { background: '#ac7a51', foreground: '#292217', label: 'FROM THE TABLE', monogram: 'SEOUL' },
+  'set-a-table': { background: '#533c32', foreground: '#f6ebd9', label: 'GATHER / YOUR WAY', monogram: 'TABLE' },
 };
 
 function ExperienceCard({ experience }: { experience: Experience }) {
@@ -30,7 +31,7 @@ function ExperienceCard({ experience }: { experience: Experience }) {
   // Archive photographs show the actual dinners. Recipe drafts retain designed
   // covers until photographs of those specific recipes have been verified.
   const hasVerifiedCover = EXPLORE_PHOTOS_ENABLED &&
-    (experience.id === 'seoul-bowl-table' || experience.id === 'giscours-vertical');
+    (experience.id === 'seoul-bowl-table' || experience.id === 'giscours-vertical' || experience.id === 'set-a-table');
   const primary = experience.links.find(link => link.href === experience.primaryHref)!;
   const others = experience.links.filter(link => link.href !== experience.primaryHref);
 
@@ -40,7 +41,9 @@ function ExperienceCard({ experience }: { experience: Experience }) {
         <div className="relative flex aspect-[16/9] min-h-[180px] flex-col justify-between overflow-hidden p-6 sm:p-7" style={{ backgroundColor: cover.background, color: cover.foreground }}>
           {hasVerifiedCover && (experience.id === 'giscours-vertical'
             ? <Image src="/images/tables/giscours-bottles-menu.webp" alt="Château Giscours bottles and the menu from the Wine With Pete vertical dinner" fill sizes="(max-width: 639px) 100vw, 50vw" className="object-cover object-[center_43%]" />
-            : <EditorialPhoto photo="hero-seoul-bowl" alt="Shared dishes laid out for the Seoul Bowl Table" sizes="(max-width: 639px) 100vw, 50vw" />)}
+            : experience.id === 'set-a-table'
+              ? <EditorialPhoto photo="set-table" alt="A Wine With Pete gathering table ready for guests" sizes="(max-width: 639px) 100vw, 50vw" />
+              : <EditorialPhoto photo="hero-seoul-bowl" alt="Shared dishes laid out for the Seoul Bowl Table" sizes="(max-width: 639px) 100vw, 50vw" />)}
           {hasVerifiedCover && <span className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-black/35" aria-hidden="true" />}
           <p className="relative z-10 text-[10px] font-semibold uppercase tracking-[.27em]">{cover.label}</p>
           <span aria-hidden className="absolute -right-6 -top-20 select-none font-serif text-[clamp(9rem,20vw,15rem)] font-medium leading-none opacity-[.14]">{cover.monogram}</span>

@@ -47,6 +47,12 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [{
+      source: '/guides/set-a-table',
+      destination: '/experiences/set-a-table/index.html',
+    }];
+  },
   async headers() {
     return [
       {
