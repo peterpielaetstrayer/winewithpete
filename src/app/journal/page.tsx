@@ -104,17 +104,6 @@ export default function JournalPage() {
         </div>
       </section>
 
-      <section className="relative isolate overflow-hidden bg-black px-5 py-24 text-white sm:px-8 md:px-12 md:py-32 lg:px-16">
-        <Image src="/images/explore-v03/from-fire.webp" alt="" fill sizes="100vw" className="-z-20 object-cover opacity-45" />
-        <div className="absolute inset-0 -z-10 bg-black/55" />
-        <div className="mx-auto max-w-5xl text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#e5a17b]">An editorial principle</p>
-          <blockquote className="mt-7 font-serif text-4xl leading-[1.08] tracking-[-0.025em] sm:text-5xl md:text-6xl">
-            The Journal should not invent a world for Wine With Pete. It should notice the one being built.
-          </blockquote>
-        </div>
-      </section>
-
       <section className="border-t border-black/10 bg-[#eee4d7] px-5 py-20 sm:px-8 md:px-12 md:py-24 lg:px-16">
         <div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
