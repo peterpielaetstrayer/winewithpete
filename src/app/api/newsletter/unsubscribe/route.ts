@@ -9,9 +9,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'This unsubscribe link is invalid.' }, { status: 400 });
     }
 
-    const { error } = await createClient()
+    const db = createClient();
+    const { data: existing, error: lookupError } = await db
       .from('newsletter_subscribers')
-      .update({ is_active: false })
+      .select('preferences')
+      .eq('id', body.id.toLowerCase())
+      .maybeSingle();
+
+    if (lookupError) {
+      console.error('Newsletter unsubscribe lookup failed:', lookupError.code);
+      return NextResponse.json({ error: 'We could not update your subscription. Please try again.' }, { status: 500 });
+    }
+
+    const preferences = existing?.preferences && typeof existing.preferences === 'object' &&
+      !Array.isArray(existing.preferences) ? { ...existing.preferences } : {};
+    // A later click on a pending rejoin email must never undo a subsequent
+    // explicit unsubscribe request.
+    delete preferences.pending_rejoin;
+
+    const { error } = await db
+      .from('newsletter_subscribers')
+      .update({ is_active: false, preferences })
       .eq('id', body.id.toLowerCase());
 
     if (error) {

@@ -2,7 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { sendEmail, emailTemplates } from '@/lib/email';
 import { createUnsubscribeUrl } from '@/lib/newsletter-unsubscribe';
+import {
+  createRejoinConfirmation,
+  isRejoinRequestCoolingDown,
+  type PendingRejoin,
+} from '@/lib/newsletter-rejoin';
 // import type { NewsletterFormData } from '@/lib/types';
+
+// A public signup endpoint must not reveal whether an address is new,
+// subscribed, or previously unsubscribed. The mailbox holds the next step.
+function acceptedSubscriptionResponse() {
+  return NextResponse.json({
+    success: true,
+    message: 'Thanks for reaching out. Check your inbox if a welcome or confirmation is needed. If you are already subscribed, you are all set.',
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,7 +69,13 @@ export async function POST(request: NextRequest) {
         .insert({
           email: sanitizedData.email,
           name: sanitizedData.name || null,
-          preferences: {},
+          preferences: {
+            newsletter_consent: {
+              source: 'website_founding_table',
+              submitted_at: new Date().toISOString(),
+              method: 'signup_form',
+            },
+          },
           is_active: true,
         })
         .select('id')
@@ -106,15 +126,82 @@ export async function POST(request: NextRequest) {
         lowerMessage.includes('duplicate key value')
       ) {
         console.log('Duplicate email detected:', sanitizedData.email.substring(0, 3) + '***');
-        // Return early with success message for duplicates
-        return NextResponse.json(
-          { 
-            success: true,
-            message: 'This email is already subscribed to our newsletter!',
-            already_subscribed: true
-          },
-          { status: 200 }
-        );
+        // Never silently reactivate a previously unsubscribed address.
+        // The mailbox owner must follow a fresh, one-time email confirmation.
+        const db = createClient();
+        const { data: existing, error: lookupError } = await db
+          .from('newsletter_subscribers')
+          .select('id, is_active, preferences')
+          .eq('email', sanitizedData.email)
+          .maybeSingle();
+
+        if (lookupError || !existing) {
+          console.error('Unable to look up duplicate newsletter signup', lookupError?.code);
+          return acceptedSubscriptionResponse();
+        }
+
+        if (!existing.is_active) {
+          const preferences: Record<string, unknown> = existing.preferences &&
+            typeof existing.preferences === 'object' && !Array.isArray(existing.preferences)
+            ? existing.preferences : {};
+          const pending = preferences.pending_rejoin as PendingRejoin | undefined;
+          // Repeated requests do not generate a stream of confirmation emails.
+          if (isRejoinRequestCoolingDown(pending)) return acceptedSubscriptionResponse();
+          if (!process.env.RESEND_API_KEY) {
+            console.error('Newsletter rejoin confirmation provider is unavailable');
+            return acceptedSubscriptionResponse();
+          }
+
+          const confirmation = createRejoinConfirmation(existing.id);
+          if (!confirmation) {
+            console.error('Unable to create newsletter rejoin confirmation');
+            return acceptedSubscriptionResponse();
+          }
+
+          // Only replace the pending token if it still matches what we read.
+          // Otherwise concurrent requests could each send a different link,
+          // with the second request silently invalidating the first email.
+          let updateQuery = db
+            .from('newsletter_subscribers')
+            .update({ preferences: { ...preferences, pending_rejoin: confirmation.pending } })
+            .eq('id', existing.id)
+            .eq('is_active', false);
+          updateQuery = typeof pending?.token_hash === 'string'
+            ? updateQuery.eq('preferences->pending_rejoin->>token_hash', pending.token_hash)
+            : updateQuery.is('preferences->pending_rejoin->>token_hash', null);
+          const { data: updated, error: updateError } = await updateQuery.select('id').maybeSingle();
+
+          if (updateError) {
+            console.error('Unable to prepare newsletter rejoin confirmation', updateError?.code);
+            return acceptedSubscriptionResponse();
+          }
+          // A competing request already prepared a confirmation. Avoid a
+          // second email and return the same privacy-preserving response.
+          if (!updated) return acceptedSubscriptionResponse();
+
+          const message = emailTemplates.newsletterRejoinConfirmation(confirmation.url);
+          let sent = null;
+          try {
+            sent = await sendEmail({ to: sanitizedData.email, ...message });
+          } catch (sendError) {
+            console.error('Newsletter rejoin email provider failed', sendError);
+          }
+          if (!sent) {
+            // Permit a retry if the provider failed, without touching other pending tokens.
+            await db.from('newsletter_subscribers')
+              .update({ preferences })
+              .eq('id', existing.id)
+              .eq('is_active', false)
+              .eq('preferences->pending_rejoin->>token_hash', confirmation.pending.token_hash);
+            console.error('Newsletter rejoin confirmation could not be delivered');
+            return acceptedSubscriptionResponse();
+          }
+
+          return acceptedSubscriptionResponse();
+        }
+
+        // An active duplicate does not get another welcome email.
+        return acceptedSubscriptionResponse();
       }
       
       console.error('Supabase subscription failed:', {
@@ -240,10 +327,7 @@ export async function POST(request: NextRequest) {
       // Continue without failing the subscription
     }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Successfully subscribed to our newsletter!'
-    });
+    return acceptedSubscriptionResponse();
 
   } catch (error) {
     console.error('Newsletter subscription error:', error);

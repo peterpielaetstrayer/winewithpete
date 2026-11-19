@@ -26,8 +26,8 @@ function InlineEmailForm({ onSuccess }: { onSuccess: () => void }) {
       const result = await response.json();
       
       if (response.ok && result.success) {
-        analyticsEvents.newsletterSignup();
-        showToast('Welcome to the Circle! Check your email.', 'success');
+        // The server does not disclose the current subscription state.
+        showToast('Thanks! Check your inbox if a welcome or confirmation is needed.', 'success');
         setEmail('');
         onSuccess();
       } else {
