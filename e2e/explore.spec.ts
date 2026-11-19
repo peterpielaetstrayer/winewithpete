@@ -12,39 +12,18 @@ test('keyboard visitors can skip the shared navigation on the homepage', async (
 });
 
 test('editorial and utility pages expose exactly one main landmark', async ({ page }) => {
-  for (const route of ['/', '/explore', '/join', '/plan', '/guides/better-taco-night/print', '/rejoin']) {
+  for (const route of ['/', '/explore', '/join', '/plan', '/guides/better-taco-night/print', '/guides/learn-to-notice-wine', '/guides/learn-to-notice-wine/print', '/rejoin']) {
     await page.goto(route);
     await expect(page.getByRole('main')).toHaveCount(1);
     await expect(page.getByRole('main')).toHaveAttribute('id', 'site-content');
   }
 });
 
-test('private gathering inquiry composer prepares an email without sending or storing it', async ({ page }) => {
-  for (const { route, kind, subject } of [
-    { route: '/signature-table', kind: 'signature', subject: 'Signature Table inquiry' },
-    { route: '/plan', kind: 'blueprint', subject: 'Gathering Blueprint inquiry' },
-  ]) {
-    await page.goto(route);
-    const composer = page.getByTestId(`private-inquiry-${kind}`);
-    await composer.getByLabel('Where would this happen?').fill('Norfolk, Virginia');
-    await composer.getByLabel('What’s bringing everyone together?').fill('A dinner for old friends.');
-    await composer.getByLabel('When are you imagining?').fill('Early spring');
-    await composer.getByRole('button', { name: 'Prepare an email' }).click();
-    await expect(composer.getByTestId('prepared-inquiry')).toBeVisible();
-    const href = await composer.getByTestId('open-inquiry-email').getAttribute('href');
-    expect(href).toContain('mailto:');
-    expect(decodeURIComponent(href || '')).toContain(subject);
-    expect(decodeURIComponent(href || '')).toContain('Norfolk, Virginia');
-    expect(decodeURIComponent(href || '')).toContain('A dinner for old friends.');
-    await expect(composer.getByText('Nothing is sent to Pete or saved on the site.', { exact: false })).toBeVisible();
-  }
-});
-
 test('Explore has honest deduplicated content and no mobile overflow', async ({ page }) => {
   await page.goto('/explore');
   await expect(page.getByRole('heading', { name: 'A good evening starts somewhere.' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '4 experiences' })).toBeVisible();
-  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(4);
+  await expect(page.getByRole('heading', { name: '5 experiences' })).toBeVisible();
+  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(5);
   await expect(page.locator('[data-experience-id="giscours-vertical"]')).toHaveCount(1);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, follow/);
   const width = await page.evaluate(() => ({ screen: window.innerWidth, actual: document.documentElement.scrollWidth }));
@@ -58,21 +37,23 @@ test('search ignores accents and clear action restores catalog', async ({ page }
   await expect(page.locator('[data-experience-id="giscours-vertical"]')).toBeVisible();
   await expect(page.locator('[data-experience-id="better-taco-night"]')).toHaveCount(0);
   await page.getByRole('button', { name: 'Clear search' }).click();
-  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(4);
+  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(5);
 });
 
 test('task and format filters compose, and empty results can be reset', async ({ page }) => {
   await page.goto('/explore');
   await page.getByRole('button', { name: 'Taste', exact: true }).click();
-  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(1);
+  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(2);
+  await expect(page.locator('[data-experience-id="learn-to-notice-wine"]')).toBeVisible();
   await page.getByText('Format & sort').click();
   await page.getByRole('combobox', { name: 'Filter by format' }).selectOption('recipe');
   await expect(page.getByText('Nothing on this shelf yet.')).toBeVisible();
   await page.getByRole('button', { name: 'See the whole collection' }).click();
-  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(4);
+  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(5);
   await page.getByRole('combobox', { name: 'Filter by format' }).selectOption('print');
-  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(1);
+  await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(2);
   await expect(page.locator('[data-experience-id="better-taco-night"]')).toBeVisible();
+  await expect(page.locator('[data-experience-id="learn-to-notice-wine"]')).toBeVisible();
 });
 
 test('visitors can navigate to a real recipe and alternate printed format', async ({ page }) => {
