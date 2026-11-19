@@ -21,7 +21,7 @@ const menu = [
 
 export default function GiscoursTablePage() {
   return (
-    <main className="bg-[#f4efe7] text-[#211d19]">
+    <div className="bg-[#f4efe7] text-[#211d19]">
       <section className="border-b border-black/10 px-5 py-16 sm:px-8 md:px-12 md:py-24 lg:px-16">
         <div className="mx-auto max-w-5xl">
           <Link href="/tables" className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9c3d24]">
@@ -175,6 +175,6 @@ export default function GiscoursTablePage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

@@ -11,6 +11,14 @@ test('keyboard visitors can skip the shared navigation on the homepage', async (
   await expect(page.locator('#site-content')).toBeVisible();
 });
 
+test('editorial and utility pages expose exactly one main landmark', async ({ page }) => {
+  for (const route of ['/', '/explore', '/join', '/plan', '/guides/better-taco-night/print', '/rejoin']) {
+    await page.goto(route);
+    await expect(page.getByRole('main')).toHaveCount(1);
+    await expect(page.getByRole('main')).toHaveAttribute('id', 'site-content');
+  }
+});
+
 test('Explore has honest deduplicated content and no mobile overflow', async ({ page }) => {
   await page.goto('/explore');
   await expect(page.getByRole('heading', { name: 'A good evening starts somewhere.' })).toBeVisible();

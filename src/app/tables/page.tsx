@@ -50,7 +50,7 @@ const tables = [
 
 export default function TablesPage() {
   return (
-    <main className="bg-[#f4efe7] text-[#211d19]">
+    <div className="bg-[#f4efe7] text-[#211d19]">
       <section className="border-b border-black/10 px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
         <div className="mx-auto max-w-7xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Table Archive</p>
@@ -155,6 +155,6 @@ export default function TablesPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

@@ -98,7 +98,7 @@ export default function BetterTacoNight() {
   const secondary = 'inline-flex min-h-12 items-center justify-center gap-2 border border-[#211d19]/20 px-5 py-3 text-xs font-semibold uppercase tracking-[.14em] transition hover:bg-black/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9c3d24]';
 
   return (
-    <main className="min-h-screen bg-[#f4efe7] text-[#211d19]">
+    <div className="min-h-screen bg-[#f4efe7] text-[#211d19]">
       <section className="border-b border-black/10 bg-[#211d19] px-5 py-12 text-[#f4efe7] sm:px-8 sm:py-20 md:px-12 lg:px-16">
         <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1fr_.55fr] md:items-end">
           <div>
@@ -276,6 +276,6 @@ export default function BetterTacoNight() {
           <Link href="/join" className="inline-flex min-h-11 items-center gap-2 border-b border-[#e0a47a] text-xs uppercase tracking-[.14em] text-[#f4efe7]">Join the Founding Table <ArrowRight size={16}/></Link>
         </div>
       </footer>
-    </main>
+    </div>
   );
 }

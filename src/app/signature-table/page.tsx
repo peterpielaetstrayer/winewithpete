@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function SignatureTablePage() {
   return (
-    <main className="bg-[#f4efe7] text-[#211d19]">
+    <div className="bg-[#f4efe7] text-[#211d19]">
       <section className="border-b border-black/10">
         <div className="mx-auto grid max-w-[1600px] lg:min-h-[78vh] lg:grid-cols-[.88fr_1.12fr]">
           <div className="flex items-center px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
@@ -149,6 +149,6 @@ export default function SignatureTablePage() {
           <Link href="/plan" className="border-b border-white/35 text-white/82">Explore a Gathering Blueprint →</Link>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

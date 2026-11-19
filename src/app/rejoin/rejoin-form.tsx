@@ -29,7 +29,7 @@ export default function RejoinForm({ id, token }: { id: string; token: string })
   };
 
   return (
-    <main className="flex min-h-[72vh] items-center bg-[#f4efe7] px-5 py-20 text-[#211d19] sm:px-8">
+    <div className="flex min-h-[72vh] items-center bg-[#f4efe7] px-5 py-20 text-[#211d19] sm:px-8">
       <div className="mx-auto w-full max-w-2xl border-y border-black/15 py-16 text-center">
         <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Founding Table</p>
         <h1 className="mt-6 font-serif text-5xl leading-[1.05] tracking-[-0.03em]">{confirmed ? 'Welcome back.' : 'A seat is waiting.'}</h1>
@@ -57,6 +57,6 @@ export default function RejoinForm({ id, token }: { id: string; token: string })
           </Link>
         </p>
       </div>
-    </main>
+    </div>
   );
 }

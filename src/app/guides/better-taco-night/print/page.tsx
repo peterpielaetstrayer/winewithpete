@@ -21,7 +21,7 @@ export default async function PrintTacoGuide({ searchParams }: PageProps) {
   const servings = supportedBatches.some(n => n === value) ? value : 6;
 
   return (
-    <main className="bg-[#f4efe7] text-[#211d19]">
+    <div className="bg-[#f4efe7] text-[#211d19]">
       <article id="wwp-print-guide" className="mx-auto max-w-4xl px-5 py-12 sm:px-10 sm:py-16">
         <div className="wwp-print-controls mb-10 flex flex-wrap items-center justify-between gap-4 border-b border-black/15 pb-6">
           <Link href="/guides/better-taco-night" className="text-sm text-[#9c3d24] hover:underline">← Back to interactive guide</Link>
@@ -86,6 +86,6 @@ export default async function PrintTacoGuide({ searchParams }: PageProps) {
           <p className="mt-8 font-crimson text-lg italic">Food is part of it. The table is the point.</p>
         </section>
       </article>
-    </main>
+    </div>
   );
 }

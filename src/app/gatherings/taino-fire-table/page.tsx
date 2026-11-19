@@ -27,7 +27,7 @@ const tableElements = [
 
 export default function TainoFireTablePage() {
   return (
-    <main className="bg-[#f4efe7] text-[#211d19]">
+    <div className="bg-[#f4efe7] text-[#211d19]">
       <section className="relative isolate min-h-[78vh] overflow-hidden bg-black text-white">
         <Image
           src="/images/explore-v03/from-fire.webp"
@@ -127,6 +127,6 @@ export default function TainoFireTablePage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

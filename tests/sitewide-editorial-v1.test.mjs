@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { resolve, join, relative } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const read = (path) => readFileSync(resolve(root, path), 'utf8');
@@ -52,6 +52,23 @@ test('shared header has a legible home scrim and visible keyboard access', () =>
   assert.match(layout, /Skip to content/);
   assert.match(layout, /href="#site-content"/);
   assert.match(layout, /id="site-content" tabIndex=\{-1\}/);
+});
+
+test('root layout owns the only main landmark across every page and state', () => {
+  const layout = read('src/app/layout.tsx');
+  assert.equal([...layout.matchAll(/<main\b/g)].length, 1);
+  assert.match(layout, /<main id="site-content" tabIndex=\{-1\} className="flex-1">\{children\}<\/main>/);
+
+  const collectTsx = (directory) => readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name);
+    return entry.isDirectory() ? collectTsx(path) : entry.name.endsWith('.tsx') ? [path] : [];
+  });
+
+  for (const absolutePath of collectTsx(resolve(root, 'src/app'))) {
+    const path = relative(root, absolutePath);
+    if (path === 'src/app/layout.tsx') continue;
+    assert.doesNotMatch(read(path), /<\/?main\b/i, `${path}: nested main landmark`);
+  }
 });
 
 test('Table Archive uses event-specific verified photographs without inventing Knife & Fire photos', () => {

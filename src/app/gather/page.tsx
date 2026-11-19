@@ -34,7 +34,7 @@ const pathways = [
 
 export default function GatherPage() {
   return (
-    <main className="bg-[#f4efe7] text-[#211d19]">
+    <div className="bg-[#f4efe7] text-[#211d19]">
       <section className="border-b border-black/10 px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-[.72fr_1.28fr] lg:items-end lg:gap-20">
@@ -145,6 +145,6 @@ export default function GatherPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

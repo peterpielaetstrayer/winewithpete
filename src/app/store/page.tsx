@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function StorePage() {
   return (
-    <main className="bg-[#f4efe7] text-[#211d19]">
+    <div className="bg-[#f4efe7] text-[#211d19]">
       <section className="border-b border-black/10 px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
         <div className="mx-auto grid max-w-7xl items-end gap-10 lg:grid-cols-[1.05fr_.95fr] lg:gap-20">
           <div>
@@ -62,6 +62,6 @@ export default function StorePage() {
           </Link>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
