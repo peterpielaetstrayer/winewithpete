@@ -14,8 +14,12 @@ test('beginner can make a personal note without buying wine or signing in', asyn
   await page.getByRole('button', { name: 'Continue' }).click();
   await page.getByRole('textbox', { name: 'What does this remind you of?' }).fill('The kitchen at home');
   await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByText('Orange peel', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Now come back to the glass.' })).toBeVisible();
   await page.getByRole('textbox', { name: 'What changed? What stayed?' }).fill('Softer on the second smell');
   await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByRole('heading', { name: 'Next time, try it with someone.' })).toBeVisible();
+  await page.getByRole('textbox', { name: 'What would you ask them?' }).fill('What did you notice?');
   await expect(page.getByText('Warm rooibos tea', { exact: true })).toBeVisible();
   await expect(page.getByText('The kitchen at home', { exact: true })).toBeVisible();
   await expect(page.getByText(/It is not sent to Wine With Pete/)).toBeVisible();
