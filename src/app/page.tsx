@@ -225,7 +225,7 @@ export default function Home() {
                   />
                 </div>
                 <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-black/50">The work</p>
-                <h3 className="mt-1 font-serif text-xl">Food is part of it. The table is the point.</h3>
+                <h3 className="mt-1 font-serif text-xl">The meal matters. So does what happens around it.</h3>
               </article>
             </div>
           </div>
@@ -342,9 +342,9 @@ export default function Home() {
         />
         <div className="absolute inset-0 -z-10 bg-black/55" />
         <blockquote className="mx-auto max-w-5xl text-center font-serif text-4xl leading-[1.08] tracking-[-0.02em] sm:text-5xl md:text-6xl">
-          The point was never dinner.
+          Some nights, the meal is the point.
           <br />
-          The point was what dinner made possible.
+          Other nights, it&apos;s what happens around it.
         </blockquote>
       </section>
 
