@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Mail } from 'lucide-react';
 
 import { buildInquiryMailto, contactEmail } from '@/lib/inquiry-mailto';
+import { PrivateInquiryComposer } from '@/components/private-inquiry-composer';
 
 const inquiryMailto = buildInquiryMailto(
   'Plan a Gathering — Blueprint Inquiry',
@@ -37,7 +38,7 @@ export default function PlanPage() {
             <p className="font-crimson text-2xl leading-9 text-black/68 sm:text-[1.55rem] sm:leading-10">
               Wine With Pete designs the gathering. You bring it to life in your own home or chosen space.
             </p>
-            <a href={inquiryMailto} className="mt-8 inline-flex min-h-12 items-center justify-center gap-3 bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+            <a href="#inquire" className="mt-8 inline-flex min-h-12 items-center justify-center gap-3 bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
               <Mail className="h-4 w-4" aria-hidden="true" />
               Start a blueprint inquiry
             </a>
@@ -124,7 +125,7 @@ export default function PlanPage() {
         </div>
       </section>
 
-      <section className="border-t border-black/10 bg-[#211d19] px-5 py-20 text-[#f4efe7] sm:px-8 md:px-12 md:py-24 lg:px-16">
+      <section id="inquire" className="scroll-mt-20 border-t border-black/10 bg-[#211d19] px-5 py-20 text-[#f4efe7] sm:px-8 md:px-12 md:py-24 lg:px-16">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_.8fr] lg:items-end lg:gap-20">
           <div className="max-w-3xl">
             <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#d78959]">Start the conversation</p>
@@ -134,12 +135,15 @@ export default function PlanPage() {
             </p>
           </div>
           <div className="lg:justify-self-end">
-            <a href={inquiryMailto} className="inline-flex min-h-12 items-center justify-center gap-3 bg-[#a64225] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">
-              <Mail className="h-4 w-4" aria-hidden="true" />
-              Email Pete
+            <p className="text-sm text-white/58">Prefer to just write a note?</p>
+            <a href={inquiryMailto} className="mt-3 inline-block border-b border-white/40 pb-1 text-sm text-white/85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ffd4b6]">
+              Email Pete directly
             </a>
             <p className="mt-3 text-xs text-white/42">{contactEmail}</p>
           </div>
+        </div>
+        <div className="mx-auto max-w-7xl">
+          <PrivateInquiryComposer kind="blueprint" />
         </div>
         <div className="mx-auto mt-12 max-w-7xl border-t border-white/10 pt-6 text-sm text-white/52">
           Want Pete to host the evening instead?{' '}
