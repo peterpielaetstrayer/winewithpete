@@ -36,7 +36,7 @@ export const wineNoticingFields: { key: keyof WineNoticingNote; label: string }[
   { key: 'taste', label: 'What I tasted or felt' },
   { key: 'association', label: 'What it reminded me of' },
   { key: 'secondLook', label: 'What changed when I returned' },
-  { key: 'invitation', label: 'A question I would ask someone else' },
+  { key: 'invitation', label: 'A question to bring to the table' },
 ];
 
 export function wineNoticingNoteText(note: WineNoticingNote): string {
