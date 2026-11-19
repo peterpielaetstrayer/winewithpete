@@ -113,7 +113,7 @@ export default function LearnToNoticeWinePage() {
             <Link href="/explore" className="inline-flex min-h-11 items-center gap-2 text-xs text-[#e3c9b5] underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e4ab85]"><ArrowLeft size={15} aria-hidden/> Back to Explore</Link>
             <p className="mt-9 text-[10px] font-semibold uppercase tracking-[.25em] text-[#e1a77c]">Wine With Pete · An introduction to tasting</p>
             <h1 className="mt-5 max-w-[14ch] font-serif text-[clamp(3.2rem,7vw,6.5rem)] leading-[.96] tracking-[-.055em]">Learn to <span className="italic text-[#e6b49b]">notice</span> wine.</h1>
-            <p className="mt-6 max-w-2xl font-crimson text-2xl leading-8 text-[#e7d9cb] sm:text-3xl sm:leading-10">You don&apos;t need a better vocabulary to begin. You need a little time to pay attention.</p>
+            <p className="mt-6 max-w-2xl font-crimson text-2xl leading-8 text-[#e7d9cb] sm:text-3xl sm:leading-10">Before anyone tells you what you&apos;re supposed to taste, see what you notice for yourself.</p>
           </div>
           <aside className="border-l border-white/25 pl-6">
             <div className="flex items-center gap-3 text-[#e1a77c]"><Wine size={23} strokeWidth={1.4} aria-hidden/><span className="text-[10px] font-semibold uppercase tracking-[.18em]">Field lesson · Working preview</span></div>
@@ -144,8 +144,8 @@ export default function LearnToNoticeWinePage() {
               {chapter === 'begin' && <article>
                 <p className={eyebrow}>01 · Before the first sip</p>
                 <h2 ref={headingRef} tabIndex={-1} className="mt-5 font-serif text-4xl leading-[1.06] outline-none sm:text-6xl">Start with what&apos;s in front of you.</h2>
-                <p className="mt-7 max-w-2xl font-crimson text-2xl leading-9 text-[#5e5147]">Maybe you know the grape. Maybe you picked a bottle because the label looked good. Either way, you have somewhere to start.</p>
-                <p className="mt-5 max-w-2xl text-base leading-8 text-[#584e44]">Set your drink down somewhere comfortable. You can use a glass of wine, or try the same exercise with tea or juice. Put your phone on the table if you want to write as you go. There is no score and no correct list of aromas to find.</p>
+                <p className="mt-7 max-w-2xl font-crimson text-2xl leading-9 text-[#5e5147]">Maybe you know the grape. Maybe you picked a bottle because the label caught your eye. That&apos;s plenty to begin with.</p>
+                <p className="mt-5 max-w-2xl text-base leading-8 text-[#584e44]">Set your drink down somewhere comfortable. You can use a glass of wine, or try the same exercise with tea or juice. For the next few minutes, let someone else worry about tasting notes and proper terminology. We&apos;re interested in what you actually experience.</p>
                 <div className="mt-9 max-w-xl border-l-2 border-[#913e2c] bg-[#ebe0d3] p-6">
                   <label htmlFor="wine-drink" className="block font-serif text-2xl">What are you tasting?</label>
                   <p id="wine-drink-hint" className="mt-2 text-sm leading-6 text-[#695f55]">A name, a grape, a color, or simply “the tea I made.” It&apos;s optional.</p>
@@ -178,11 +178,26 @@ export default function LearnToNoticeWinePage() {
 
               {chapter === 'return' && <article>
                 <p className={eyebrow}>04 · Look again</p>
-                <h2 ref={headingRef} tabIndex={-1} className="mt-5 font-serif text-4xl leading-[1.06] outline-none sm:text-6xl">A second look is another observation.</h2>
-                <p className="mt-6 max-w-2xl text-base leading-8 text-[#584e44]">Give the glass a minute. Come back to the aroma, or take another small sip if you want. Compare it with your first impression. The point is to notice whether anything seems different—not to produce a more impressive answer.</p>
+                <h2 ref={headingRef} tabIndex={-1} className="mt-5 font-serif text-4xl leading-[1.06] outline-none sm:text-6xl">Now come back to the glass.</h2>
+                <p className="mt-6 max-w-2xl text-base leading-8 text-[#584e44]">Let it sit for a minute. Before you return, read what you wrote the first time. Then smell it again, look again, or take another small sip if you want. What stands out now?</p>
+                <div className="mt-8 border border-[#8d7a69]/25 bg-[#e9dfd2] p-6 sm:p-8">
+                  <p className={eyebrow}>Your first impression</p>
+                  {note.appearance.trim() || note.aroma.trim() || note.taste.trim() ?
+                    <dl className="mt-5 grid gap-5 sm:grid-cols-3">
+                      {([
+                        { label: 'Saw', value: note.appearance },
+                        { label: 'Smelled', value: note.aroma },
+                        { label: 'Tasted or felt', value: note.taste },
+                      ]).map(item => <div key={item.label} className="min-w-0">
+                        <dt className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#765747]">{item.label}</dt>
+                        <dd className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[#493e35]">{item.value.trim() || 'Not written down'}</dd>
+                      </div>)}
+                    </dl> :
+                    <p className="mt-3 text-sm leading-7 text-[#5e5147]">Nothing written down yet? That&apos;s fine. Remember your first impression as best you can, then try again.</p>}
+                </div>
+                <p className="mt-6 max-w-2xl font-crimson text-xl leading-8 text-[#5e5147]">Maybe the drink changed a little. Maybe you&apos;re paying attention differently. Maybe nothing changed at all. You don&apos;t have to explain it away.</p>
                 <div className="mt-9 space-y-9">
-                  <NoteField id="wine-second" label="What changed? What stayed?" hint="Maybe something new appeared, maybe it softened, or maybe nothing changed. All are observations." value={note.secondLook} onChange={value => updateNote('secondLook', value)}/>
-                  <NoteField id="wine-invitation" label="What would you ask someone else at the table?" hint="Try an open question: “What does this remind you of?” or “Did anything change on the second smell?”" value={note.invitation} onChange={value => updateNote('invitation', value)}/>
+                  <NoteField id="wine-second" label="What changed? What stayed?" hint="Compare this moment with your own first words. A difference is worth noticing, and so is a familiar impression." value={note.secondLook} onChange={value => updateNote('secondLook', value)}/>
                 </div>
               </article>}
 
@@ -190,6 +205,12 @@ export default function LearnToNoticeWinePage() {
                 <p className={eyebrow}>05 · Remember and return</p>
                 <h2 ref={headingRef} tabIndex={-1} className="mt-5 font-serif text-4xl leading-[1.06] outline-none sm:text-6xl">You have a tasting note. In your own words.</h2>
                 <p className="mt-6 max-w-2xl text-base leading-8 text-[#584e44]">This doesn&apos;t make you an expert. It gives you a starting point you can come back to. Keep this note, try another drink on another day, and see whether you notice something different.</p>
+                <div className="mt-8 border-l-2 border-[#913e2c] bg-[#ebe0d3] p-6 sm:p-8">
+                  <p className={eyebrow}>Bring it to the table</p>
+                  <h3 className="mt-3 font-serif text-3xl leading-tight">Next time, try it with someone.</h3>
+                  <p className="mt-4 max-w-2xl text-sm leading-7 text-[#584e44]">Sit down with a friend and a drink of your choice. Take a moment to notice separately before swapping descriptions. You might pick up on completely different things. Neither person needs to be right.</p>
+                  <div className="mt-6"><NoteField id="wine-invitation" label="What would you ask them?" hint="Something open-ended works best: “What does this remind you of?” or “Did you notice anything different the second time?”" value={note.invitation} onChange={value => updateNote('invitation', value)}/></div>
+                </div>
                 <div className="mt-8 border border-[#8d7a69]/30 bg-[#fffdf8] p-6 sm:p-9">
                   <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#8d7a69]/20 pb-4"><p className={eyebrow}>Your first noticing card</p><p className="font-crimson text-lg italic text-[#76665a]">An observation, not a grade</p></div>
                   <div className="mt-6 space-y-5">
