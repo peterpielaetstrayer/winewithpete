@@ -78,6 +78,7 @@ try {
     await expect(page.getByRole('link', { name: 'Read the Giscours table story' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Read the Seoul Bowl story' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Try the interactive guide' })).toBeVisible();
+    await expect(page.getByText('An editorial principle')).toHaveCount(0);
     await loadImagesForScreenshot(page);
     await checkOverflow(page, size.name + ' Journal');
     await page.screenshot({ path: 'review-screenshots/wwp-journal-' + size.name + '.png', fullPage: true });
