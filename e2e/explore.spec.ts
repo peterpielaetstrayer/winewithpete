@@ -19,6 +19,27 @@ test('editorial and utility pages expose exactly one main landmark', async ({ pa
   }
 });
 
+test('private gathering inquiry composer prepares an email without sending or storing it', async ({ page }) => {
+  for (const { route, kind, subject } of [
+    { route: '/signature-table', kind: 'signature', subject: 'Signature Table inquiry' },
+    { route: '/plan', kind: 'blueprint', subject: 'Gathering Blueprint inquiry' },
+  ]) {
+    await page.goto(route);
+    const composer = page.getByTestId(`private-inquiry-${kind}`);
+    await composer.getByLabel('Where would this happen?').fill('Norfolk, Virginia');
+    await composer.getByLabel('What’s bringing everyone together?').fill('A dinner for old friends.');
+    await composer.getByLabel('When are you imagining?').fill('Early spring');
+    await composer.getByRole('button', { name: 'Prepare an email' }).click();
+    await expect(composer.getByTestId('prepared-inquiry')).toBeVisible();
+    const href = await composer.getByTestId('open-inquiry-email').getAttribute('href');
+    expect(href).toContain('mailto:');
+    expect(decodeURIComponent(href || '')).toContain(subject);
+    expect(decodeURIComponent(href || '')).toContain('Norfolk, Virginia');
+    expect(decodeURIComponent(href || '')).toContain('A dinner for old friends.');
+    await expect(composer.getByText('Nothing is sent to Pete or saved on the site.', { exact: false })).toBeVisible();
+  }
+});
+
 test('Explore has honest deduplicated content and no mobile overflow', async ({ page }) => {
   await page.goto('/explore');
   await expect(page.getByRole('heading', { name: 'A good evening starts somewhere.' })).toBeVisible();
