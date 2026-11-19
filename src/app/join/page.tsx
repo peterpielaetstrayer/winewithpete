@@ -43,7 +43,7 @@ export default function JoinPage() {
 
   if (isSubmitted) {
     return (
-      <main className="flex min-h-[72vh] items-center bg-[#f4efe7] px-5 py-20 text-[#211d19] sm:px-8 md:px-12 lg:px-16">
+      <div className="flex min-h-[72vh] items-center bg-[#f4efe7] px-5 py-20 text-[#211d19] sm:px-8 md:px-12 lg:px-16">
         <div className="mx-auto w-full max-w-4xl border-y border-black/15 py-16 text-center md:py-24">
           <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Founding Table</p>
           <h1 className="mx-auto mt-6 max-w-[12ch] font-serif text-5xl leading-[1.02] tracking-[-0.03em] sm:text-6xl">
@@ -61,12 +61,12 @@ export default function JoinPage() {
             </Link>
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="bg-[#f4efe7] text-[#211d19]">
+    <div className="bg-[#f4efe7] text-[#211d19]">
       <section className="border-b border-black/10 px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
         <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[1.05fr_.95fr] lg:items-end lg:gap-24">
           <div>
@@ -164,6 +164,6 @@ export default function JoinPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

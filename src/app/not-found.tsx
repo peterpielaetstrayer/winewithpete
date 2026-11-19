@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <main className="flex min-h-[72vh] items-center bg-[#f4efe7] px-5 py-20 text-[#211d19] sm:px-8 md:px-12 lg:px-16">
+    <div className="flex min-h-[72vh] items-center bg-[#f4efe7] px-5 py-20 text-[#211d19] sm:px-8 md:px-12 lg:px-16">
       <div className="mx-auto w-full max-w-5xl border-y border-black/15 py-16 md:py-24">
         <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">404 · Wrong turn</p>
         <div className="mt-6 grid gap-10 md:grid-cols-[1.15fr_.85fr] md:items-end md:gap-16">
@@ -24,6 +24,6 @@ export default function NotFound() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
