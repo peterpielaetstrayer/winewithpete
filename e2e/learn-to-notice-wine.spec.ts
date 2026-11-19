@@ -6,7 +6,7 @@ test('beginner can make a personal note without buying wine or signing in', asyn
   await page.goto(lesson);
   await expect(page.getByRole('heading', { name: /Learn to notice wine/i })).toBeVisible();
   await expect(page.getByText(/Wine is optional/)).toBeVisible();
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, follow/);
 
   await page.getByRole('textbox', { name: 'What are you tasting?' }).fill('Warm rooibos tea');
   await page.getByRole('button', { name: 'Continue' }).click();
