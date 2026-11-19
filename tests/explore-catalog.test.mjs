@@ -7,6 +7,10 @@ import { PAGE_SIZE, normalizeSearch, queryExperiences, validateCatalog, visibleP
 test('catalog has unique verified destinations and one entry per experience', () => {
   assert.deepEqual(validateCatalog(experiences), []);
   assert.equal(experiences.length, 5);
+  const wineLesson = experiences.find(item => item.id === 'learn-to-notice-wine');
+  assert.equal(wineLesson?.status, 'public');
+  assert.ok(wineLesson?.links.every(link => !link.prototype));
+  assert.equal(wineLesson?.previewLabel, undefined);
   assert.deepEqual(experiences.find(item => item.id === 'giscours-vertical')?.links, [
     { format: 'story', label: 'Read the table story', href: '/tables/chateau-giscours-vertical' },
   ]);
