@@ -1,6 +1,8 @@
 # Wine With Pete — private gathering inquiry v0 proposal
 
-**November 19, 2026 | Status: draft prototype, not a released service or confirmed operating policy**
+**November 19, 2026 | Status: browser-only v0 released; not a hosted booking service or confirmed operating policy**
+
+**Release update:** [PR #30](https://github.com/peterpielaetstrayer/winewithpete/pull/30) was squash-merged as `778712b6b8c88bfe51c0e4e5f40170f383ff74ff`. Vercel production was READY and aliased to `winewithpete.me`; both `/signature-table` and `/plan` returned HTTP 200 with the composer and explicit no-send/no-storage language. Three PR workflows passed, and the preview interaction was checked in a browser. Peter delegated release judgment for high-confidence low-risk changes. The email-first boundary remains; real-device/assistive-tech testing and inquiry-response operations remain follow-up items.
 
 ## Why this exists
 
@@ -8,7 +10,7 @@ The public Gather page clearly distinguishes a **Signature Table** (Pete designs
 
 The proposal is to offer a short, on-page **conversation starter** on each offer page. It is not a booking flow, quote, commitment of availability, ticket purchase, or automated customer relationship manager.
 
-## Draft experience
+## Released v0 experience
 
 1. The hero call to action scrolls to the inquiry section. A direct email link remains available.
 2. Visitor describes their city/area and what brings their people together (required). Name, timeframe, approximate guest count, and one offer-specific prompt are optional.
@@ -26,13 +28,13 @@ The composer does not request a separate email address, upload guest lists, reta
 | Optional extra prompt | Space, food, wine or atmosphere to know about | Parts of planning where help is wanted |
 | Business status | Inquiry only; no reserved date | Inquiry only; no committed deliverable or price |
 
-## Review gates before publishing
+## Original review gates and ongoing quality checks
 
-- Peter reviews the copy, number of questions, appearance, and whether the interaction feels like a personal invitation rather than a corporate intake form.
-- Mobile and desktop browser tests, keyboard labels, 200% zoom, copy fallback, and no-email-client fallback are verified. In particular, successful mailto activation is **not** equivalent to confirmed delivery; do not count it as a lead received.
+- Peter can still review and refine the copy, number of questions, appearance, and tone. V0 was released under his delegated high-confidence release discretion; that is not an endorsement of every future modification.
+- Mobile and desktop automated browser checks passed and the draft email was prepared in a manual preview browser session. **Still to check:** 200% zoom, physical-device/assistive-technology behavior, clipboard failure, and actual email-client handoff. A `mailto:` activation is **not** confirmed email delivery; do not count it as a lead received.
 - Confirm the contact address and actual process for noticing and replying to inquiries. Do not promise a response time, pricing, geography, or capacity before Peter decides.
 - Keep the existing `/api/gatherings/interest` route conceptually separate: it records community-table interest in Supabase and is not a private-service CRM.
-- Production Founding Table/Supabase permission hardening and consent validation documented in `docs/wwp-founding-table-operations-gate-2026-11-18.md` must be reconciled before **any** new backend inquiry storage or shared subscriber linkage. No database/policy modification is part of this prototype.
+- The prior Founding Table/Supabase permissions release gate was closed on November 18 (see the closure addendum in `docs/wwp-founding-table-operations-gate-2026-11-18.md`). **Any future backend inquiry storage or subscriber linkage** still requires separate privacy, retention, permission and consent decisions. V0 made no database/policy change.
 
 ## What would justify a true hosted form later?
 
