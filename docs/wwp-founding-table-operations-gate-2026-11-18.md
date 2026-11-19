@@ -1,6 +1,15 @@
 # Founding Table operational gate — November 18, 2026
 
-**Status:** Production database permissions inspected on November 18, 2026; **release remains held until the server-route fix is deployed and the dangerous live grants/policies are removed and verified**. This is a focused post-v1 operational hardening change, not part of the collaborative Explore product.
+**Status: historical gate, closed November 18, 2026.** This note preserves the original audit, proposed remediation, and pre-release checks as they stood before the fix. It is not a current production hold or an instruction to rerun the transaction below.
+
+### Closure and superseding verification
+
+- [PR #24](https://github.com/peterpielaetstrayer/winewithpete/pull/24) was merged and released to `winewithpete.me` as `cf3aa9422d5b254e02d8739a8f2998936b7b9c7f`. The server-only signup changes and individually signed, confirm-before-removal unsubscribe flow shipped with a dedicated server-side signing secret.
+- The production Supabase remediation was applied and verified on November 18: `anon` and `authenticated` were left with **no** `SELECT`, `INSERT`, `UPDATE`, or `DELETE` privileges on `public.newsletter_subscribers` or `public.gathering_interests`, and the three unrestricted newsletter policies were dropped. Existing subscriber and interest records were preserved.
+- A consented single-address live test completed the Join → welcome email → signed unsubscribe → inactive-record journey. The final read-only database count was **16 newsletter rows: 15 original active subscribers and one inactive test record**. No broadcast or existing-contact mutation occurred.
+- [PR #25](https://github.com/peterpielaetstrayer/winewithpete/pull/25) later shipped mailbox-confirmed rejoining for unsubscribed addresses. **Still separate:** establishing consent/provenance of historical contacts, reconciling the old Kit/Loops audiences, and reviewing RSVP/order table grants before wider sends or migrations.
+
+The remainder of this document is retained for audit history and describes **the state before those changes**.
 
 ## Scope of this change
 
@@ -72,4 +81,4 @@ Before any live release, verify that public/anonymous clients **cannot SELECT or
 5. Verify a reliable route for a previously unsubscribed reader to request re-enrollment. At present, duplicate signup is reported as already on file and does not automatically reactivate. Do not reactivate without verifiable consent.
 6. Monitor the production deployment, opt-out route, and errors only after all preceding gates pass.
 
-**Live release status:** Held for live remediation approval and end-to-end verification with a single approved test contact. No mass send, DB policy mutation, or production deployment is authorized merely by this document.
+**Historical release status when first written:** Held for live remediation approval and end-to-end verification with a single approved test contact. Those steps were subsequently completed, as recorded in the closure section above. This document alone does not authorize any further DB change, migration, or mass send.
