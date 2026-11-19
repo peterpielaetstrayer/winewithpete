@@ -31,7 +31,7 @@ export default function PrintWineNoticingCard() {
       <footer className="mt-8 border-t border-[#4c3d33]/30 pt-5">
         <p className="font-crimson text-lg italic text-[#675a50]">Next time, notice again. That&apos;s the practice.</p>
         <p className="mt-2 text-[10px] text-[#77695c]">Try it with someone else: notice separately, then compare without correcting each other.</p>
-        <p className="mt-2 text-[10px] text-[#77695c]">Working lesson preview · Personal reflection, not a tasting grade</p>
+        <p className="mt-2 text-[10px] text-[#77695c]">Personal reflection, not a tasting grade</p>
       </footer>
     </article>
   </div>;
