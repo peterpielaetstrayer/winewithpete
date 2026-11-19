@@ -27,6 +27,7 @@ export type Experience = {
   links: readonly ExperienceLink[];
   primaryHref: string;
   status: PublicationStatus;
+  previewLabel?: string;
   minutes?: number;
   spotlight?: string;
   rank: number;
@@ -47,6 +48,7 @@ export const experiences: readonly Experience[] = [
     ],
     primaryHref: '/guides/better-taco-night',
     status: 'prototype',
+    previewLabel: 'Kitchen-test preview · Not a final recipe',
     minutes: 35,
     spotlight: '01',
     rank: 1,
@@ -67,6 +69,25 @@ export const experiences: readonly Experience[] = [
     rank: 2,
   },
   {
+    id: 'learn-to-notice-wine',
+    title: 'Learn to Notice Wine',
+    eyebrow: 'A field lesson · Taste / No. 01',
+    summary: 'Start with one drink, five gentle steps, and a tasting note in your own words—without wine expertise.',
+    note: 'Working beginner lesson. Feedback welcome before editorial release.',
+    intents: ['taste'],
+    tags: ['wine', 'tasting', 'beginner', 'learn', 'notice', 'observe', 'sensory', 'reflection', 'nonalcoholic'],
+    links: [
+      { format: 'interactive', label: 'Try the tasting lesson', href: '/guides/learn-to-notice-wine', prototype: true },
+      { format: 'print', label: 'Blank tasting card', href: '/guides/learn-to-notice-wine/print', prototype: true },
+    ],
+    primaryHref: '/guides/learn-to-notice-wine',
+    status: 'prototype',
+    previewLabel: 'Learning experience preview · Under review',
+    minutes: 12,
+    spotlight: 'TASTE',
+    rank: 3,
+  },
+  {
     id: 'giscours-vertical',
     title: 'Château Giscours Vertical',
     eyebrow: 'Table archive · May 2026',
@@ -80,7 +101,7 @@ export const experiences: readonly Experience[] = [
     primaryHref: '/tables/chateau-giscours-vertical',
     status: 'public',
     spotlight: '2015—18',
-    rank: 3,
+    rank: 4,
   },
   {
     id: 'seoul-bowl-table',
@@ -95,6 +116,6 @@ export const experiences: readonly Experience[] = [
     ],
     primaryHref: '/tables/seoul-bowl-table',
     status: 'public',
-    rank: 4,
+    rank: 5,
   },
 ];
