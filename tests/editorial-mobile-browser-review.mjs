@@ -56,14 +56,14 @@ try {
 
     await page.goto(base + '/explore', { waitUntil: 'domcontentloaded', timeout: 30000 });
     await expect(page.getByRole('heading', { level: 1, name: 'A good evening starts somewhere.' })).toBeVisible();
-    await expect(page.locator('[data-experience-id]')).toHaveCount(5);
+    await expect(page.locator('[data-experience-id]')).toHaveCount(6);
     await expect(page.locator('[data-experience-id="giscours-vertical"] img')).toHaveCount(1);
     await expect(page.getByRole('button', { name: 'Taste', exact: true })).toHaveCount(1);
     await page.getByRole('button', { name: 'Taste', exact: true }).click();
     await expect(page.locator('[data-experience-id]')).toHaveCount(2);
     await expect(page.locator('[data-experience-id="giscours-vertical"]')).toBeVisible();
     await page.getByRole('button', { name: 'Everything', exact: true }).click();
-    await expect(page.locator('[data-experience-id]')).toHaveCount(5);
+    await expect(page.locator('[data-experience-id]')).toHaveCount(6);
     await page.getByText('Format & sort').click();
     await expect(page.getByRole('combobox', { name: 'Filter by format' })).toBeVisible();
     if (await page.getByRole('main').count() !== 1) {
