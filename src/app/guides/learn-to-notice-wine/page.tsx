@@ -116,7 +116,7 @@ export default function LearnToNoticeWinePage() {
             <p className="mt-6 max-w-2xl font-crimson text-2xl leading-8 text-[#e7d9cb] sm:text-3xl sm:leading-10">Before anyone tells you what you&apos;re supposed to taste, see what you notice for yourself.</p>
           </div>
           <aside className="border-l border-white/25 pl-6">
-            <div className="flex items-center gap-3 text-[#e1a77c]"><Wine size={23} strokeWidth={1.4} aria-hidden/><span className="text-[10px] font-semibold uppercase tracking-[.18em]">Field lesson · Working preview</span></div>
+            <div className="flex items-center gap-3 text-[#e1a77c]"><Wine size={23} strokeWidth={1.4} aria-hidden/><span className="text-[10px] font-semibold uppercase tracking-[.18em]">Field lesson · Taste No. 01</span></div>
             <p className="mt-5 font-serif text-3xl">One drink. A few minutes. Your own words.</p>
             <p className="mt-4 text-sm leading-7 text-[#dccbc0]">A beginner-friendly guided exercise you can repeat with another glass, another day, or another person.</p>
             <p className="mt-4 text-xs leading-6 text-[#d0b8a8]">Wine is optional. Tea, juice, or another aromatic nonalcoholic drink works for the observation practice too. If choosing wine, please drink responsibly; this activity requires no particular amount.</p>
@@ -244,7 +244,7 @@ export default function LearnToNoticeWinePage() {
                 <p className="text-xs font-semibold uppercase tracking-[.14em] text-[#6c5b4b]">This part should take</p>
                 <p className="mt-2 font-serif text-2xl">{wineNoticingChapters[chapterIndex].minutes}</p>
               </div>
-              <p className="mt-6 text-xs leading-6 text-[#766558]">This is a preview of one activity, not the complete Art of Learning [Wine] course. The exercise doesn&apos;t require special knowledge, a purchase, or an account.</p>
+              <p className="mt-6 text-xs leading-6 text-[#766558]">Try this again with a different drink, or with someone at the table. No special knowledge, purchase, or account needed.</p>
             </aside>
           </div>
         </div>
