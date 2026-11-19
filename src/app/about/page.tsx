@@ -17,10 +17,10 @@ export default function AboutPage() {
           <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">About Wine With Pete</p>
           <div className="mt-5 grid gap-10 lg:grid-cols-[1.05fr_.95fr] lg:items-end lg:gap-20">
             <h1 className="max-w-[11ch] font-serif text-5xl font-medium leading-[.98] tracking-[-0.035em] sm:text-6xl md:text-7xl">
-              It began with a simple suspicion: the table still matters.
+              It started with wine tastings. The table grew from there.
             </h1>
             <p className="max-w-xl font-crimson text-2xl leading-9 text-black/68 sm:text-[1.6rem] sm:leading-10">
-              Wine With Pete is an attempt to rebuild some of the human infrastructure that modern life keeps making easier to neglect.
+              Wine With Pete is where I explore the craft of cooking and wine, and what becomes possible when people take the time to gather.
             </p>
           </div>
         </div>
@@ -40,7 +40,7 @@ export default function AboutPage() {
                 The table is ordinary enough to overlook. But people have used it to feed one another, argue, celebrate, teach, grieve, negotiate, flirt, tell stories, pass traditions down, and make sense of the world.
               </p>
               <p>
-                Wine With Pete takes that ordinary technology seriously. Food matters. Wine matters. Fire matters. Atmosphere matters. But they matter because of what they can make possible between people.
+                I care about the cooking, the wine, the fire, and the work that goes into an evening. Sometimes the meal or the wine is the reason we&apos;re there. Other times it opens space for conversation, laughter, or understanding someone a little better. Both are worth making time for.
               </p>
             </div>
           </div>
@@ -64,13 +64,13 @@ export default function AboutPage() {
             <h2 className="mt-5 font-serif text-4xl leading-[1.05] tracking-[-0.025em] sm:text-5xl">A winding path back to the table.</h2>
             <div className="mt-7 space-y-5 text-lg leading-8 text-black/64">
               <p>
-                I studied psychology, spent time teaching in Korea, and eventually found my way into the wine world, where I spent years learning how history, place, taste, hospitality, and people can meet in a glass.
+                I studied psychology and spent time teaching in Korea before finding my way into wine. Wine With Pete began with tastings in Virginia, where I was exploring the places, people, and flavors behind what we were drinking.
               </p>
               <p>
-                Along the way I kept returning to cooking, fire, writing, and bringing people together. Those interests did not look like one project at first. Over time they began to converge around the same question: what happens when we put real intention into the spaces where people meet?
+                Those tastings gradually became meals and longer conversations. I kept coming back to cooking, fire, writing, and the pleasure of making something of my own, then sharing it. Eventually, those interests began to feel like parts of the same project.
               </p>
               <p>
-                Wine With Pete grew out of that question. The dinners, essays, fire gatherings, recipes, and experiments are all different ways of working on the same thing.
+                I&apos;m still figuring out what each table can be. Sometimes I want the food or a particular wine to lead. Other times I want the gathering to be more open, with people cooking or serving themselves around a fire. Wine With Pete is a place to keep exploring both.
               </p>
             </div>
           </div>
