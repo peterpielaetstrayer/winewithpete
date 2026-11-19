@@ -22,7 +22,7 @@ export type Experience = {
   eyebrow: string;
   summary: string;
   note: string;
-  intents: readonly Intent[];
+  intents: readonly Intent[]; // Primary lane first; remaining lanes are meaningful related uses.
   tags: readonly string[];
   links: readonly ExperienceLink[];
   primaryHref: string;
