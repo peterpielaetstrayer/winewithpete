@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useMemo, useState } from 'react';
 import { ArrowRight, ArrowUpRight, BookOpen, Check, ChefHat, Compass, FileText, Search, SlidersHorizontal, Sparkles, Users, Wine, X } from 'lucide-react';
 
@@ -25,7 +26,10 @@ const coverThemes: Record<string, { background: string; foreground: string; labe
 
 function ExperienceCard({ experience }: { experience: Experience }) {
   const cover = coverThemes[experience.id] ?? coverThemes['chipotle-lime-fire-wings'];
-  const hasVerifiedCover = EXPLORE_PHOTOS_ENABLED && experience.id === 'seoul-bowl-table';
+  // Archive photographs show the actual dinners. Recipe drafts retain designed
+  // covers until photographs of those specific recipes have been verified.
+  const hasVerifiedCover = EXPLORE_PHOTOS_ENABLED &&
+    (experience.id === 'seoul-bowl-table' || experience.id === 'giscours-vertical');
   const primary = experience.links.find(link => link.href === experience.primaryHref)!;
   const others = experience.links.filter(link => link.href !== experience.primaryHref);
 
@@ -33,7 +37,9 @@ function ExperienceCard({ experience }: { experience: Experience }) {
     <article data-experience-id={experience.id} className="group flex h-full min-w-0 flex-col overflow-hidden border border-black/15 bg-[#faf7f1]">
       <Link href={experience.primaryHref} aria-label={'Open ' + experience.title} className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9c3d24]">
         <div className="relative flex aspect-[16/9] min-h-[180px] flex-col justify-between overflow-hidden p-6 sm:p-7" style={{ backgroundColor: cover.background, color: cover.foreground }}>
-          {hasVerifiedCover && <EditorialPhoto photo="hero-seoul-bowl" alt="Shared dishes laid out for the Seoul Bowl Table" sizes="(max-width: 639px) 100vw, 50vw" />}
+          {hasVerifiedCover && (experience.id === 'giscours-vertical'
+            ? <Image src="/images/tables/giscours-bottles-menu.webp" alt="Château Giscours bottles and the menu from the Wine With Pete vertical dinner" fill sizes="(max-width: 639px) 100vw, 50vw" className="object-cover object-[center_43%]" />
+            : <EditorialPhoto photo="hero-seoul-bowl" alt="Shared dishes laid out for the Seoul Bowl Table" sizes="(max-width: 639px) 100vw, 50vw" />)}
           {hasVerifiedCover && <span className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-black/35" aria-hidden="true" />}
           <p className="relative z-10 text-[10px] font-semibold uppercase tracking-[.27em]">{cover.label}</p>
           <span aria-hidden className="absolute -right-6 -top-20 select-none font-serif text-[clamp(9rem,20vw,15rem)] font-medium leading-none opacity-[.14]">{cover.monogram}</span>
@@ -127,15 +133,17 @@ export default function ExplorePage() {
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5" role="group" aria-label="Explore by purpose">
+          <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-4" role="group" aria-label="Explore by purpose">
+            <p className="w-full text-xs font-semibold uppercase tracking-[.16em] text-black/60 sm:w-auto">Browse by</p>
             {intentions.map(item => {
               const Icon = item.icon;
               const selected = intent === item.value;
               return <button type="button" key={item.value} aria-pressed={selected} onClick={() => selectIntent(item.value)}
-                className={'flex min-h-[94px] flex-col items-start justify-center border px-4 py-4 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9c3d24] sm:min-h-[110px] sm:px-5 ' + (selected ? 'border-[#9c3d24] bg-[#9c3d24] text-white' : 'border-black/15 bg-[#faf7f1] text-[#211d19] hover:border-[#9c3d24]/60')}>
-                <div className="flex w-full items-center justify-between"><Icon size={21} strokeWidth={1.5} aria-hidden/>{selected && <Check size={16} aria-hidden/>}</div>
-                <span className="mt-3 font-serif text-xl leading-none">{item.label}</span>
-                <span className={'mt-2 hidden text-xs sm:block ' + (selected ? 'text-white/75' : 'text-black/50')}>{item.description}</span>
+                title={item.description}
+                className={'inline-flex min-h-11 items-center gap-2 border px-4 py-2.5 text-left font-crimson text-lg leading-6 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9c3d24] ' + (selected ? 'border-[#9c3d24] bg-[#9c3d24] text-white' : 'border-black/20 bg-[#faf7f1] text-[#211d19] hover:border-[#9c3d24]/60')}>
+                <Icon size={17} strokeWidth={1.6} aria-hidden/>
+                <span>{item.label}</span>
+                {selected && <Check size={14} aria-hidden/>}
               </button>;
             })}
           </div>
@@ -146,9 +154,15 @@ export default function ExplorePage() {
               <h2 className="mt-2 font-serif text-3xl sm:text-4xl">{results.length} {results.length === 1 ? 'experience' : 'experiences'}</h2>
               <p className="mt-2 max-w-lg text-sm leading-6 text-black/55">Each experience appears once, even when it includes a story, interactive tool, or printable edition.</p>
             </div>
-            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-end">
+            <details className="group w-full sm:w-auto">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 border border-black/20 px-4 text-sm font-medium text-[#5e493d] marker:hidden hover:border-[#9c3d24]/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9c3d24] [&::-webkit-details-marker]:hidden">
+                <SlidersHorizontal size={17} aria-hidden/>
+                Format &amp; sort
+                {(format !== 'all' || order !== 'curated') && <span className="rounded-full bg-[#9c3d24] px-2 py-0.5 text-xs text-white">Active</span>}
+              </summary>
+              <div className="mt-3 flex flex-col gap-3 border border-black/15 bg-[#faf7f1] p-4 sm:flex-row sm:items-end">
               <label className="min-w-0 flex-1 text-xs font-medium text-black/65 sm:flex-none">
-                <span className="mb-2 flex items-center gap-2"><SlidersHorizontal size={15} aria-hidden/> Format</span>
+                <span className="mb-2 block">Format</span>
                 <select aria-label="Filter by format" value={format} onChange={event => selectFormat(event.target.value as CatalogFormat)} className="min-h-12 w-full border border-black/20 bg-[#faf7f1] px-4 text-sm text-[#211d19] outline-none focus:border-[#9c3d24] sm:min-w-40">
                   <option value="all">All formats</option><option value="recipe">Recipes</option><option value="interactive">Interactive</option><option value="print">Printable</option><option value="story">Stories</option>
                 </select>
@@ -159,7 +173,8 @@ export default function ExplorePage() {
                   <option value="curated">Curated</option><option value="az">A to Z</option>
                 </select>
               </label>
-            </div>
+              </div>
+            </details>
           </div>
 
           {hasFilters && <div className="mt-5 flex items-center justify-between gap-3">
@@ -172,10 +187,10 @@ export default function ExplorePage() {
               <div data-testid="explore-results" className="mt-7 grid gap-5 sm:grid-cols-2 xl:gap-7">
                 {visible.map(item => <ExperienceCard key={item.id} experience={item}/>)}
               </div>
-              <div className="mt-9 flex flex-col items-center gap-4 border-t border-black/15 pt-7">
+              {visible.length < results.length && <div className="mt-9 flex flex-col items-center gap-4 border-t border-black/15 pt-7">
                 <p className="text-sm text-black/55">Showing {visible.length} of {results.length} experiences</p>
                 {visible.length < results.length && <button type="button" onClick={() => setPages(n => n + 1)} className="inline-flex min-h-12 items-center gap-3 border border-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[.16em] text-[#9c3d24] hover:bg-[#9c3d24] hover:text-white">Show {Math.min(PAGE_SIZE, results.length - visible.length)} more <ArrowRight size={16}/></button>}
-              </div>
+              </div>}
             </>
           ) : (
             <div role="status" className="mt-7 border border-black/15 bg-[#faf7f1] px-6 py-14 text-center">

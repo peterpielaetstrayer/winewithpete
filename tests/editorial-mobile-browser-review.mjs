@@ -2,7 +2,12 @@ import { chromium, expect } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 
 const base = process.env.WWP_REVIEW_BASE_URL || 'http://127.0.0.1:3109';
-const browser = await chromium.launch({ headless: true });
+// Supply WWP_CHROMIUM_PATH in environments with system Chromium but no
+// Playwright-managed browser download.
+const browser = await chromium.launch({
+  headless: true,
+  ...(process.env.WWP_CHROMIUM_PATH ? { executablePath: process.env.WWP_CHROMIUM_PATH } : {}),
+});
 const viewports = [
   { name: 'phone', width: 390, height: 844 },
   { name: 'desktop', width: 1366, height: 900 },
@@ -52,12 +57,31 @@ try {
     await page.goto(base + '/explore', { waitUntil: 'domcontentloaded', timeout: 30000 });
     await expect(page.getByRole('heading', { level: 1, name: 'A good evening starts somewhere.' })).toBeVisible();
     await expect(page.locator('[data-experience-id]')).toHaveCount(4);
+    await expect(page.locator('[data-experience-id="giscours-vertical"] img')).toHaveCount(1);
+    await expect(page.getByRole('button', { name: 'Taste', exact: true })).toHaveCount(1);
+    await page.getByRole('button', { name: 'Taste', exact: true }).click();
+    await expect(page.locator('[data-experience-id]')).toHaveCount(1);
+    await expect(page.locator('[data-experience-id="giscours-vertical"]')).toBeVisible();
+    await page.getByRole('button', { name: 'Everything', exact: true }).click();
+    await expect(page.locator('[data-experience-id]')).toHaveCount(4);
+    await page.getByText('Format & sort').click();
+    await expect(page.getByRole('combobox', { name: 'Filter by format' })).toBeVisible();
     if (await page.getByRole('main').count() !== 1) {
       throw new Error(size.name + ': Explore must use exactly one main landmark');
     }
     await loadImagesForScreenshot(page);
     await checkOverflow(page, size.name + ' Explore');
     await page.screenshot({ path: 'review-screenshots/wwp-explore-' + size.name + '.png', fullPage: true });
+
+    await page.goto(base + '/journal', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await expect(page.getByRole('heading', { name: 'Real tables. Something to make.' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Read the Giscours table story' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Read the Seoul Bowl story' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Try the interactive guide' })).toBeVisible();
+    await expect(page.getByText('An editorial principle')).toHaveCount(0);
+    await loadImagesForScreenshot(page);
+    await checkOverflow(page, size.name + ' Journal');
+    await page.screenshot({ path: 'review-screenshots/wwp-journal-' + size.name + '.png', fullPage: true });
 
     await page.goto(base + '/recipes/chipotle-lime-fire-wings', { waitUntil: 'domcontentloaded', timeout: 30000 });
     await expect(page.getByRole('heading', { level: 1, name: 'Chipotle Lime Fire Wings' })).toBeVisible();

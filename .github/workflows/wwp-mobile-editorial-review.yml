@@ -47,8 +47,15 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
-      - name: Install isolated Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Prepare preinstalled Chrome or download Chromium without apt
+        run: |
+          browser_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          if [ -n "$browser_path" ]; then
+            echo "WWP_SYSTEM_CHROMIUM=$browser_path" >> "$GITHUB_ENV"
+            echo "WWP_CHROMIUM_PATH=$browser_path" >> "$GITHUB_ENV"
+          else
+            npx playwright install chromium
+          fi
       - name: Build with inert nonproduction config
         run: npm run build
       - name: Test two responsive sizes, anchors, print and landmarks

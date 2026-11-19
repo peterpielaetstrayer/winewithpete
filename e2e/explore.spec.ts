@@ -23,8 +23,9 @@ test('search ignores accents and clear action restores catalog', async ({ page }
 
 test('task and format filters compose, and empty results can be reset', async ({ page }) => {
   await page.goto('/explore');
-  await page.getByRole('button', { name: /^Taste/ }).click();
+  await page.getByRole('button', { name: 'Taste', exact: true }).click();
   await expect(page.locator('[data-testid="explore-results"] > article')).toHaveCount(1);
+  await page.getByText('Format & sort').click();
   await page.getByRole('combobox', { name: 'Filter by format' }).selectOption('recipe');
   await expect(page.getByText('Nothing on this shelf yet.')).toBeVisible();
   await page.getByRole('button', { name: 'See the whole collection' }).click();
