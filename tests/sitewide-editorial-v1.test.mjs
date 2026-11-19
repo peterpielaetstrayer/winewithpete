@@ -71,6 +71,21 @@ test('root layout owns the only main landmark across every page and state', () =
   }
 });
 
+test('private inquiry composer is a local email draft, not a backend submission or newsletter opt-in', () => {
+  const composer = read('src/components/private-inquiry-composer.tsx');
+  const helper = read('src/lib/private-inquiry.ts');
+  assert.match(composer, /event\.preventDefault\(\)/);
+  assert.match(composer, /mailto/);
+  assert.match(composer, /Nothing is sent to Pete or saved on the site/);
+  assert.doesNotMatch(composer, /fetch\(|localStorage|sessionStorage|newsletterOptIn/);
+  assert.doesNotMatch(helper, /fetch\(|localStorage|sessionStorage|newsletterOptIn/);
+  for (const path of ['src/app/plan/page.tsx', 'src/app/signature-table/page.tsx']) {
+    const page = read(path);
+    assert.match(page, /href="#inquire"/);
+    assert.match(page, /PrivateInquiryComposer/);
+  }
+});
+
 test('Table Archive uses event-specific verified photographs without inventing Knife & Fire photos', () => {
   const archive = read('src/app/tables/page.tsx');
   assert.match(archive, /giscours-bottles-menu\.webp/);
