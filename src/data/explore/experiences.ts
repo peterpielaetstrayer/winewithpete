@@ -87,6 +87,23 @@ export const experiences: readonly Experience[] = [
     rank: 3,
   },
   {
+    id: 'set-a-table',
+    title: 'Set a Table Worth Staying At',
+    eyebrow: 'A gathering field experience · No. 01',
+    summary: 'Start with an evening you remember. Shape a gathering of your own, then take a simple Table Score into the real world.',
+    note: 'A free, self-guided host experience. Your draft stays in your browser and can be downloaded or printed.',
+    intents: ['gather'],
+    tags: ['table', 'gathering', 'host', 'hosting', 'dinner', 'communal', 'hospitality', 'conversation', 'friends', 'plan', 'table score'],
+    links: [
+      { format: 'interactive', label: 'Design your gathering', href: '/guides/set-a-table' },
+    ],
+    primaryHref: '/guides/set-a-table',
+    status: 'public',
+    minutes: 15,
+    spotlight: 'GATHER',
+    rank: 4,
+  },
+  {
     id: 'giscours-vertical',
     title: 'Château Giscours Vertical',
     eyebrow: 'Table archive · May 2026',
@@ -100,7 +117,7 @@ export const experiences: readonly Experience[] = [
     primaryHref: '/tables/chateau-giscours-vertical',
     status: 'public',
     spotlight: '2015—18',
-    rank: 4,
+    rank: 5,
   },
   {
     id: 'seoul-bowl-table',
@@ -115,6 +132,6 @@ export const experiences: readonly Experience[] = [
     ],
     primaryHref: '/tables/seoul-bowl-table',
     status: 'public',
-    rank: 5,
+    rank: 6,
   },
 ];
