@@ -19,6 +19,7 @@ const intentions: { value: CatalogIntent; label: string; description: string; ic
 
 const coverThemes: Record<string, { background: string; foreground: string; label: string; monogram: string }> = {
   'better-taco-night': { background: '#853d2f', foreground: '#f8e3cc', label: 'CRAVINGS, REBUILT', monogram: '01' },
+  'learn-to-notice-wine': { background: '#4a3039', foreground: '#f0ddd2', label: 'LEARN TO NOTICE', monogram: 'TASTE' },
   'chipotle-lime-fire-wings': { background: '#333a29', foreground: '#f0e4c8', label: 'COOK / WITH FIRE', monogram: 'FIRE' },
   'giscours-vertical': { background: '#4a292f', foreground: '#f3ddc1', label: 'RED WINE / EXPLORATION', monogram: '4' },
   'seoul-bowl-table': { background: '#ac7a51', foreground: '#292217', label: 'FROM THE TABLE', monogram: 'SEOUL' },
@@ -56,7 +57,7 @@ function ExperienceCard({ experience }: { experience: Experience }) {
         </div>
         <h3 className="mt-4 font-serif text-[clamp(1.8rem,3.5vw,2.3rem)] leading-[1.09] tracking-[-.025em]">{experience.title}</h3>
         <p className="mt-4 max-w-md text-sm leading-7 text-black/65">{experience.summary}</p>
-        {experience.status === 'prototype' && <p className="mt-4 border-l-2 border-[#9c3d24] pl-3 text-xs leading-5 text-[#7b3a2b]">Kitchen-test preview · Not a final recipe</p>}
+        {experience.status === 'prototype' && <p className="mt-4 border-l-2 border-[#9c3d24] pl-3 text-xs leading-5 text-[#7b3a2b]">{experience.previewLabel ?? 'Working preview · Under review'}</p>}
         <div className="mt-auto pt-8">
           <Link href={experience.primaryHref} className="inline-flex min-h-11 items-center gap-2 border-b border-[#9c3d24] pb-1 text-xs font-semibold uppercase tracking-[.15em] text-[#9c3d24] hover:text-[#672718] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9c3d24]">
             {primary.label} <ArrowRight size={16} aria-hidden/>

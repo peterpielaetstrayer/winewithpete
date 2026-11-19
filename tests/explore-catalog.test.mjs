@@ -6,7 +6,11 @@ import { PAGE_SIZE, normalizeSearch, queryExperiences, validateCatalog, visibleP
 
 test('catalog has unique verified destinations and one entry per experience', () => {
   assert.deepEqual(validateCatalog(experiences), []);
-  assert.equal(experiences.length, 4);
+  assert.equal(experiences.length, 5);
+  const wineLesson = experiences.find(item => item.id === 'learn-to-notice-wine');
+  assert.equal(wineLesson?.status, 'public');
+  assert.ok(wineLesson?.links.every(link => !link.prototype));
+  assert.equal(wineLesson?.previewLabel, undefined);
   assert.deepEqual(experiences.find(item => item.id === 'giscours-vertical')?.links, [
     { format: 'story', label: 'Read the table story', href: '/tables/chateau-giscours-vertical' },
   ]);
@@ -17,23 +21,24 @@ test('accent-agnostic title and flexible keyword search work', () => {
   assert.deepEqual(queryExperiences(experiences, { term: 'chateau' }).map(item => item.id), ['giscours-vertical']);
   assert.deepEqual(queryExperiences(experiences, { term: 'red  wine' }).map(item => item.id), ['giscours-vertical']);
   assert.deepEqual(queryExperiences(experiences, { term: 'chipotle wings' }).map(item => item.id), ['chipotle-lime-fire-wings']);
+  assert.deepEqual(queryExperiences(experiences, { term: 'notice wine' }).map(item => item.id), ['learn-to-notice-wine']);
   assert.deepEqual(queryExperiences(experiences, { term: 'alien moon' }), []);
 });
 
 test('task intentions and delivery formats intersect without duplicating entries', () => {
-  assert.deepEqual(queryExperiences(experiences, { intent: 'taste' }).map(item => item.id), ['giscours-vertical']);
+  assert.deepEqual(queryExperiences(experiences, { intent: 'taste' }).map(item => item.id), ['learn-to-notice-wine', 'giscours-vertical']);
   assert.deepEqual(queryExperiences(experiences, { intent: 'read' }).map(item => item.id), ['giscours-vertical', 'seoul-bowl-table']);
-  assert.deepEqual(queryExperiences(experiences, { format: 'print' }).map(item => item.id), ['better-taco-night']);
+  assert.deepEqual(queryExperiences(experiences, { format: 'print' }).map(item => item.id), ['better-taco-night', 'learn-to-notice-wine']);
   assert.deepEqual(queryExperiences(experiences, { intent: 'gather', format: 'interactive' }).map(item => item.id), ['better-taco-night']);
   assert.deepEqual(queryExperiences(experiences, { intent: 'read', format: 'recipe' }), []);
 });
 
 test('A-Z order and pagination preserve predictable browse behavior', () => {
   assert.deepEqual(queryExperiences(experiences, { order: 'az' }).map(item => item.title), [
-    'Château Giscours Vertical', 'Chipotle Lime Fire Wings', 'The Better Taco Night', 'The Seoul Bowl Table',
+    'Château Giscours Vertical', 'Chipotle Lime Fire Wings', 'Learn to Notice Wine', 'The Better Taco Night', 'The Seoul Bowl Table',
   ]);
   assert.equal(PAGE_SIZE, 12);
-  assert.equal(visiblePage(experiences, 1).length, 4);
+  assert.equal(visiblePage(experiences, 1).length, 5);
 });
 
 test('500 generated test records remain filterable, paginated and unique', () => {
