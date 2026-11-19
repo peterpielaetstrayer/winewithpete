@@ -9,6 +9,15 @@ import {
 } from '@/lib/newsletter-rejoin';
 // import type { NewsletterFormData } from '@/lib/types';
 
+// A public signup endpoint must not reveal whether an address is new,
+// subscribed, or previously unsubscribed. The mailbox holds the next step.
+function acceptedSubscriptionResponse() {
+  return NextResponse.json({
+    success: true,
+    message: 'Thanks for reaching out. Check your inbox if a welcome or confirmation is needed. If you are already subscribed, you are all set.',
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     let body;
@@ -128,7 +137,7 @@ export async function POST(request: NextRequest) {
 
         if (lookupError || !existing) {
           console.error('Unable to look up duplicate newsletter signup', lookupError?.code);
-          return NextResponse.json({ error: 'Unable to process your request. Please try again later.' }, { status: 503 });
+          return acceptedSubscriptionResponse();
         }
 
         if (!existing.is_active) {
@@ -136,21 +145,17 @@ export async function POST(request: NextRequest) {
             typeof existing.preferences === 'object' && !Array.isArray(existing.preferences)
             ? existing.preferences : {};
           const pending = preferences.pending_rejoin as PendingRejoin | undefined;
-          const confirmationResponse = () => NextResponse.json({
-            success: true,
-            confirmation_requested: true,
-            message: 'If you recently requested to rejoin, check your inbox for a confirmation link.',
-          });
-
           // Repeated requests do not generate a stream of confirmation emails.
-          if (isRejoinRequestCoolingDown(pending)) return confirmationResponse();
+          if (isRejoinRequestCoolingDown(pending)) return acceptedSubscriptionResponse();
           if (!process.env.RESEND_API_KEY) {
-            return NextResponse.json({ error: 'Email confirmation is temporarily unavailable. Please try again later.' }, { status: 503 });
+            console.error('Newsletter rejoin confirmation provider is unavailable');
+            return acceptedSubscriptionResponse();
           }
 
           const confirmation = createRejoinConfirmation(existing.id);
           if (!confirmation) {
-            return NextResponse.json({ error: 'Unable to process your request. Please try again later.' }, { status: 503 });
+            console.error('Unable to create newsletter rejoin confirmation');
+            return acceptedSubscriptionResponse();
           }
 
           // Only replace the pending token if it still matches what we read.
@@ -168,11 +173,11 @@ export async function POST(request: NextRequest) {
 
           if (updateError) {
             console.error('Unable to prepare newsletter rejoin confirmation', updateError?.code);
-            return NextResponse.json({ error: 'Unable to process your request. Please try again later.' }, { status: 503 });
+            return acceptedSubscriptionResponse();
           }
           // A competing request already prepared a confirmation. Avoid a
           // second email and return the same privacy-preserving response.
-          if (!updated) return confirmationResponse();
+          if (!updated) return acceptedSubscriptionResponse();
 
           const message = emailTemplates.newsletterRejoinConfirmation(confirmation.url);
           let sent = null;
@@ -188,21 +193,15 @@ export async function POST(request: NextRequest) {
               .eq('id', existing.id)
               .eq('is_active', false)
               .eq('preferences->pending_rejoin->>token_hash', confirmation.pending.token_hash);
-            return NextResponse.json({ error: 'Unable to send confirmation right now. Please try again later.' }, { status: 503 });
+            console.error('Newsletter rejoin confirmation could not be delivered');
+            return acceptedSubscriptionResponse();
           }
 
-          return confirmationResponse();
+          return acceptedSubscriptionResponse();
         }
 
         // An active duplicate does not get another welcome email.
-        return NextResponse.json(
-          { 
-            success: true,
-            message: 'This email is already subscribed to our newsletter!',
-            already_subscribed: true
-          },
-          { status: 200 }
-        );
+        return acceptedSubscriptionResponse();
       }
       
       console.error('Supabase subscription failed:', {
@@ -328,10 +327,7 @@ export async function POST(request: NextRequest) {
       // Continue without failing the subscription
     }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Successfully subscribed to our newsletter!'
-    });
+    return acceptedSubscriptionResponse();
 
   } catch (error) {
     console.error('Newsletter subscription error:', error);

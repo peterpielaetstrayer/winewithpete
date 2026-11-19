@@ -2,13 +2,11 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { analyticsEvents } from '@/lib/analytics';
 
 export default function JoinPage() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [needsConfirmation, setNeedsConfirmation] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -29,16 +27,9 @@ export default function JoinPage() {
         : { error: 'Subscription service returned an unexpected response.' };
 
       if (response.ok) {
-        if (result.confirmation_requested) {
-          setNeedsConfirmation(true);
-          setIsSubmitted(true);
-        } else if (result.already_subscribed) {
-          setError("You're already at the Founding Table. Keep an eye on your inbox for the next note.");
-          setEmail('');
-        } else {
-          analyticsEvents.newsletterSignup();
-          setIsSubmitted(true);
-        }
+        // The server deliberately hides whether the address is new, active,
+        // or returning. Do not treat this as a verified new signup event.
+        setIsSubmitted(true);
       } else {
         setError(result.error || result.details || 'Failed to subscribe. Please try again.');
       }
@@ -56,12 +47,10 @@ export default function JoinPage() {
         <div className="mx-auto w-full max-w-4xl border-y border-black/15 py-16 text-center md:py-24">
           <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#9c3d24]">Founding Table</p>
           <h1 className="mx-auto mt-6 max-w-[12ch] font-serif text-5xl leading-[1.02] tracking-[-0.03em] sm:text-6xl">
-            {needsConfirmation ? 'Check your inbox.' : 'There’s a chair for you.'}
+            Thanks for reaching out.
           </h1>
           <p className="mx-auto mt-7 max-w-2xl font-crimson text-2xl leading-9 text-black/65">
-            {needsConfirmation
-              ? 'If you asked to return, you’ll have a confirmation link waiting. Your email preferences won’t change until you confirm.'
-              : 'You’re on the list. The next note, invitation, recipe, or experiment will find you there.'}
+            If you’re new, look for a welcome note. If you’re returning, follow the email confirmation link to rejoin. Already at the Table? You’re all set.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-5 sm:flex-row">
             <Link href="/journal" data-analytics-event="journal_enter" data-analytics-category="navigation" data-analytics-label="founding_table_success" className="inline-flex min-h-12 items-center justify-center bg-[#9c3d24] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white">

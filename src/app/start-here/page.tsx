@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import Image from 'next/image';
 
 export default function StartHerePage() {
   const [email, setEmail] = useState('');
@@ -37,18 +36,7 @@ export default function StartHerePage() {
       }
 
       if (response.ok) {
-        // Check if it's a duplicate subscription
-        if (result.confirmation_requested) {
-          alert('Check your email for a link to confirm your return to the Founding Table.');
-          setEmail('');
-          setName('');
-        } else if (result.already_subscribed) {
-          alert('You\'re already subscribed! Check your email for our latest updates.');
-          setEmail(''); // Clear the form
-          setName(''); // Clear the form
-        } else {
-          setIsSubmitted(true);
-        }
+        setIsSubmitted(true);
       } else {
         const errorMsg = result.error || result.details || 'Failed to subscribe';
         alert(errorMsg);
@@ -129,9 +117,9 @@ export default function StartHerePage() {
                   </form>
                 ) : (
                   <div className="bg-cream rounded-lg p-4">
-                    <p className="text-ember font-medium mb-2">✓ You&apos;re in!</p>
+                    <p className="text-ember font-medium mb-2">Thanks for reaching out.</p>
                     <p className="text-sm text-black/70">
-                      Check your email for your welcome message and free recipe card.
+                      New here? Look for a welcome note. Returning? Check for a confirmation link. Already subscribed? You&apos;re all set.
                     </p>
                   </div>
                 )}

@@ -39,6 +39,13 @@ function load(relativePath, services = {}, env = {}) {
 function json(body) { return { json: async () => body }; }
 const response = { NextResponse: { json: (body, options = {}) => ({ body, status: options.status || 200 }) } };
 
+function assertPrivateAcceptance(result) {
+  assert.equal(result.status, 200);
+  assert.deepEqual(Object.keys(result.body).sort(), ['message', 'success']);
+  assert.equal(result.body.success, true);
+  assert.match(result.body.message, /inbox/);
+}
+
 test('unsubscribe links are signed, subscriber-specific and need a server-only secret', () => {
   const signer = load('src/lib/newsletter-unsubscribe.ts', {}, signingEnv);
   const url = new URL(signer.createUnsubscribeUrl(subscriberId));
@@ -153,8 +160,7 @@ test('Founding Table signup persists with server-only client and sends a signed 
   };
   const route = load('src/app/api/newsletter/subscribe/route.ts', services, { RESEND_API_KEY: 'test-only' });
   const result = await route.POST(json({ email: '  ALEx@EXAMPLE.test  ' }));
-  assert.equal(result.status, 200);
-  assert.equal(result.body.success, true);
+  assertPrivateAcceptance(result);
   assert.equal(inserted.length, 1);
   assert.equal(inserted[0].email, 'alex@example.test');
   assert.equal(emails.length, 1);
@@ -279,8 +285,7 @@ test('active duplicate is idempotent and sends no new email', async () => {
   const route = load('src/app/api/newsletter/subscribe/route.ts', rejoinServices(fixture, emails),
     { RESEND_API_KEY: 'test-only' });
   const result = await route.POST(json({ email: fixture.state.email }));
-  assert.equal(result.status, 200);
-  assert.equal(result.body.already_subscribed, true);
+  assertPrivateAcceptance(result);
   assert.equal(fixture.state.is_active, true);
   assert.equal(fixture.calls.updates.length, 0);
   assert.equal(emails.length, 0);
@@ -292,15 +297,15 @@ test('inactive duplicate receives one confirmation, not reactivation or a welcom
   const route = load('src/app/api/newsletter/subscribe/route.ts', rejoinServices(fixture, emails),
     { RESEND_API_KEY: 'test-only' });
   const result = await route.POST(json({ email: fixture.state.email }));
-  assert.equal(result.status, 200);
-  assert.equal(result.body.confirmation_requested, true);
+  assertPrivateAcceptance(result);
   assert.equal(fixture.state.is_active, false);
   assert.equal(fixture.state.preferences.gathering_interest.source, 'historic');
   assert.equal(emails.length, 1);
   assert.match(emails[0].text, /\/rejoin\?id=/);
 
   const repeated = await route.POST(json({ email: fixture.state.email }));
-  assert.equal(repeated.body.confirmation_requested, true);
+  assertPrivateAcceptance(repeated);
+  assert.deepEqual(repeated.body, result.body);
   assert.equal(emails.length, 1, 'A duplicate request during cooldown must not send another email');
   assert.equal(fixture.calls.updateFilters[0].find(f => f.column === 'preferences->pending_rejoin->>token_hash')?.operator,
     'is', 'Creating a pending request must require a missing existing token');
@@ -318,7 +323,8 @@ test('simultaneous rejoin requests cannot replace the first confirmation token',
     route.POST(json({ email: fixture.state.email })),
   ]);
   assert.deepEqual(results.map(result => result.status), [200, 200]);
-  assert.ok(results.every(result => result.body.confirmation_requested));
+  results.forEach(assertPrivateAcceptance);
+  assert.deepEqual(results[0].body, results[1].body);
   assert.equal(fixture.calls.updateFilters.length, 2);
   assert.equal(fixture.calls.updates.length, 1, 'Only one atomic compare-and-set can win');
   assert.equal(emails.length, 1, 'A competing request must not send an invalid link');
@@ -447,9 +453,47 @@ test('a failed confirmation email leaves the address inactive and allows retry',
   services['@/lib/email'].sendEmail = async () => null;
   const route = load('src/app/api/newsletter/subscribe/route.ts', services, { RESEND_API_KEY: 'test-only' });
   const result = await route.POST(json({ email: fixture.state.email }));
-  assert.equal(result.status, 503);
+  assertPrivateAcceptance(result);
   assert.equal(fixture.state.is_active, false);
   assert.equal(fixture.state.preferences.pending_rejoin, undefined);
+});
+
+test('public success response cannot distinguish a new, active, or inactive email address', async () => {
+  const inserted = [];
+  const freshServices = {
+    'next/server': response,
+    '@/lib/supabase/server': { createClient: () => ({ from: () => ({ insert: (row) => {
+      inserted.push(row);
+      return { select: () => ({ single: async () => ({ data: { id: subscriberId }, error: null }) }) };
+    } }) }) },
+    '@/lib/email': { emailTemplates: { newsletterWelcome: () => ({ subject: 'Welcome', text: '', html: '' }) },
+      sendEmail: async () => ({ id: 'mock-welcome' }) },
+    '@/lib/newsletter-unsubscribe': { createUnsubscribeUrl: () => null },
+    '@/lib/newsletter-rejoin': load('src/lib/newsletter-rejoin.ts'),
+  };
+  const freshRoute = load('src/app/api/newsletter/subscribe/route.ts', freshServices,
+    { RESEND_API_KEY: 'test-only' });
+  const first = await freshRoute.POST(json({ email: 'fresh@example.test' }));
+
+  const active = rejoinDatabase(true);
+  const activeRoute = load('src/app/api/newsletter/subscribe/route.ts', rejoinServices(active, []),
+    { RESEND_API_KEY: 'test-only' });
+  const second = await activeRoute.POST(json({ email: active.state.email }));
+
+  const inactive = rejoinDatabase(false);
+  const emails = [];
+  const inactiveRoute = load('src/app/api/newsletter/subscribe/route.ts', rejoinServices(inactive, emails),
+    { RESEND_API_KEY: 'test-only' });
+  const third = await inactiveRoute.POST(json({ email: inactive.state.email }));
+
+  [first, second, third].forEach(assertPrivateAcceptance);
+  // Each route loads in an independent VM realm with a different object prototype.
+  assert.equal(JSON.stringify(second.body), JSON.stringify(first.body));
+  assert.equal(JSON.stringify(third.body), JSON.stringify(first.body));
+  assert.equal(inserted.length, 1);
+  assert.equal(active.calls.updates.length, 0);
+  assert.equal(emails.length, 1);
+  assert.equal(inactive.state.is_active, false);
 });
 
 test('campaign sends one signed unsubscribe link per recipient and respects active filtering', async () => {

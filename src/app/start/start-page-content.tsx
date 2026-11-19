@@ -26,12 +26,8 @@ function InlineEmailForm({ onSuccess }: { onSuccess: () => void }) {
       const result = await response.json();
       
       if (response.ok && result.success) {
-        if (!result.already_subscribed && !result.confirmation_requested) analyticsEvents.newsletterSignup();
-        showToast(result.confirmation_requested
-          ? 'Check your inbox for a link to confirm your return.'
-          : result.already_subscribed
-            ? 'You’re already at the Founding Table.'
-            : 'Welcome to the Founding Table! Check your email.', 'success');
+        // The server does not disclose the current subscription state.
+        showToast('Thanks! Check your inbox if a welcome or confirmation is needed.', 'success');
         setEmail('');
         onSuccess();
       } else {
